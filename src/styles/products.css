@@ -20,10 +20,10 @@ margin-left: 5px;
     align-items: center;
     margin-right: 10px;
     color: white;
-    gap: 15px; /* Added spacing between items */
-    font-size: 16px; /* Adjusted font size */
-    font-weight: bold; /* Made text bold */
-    cursor: pointer; /* Added pointer cursor */
+    gap: 15px;
+    font-size: 16px;
+    font-weight: bold; 
+    cursor: pointer; 
 }
 
 .head {
