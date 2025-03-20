@@ -13,6 +13,12 @@ align-items: center;
 color: rgb(26, 26, 237);
 margin-left: 5px;
 }
+.middle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .right {
     display: flex;
@@ -31,11 +37,21 @@ margin-left: 5px;
     font-size: 24px;
     font-weight: bold;
     margin: 20px 0;
-    color: #333; /* Dark color for emphasis */
+    color: #333; 
     text-transform: uppercase;
+    height: 10vh;
 }
 
 
+.cuboid{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    padding:20px;
+    border-radius: 5px;
+}
 .main-body{
     margin: 10px;
 }
@@ -46,5 +62,19 @@ margin-left: 5px;
 .category{
     display: flex;
     justify-content: center;
-    gap: 5px;
+    gap: 25px;
+    padding: 6px;
+}
+.search-box{
+    position: relative;
+    width: 300px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+.search-box::placeholder{
+    font-weight: 400;
+    font-size: 18px;
+}
+.search-btn{
+    position: absolute;
 }

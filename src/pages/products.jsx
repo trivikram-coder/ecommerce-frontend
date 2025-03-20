@@ -9,8 +9,8 @@ const Products = () => {
             <h4>VK store</h4>
           </div>
           <div className="middle">
-            <input type="text" placeholder='Search'/>
-            <Search size={20}/>
+            <input type="text" placeholder='Search' className='search-box'/>
+            <div className='search-btn'><Search size={20}/></div>
           </div>
           <div className="right">
             <User size={20}/>
@@ -29,9 +29,10 @@ const Products = () => {
             
                 {['Electronics','Clothing','Grocery'].map((item)=>(
                     
-                   <p> 
-                    <Cuboid size={24}/> <br />
-                    {item}</p>
+                  <div className='cuboid'><Cuboid size={24}/>
+                     
+                  <p className='cat-name'>  {item}</p>
+                  </div>
                 ))}
             </div>
             <div className='product-card'>
