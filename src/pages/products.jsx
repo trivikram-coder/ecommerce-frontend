@@ -13,12 +13,21 @@ const Products = () => {
             <div className='search-btn'><Search size={20}/></div>
           </div>
           <div className="right">
+            <div className="nav">
             <User size={20}/>
             Account
+            </div>
+            <div className="nav">
             <Heart size={20}/>
             Wishlist
+            </div>
+            <div className="nav">
             <ShoppingBag size={20}/>
             Cart
+            </div>
+           
+           
+            
           </div>
         </div>
         <div className="main-body">
