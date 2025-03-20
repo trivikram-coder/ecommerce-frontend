@@ -1,0 +1,64 @@
+import React from 'react'
+import '../styles/products.css'
+import {Cuboid, Heart, Search,ShoppingBag,User} from 'lucide-react'
+const Products = () => {
+  return (
+    <div className="main-container">
+        <div className="header">
+          <div className="left">
+            <h4>VK store</h4>
+          </div>
+          <div className="middle">
+            <input type="text" placeholder='Search'/>
+            <Search size={20}/>
+          </div>
+          <div className="right">
+            <User size={20}/>
+            Account
+            <Heart size={20}/>
+            Wishlist
+            <ShoppingBag size={20}/>
+            Cart
+          </div>
+        </div>
+        <div className="main-body">
+            <div className="head">
+                Welcome to VK
+            </div>
+            <div className='category'>
+            
+                {['Electronics','Clothing','Grocery'].map((item)=>(
+                    
+                   <p> 
+                    <Cuboid size={24}/> <br />
+                    {item}</p>
+                ))}
+            </div>
+            <div className='product-card'>
+        <div className="card" style={{ width: '18rem' }}>
+  <img className="card-img-top" src="..." alt="Card image cap"/>
+  <div className="card-body">
+    <h5 className="card-title">Card title</h5>
+    <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <a href="#" className="btn btn-primary">Go somewhere</a>
+  </div>
+  
+  </div>
+  <div className="card" style={{ width: '18rem' }}>
+  <img className="card-img-top" src="..." alt="Card image cap"/>
+  <div className="card-body">
+    <h5 className="card-title">Card title</h5>
+    <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <a href="#" className="btn btn-primary">Go somewhere</a>
+  </div>
+  </div>
+</div>
+        </div>
+        <div className="footer">
+
+        </div>
+    </div>
+  )
+}
+
+export default Products

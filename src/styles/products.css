@@ -1,0 +1,50 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    color: white;
+    min-height: 60px;
+}
+.left{
+display: flex;
+justify-content: center;
+align-items: center;
+color: rgb(26, 26, 237);
+margin-left: 5px;
+}
+
+.right {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-right: 10px;
+    color: white;
+    gap: 15px; /* Added spacing between items */
+    font-size: 16px; /* Adjusted font size */
+    font-weight: bold; /* Made text bold */
+    cursor: pointer; /* Added pointer cursor */
+}
+
+.head {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #333; /* Dark color for emphasis */
+    text-transform: uppercase;
+}
+
+
+.main-body{
+    margin: 10px;
+}
+.product-card{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+}
+.category{
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
