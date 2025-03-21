@@ -17,7 +17,7 @@ const Signin = () => {
                             type="email"
                             placeholder="Enter Email"
                             className="email"
-                           
+                          required 
                         />
                         <br />
                        
@@ -40,7 +40,11 @@ const Signin = () => {
                     </div>
                     </form>
                     </div>
-                    
+                    <div className="footer">
+                        <p>
+                            &copy; 2025 Vk Store. All Rights Reserved 
+                        </p>
+                    </div>
         </>
     );
 };

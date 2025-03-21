@@ -18,7 +18,7 @@ const Signup = () => {
                             type="email"
                             placeholder="Enter Email"
                             className="email"
-                           
+                           required
                         />
                         <br />
                        
@@ -30,7 +30,7 @@ const Signup = () => {
                             type="password"
                             placeholder="Enter password"
                             className="pass"
-                            
+                            required
                         />
                       
                     </div>
@@ -41,17 +41,22 @@ const Signup = () => {
                             type="password"
                             placeholder="Confirm password"
                             className="pass"
-                            
+                            required
                         />
                       
                     </div>
                     <div className="form-group">
                   
                       <button className='btn btn-primary'>Register</button>
-                      <Link to='/' className='btn btn-dark'>Login</Link>
+                      <Link to='/product' className='btn btn-dark'>Login</Link>
                     </div>
                     </form>
                     </div>
+                    </div>
+                    <div className="footer">
+                        <p>
+                            &copy; 2025 Vk Store. All Rights Reserved 
+                        </p>
                     </div>
         </>
     );
