@@ -4,7 +4,7 @@ import {Cuboid, Heart, Search,ShoppingBag,User} from 'lucide-react'
 const Products = () => {
   return (
     <div className="main-container">
-        <div className="header">
+        <div className="header bg-dark">
           <div className="left">
             <h4>VK store</h4>
           </div>
@@ -64,9 +64,15 @@ const Products = () => {
   </div>
 </div>
         </div>
-        <div className="footer">
+        <footer>
+                 <div className="footer-box">
+        <div className="foot bg-dark text-light d-flex justify-content-center align-items-center ">
+            <p>&copy; 2025 VK Store. All Rights Reserved</p>
 
         </div>
+        </div>
+        </footer>
+ 
     </div>
   )
 }
