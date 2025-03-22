@@ -1,6 +1,7 @@
-import React from 'react'
-import '../styles/products.css'
-import {Cuboid, Heart, Search,ShoppingBag,User} from 'lucide-react'
+import React, { useEffect, useState } from 'react';
+import '../styles/products.css';
+import { Cuboid, Heart, Search, ShoppingBag, User } from 'lucide-react';
+
 const Products = () => {
   return (
     <div className="main-container">
