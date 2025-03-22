@@ -1,30 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/products.css';
-import { Cuboid, Heart, Search, ShoppingBag, User } from 'lucide-react';
+import { Cuboid, Heart, Search, ShoppingBag, User,X } from 'lucide-react';
+import productsDetails from '../data/data';
 
 const Products = () => {
-  const[items,setItems]=useState([])
-  useEffect(()=>{
-    fetch('https://fakestoreapi.com/products')
-    .then(response => response.json())
-    .then(data =>{
-      setItems(data)
-      
-    }
-    );
-  },[])
+  const[items,setItems]=useState(productsDetails)
+  const[filtered,setFiltered]=useState(productsDetails)
+  const[search,setSearch]=useState('');
   
+  function searchProduct(name){
+  
+    if(name===''){
+      setItems(filtered)
+      return
+    }
+    const filter=items.filter(item=>item.title.toLowerCase().includes(name.toLowerCase()))
+    setItems(filter)
+  }
+  
+
   return (
     <div className="main-container">
       {/* Header Section */}
       <header>
       <div className="header bg-dark">
         <div className="left">
-          <h4>VK Store</h4>
+          <h4>VK Store   <ShoppingBag size={24}/></h4>
         </div>
         <div className="middle">
-          <input type="text" placeholder='Search' className='search-box'/>
-          <div className='search-btn'><Search size={20}/></div>
+        <input 
+  type="text" 
+ value={search}
+  placeholder="Search"
+  className="search-box" 
+  onChange={(e) => {
+    setSearch(e.target.value);
+    searchProduct(e.target.value); // Perform search on every change
+  }} 
+  onKeyDown={(e) => {
+    if (e.key === "Enter" || e.key === "Backspace") {
+      searchProduct(search); 
+    }
+  }}
+/>
+
+
+          <button className="btn-del" onClick={()=>{setSearch('')
+          setItems(filtered)
+          }}>
+      <X size={20} />
+    </button>
+          <div className='search-btn'>
+            
+            <Search size={20} onClick={(e)=>searchProduct(search)}/></div>
         </div>
         <div className="right">
           <div className="nav"><User size={20}/> Account</div>
@@ -37,19 +65,27 @@ const Products = () => {
       <div className="main-body">
         
       <div className="head">
-        <h2>Welcome to VK</h2></div>
-        {/* Categories */}
-        <div className='category'>
-        
-          <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'>Electronics</p></div>
-          <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'>Clothing</p></div>
-          <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'>Grocery</p></div>
+        <div className="headh2">
+        <h2>Welcome to VK Store <ShoppingBag size={28}className='gap-3'/>
+        </h2>
         </div>
+        
+        
+        </div>
+        {/* Categories */}
+          <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
+          <div className='category'>
+               
+            <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Electronics</strong></p></div>
+            <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Clothing</strong></p></div>
+            <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Grocery</strong></p></div>
+          </div>
 
-        {/* Product Cards Grid */}
+          {/* Product Cards Grid */}
         <div className="container mt-4 mb-4">
   <div className="row g-3">  
-    {items.map((item) => (
+    <h3 className='d-flex justify-content-center mt-5 mb-5'><strong>Popular Products in our store</strong></h3>
+    {items.length > 0 ? items.map((item) => (
       <div className="col-md-3" key={item.id}>
         <div className="card h-100 d-flex flex-column">
           <div className='image-container'>
@@ -62,12 +98,23 @@ const Products = () => {
           </div>
           <div className="card-body d-flex flex-column flex-grow-1">
             <h5 className="card-title">{item.title}</h5>
+           
             <p className="card-text">${item.price}</p>
+            <div className="flex flex-col items-center">
+             
+  <select className="border rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500">
+    <option value="" disabled>Select quantity</option>
+    {[1, 2, 3, 4, 5].map((num) => (
+      <option key={num} value={num}>{num}</option>
+    ))}
+  </select>
+</div>
+
             <a href="#" className="btn btn-primary mt-auto">Add to Cart</a>
           </div>
         </div>
       </div>
-    ))}
+    )) : <p>No products found</p>}
   </div>
 </div>
 

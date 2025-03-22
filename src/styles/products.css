@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&display=swap');
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    min-height: 60px;
+    min-height: 70px;
+    font-family: 'Poppins', sans-serif;
     position: fixed;
     top: 0;
     left: 0;
@@ -15,9 +18,9 @@
 
 .left {
     display: flex;
-    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-family:'Poppins', sans-serif;
     align-items: center;
-    color: rgb(26, 26, 237);
+    color: rgb(221, 221, 228);
     margin-left: 10px;
 }
 
@@ -73,7 +76,7 @@
     margin-top: 20px;
     text-transform: uppercase;
     color: white;
-    background-color: #3986d3;
+    background: linear-gradient(to right, #0000ff, #87ceeb);
     width: 100%;
 }
 
@@ -86,41 +89,41 @@
 
 .search-box {
     position: relative;
-    width: 400px;
+    width: 430px;
     height: 40px;
-    border-radius: 5px;
+    border-radius: 25px;
     border: 1px solid #ccc;
     padding: 5px 10px;
     font-size: 16px;
     transition: all 0.3s ease;
+    margin-left: 5px;
 }
 
 .search-box:hover,
 .search-box:focus {
     border: 1px solid black;
     outline: none;
+    transform: scale(1.05);
 }
 
 .search-box::placeholder {
     font-weight: 400;
     font-size: 16px;
 }
-
 .search-btn {
-    position: absolute;
-    right: 40%;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: blue;
-    border: none;
-    padding: 5px 12px;
-    cursor: pointer;
-    font-size: 16px;
+    background-color: rgb(0, 4, 255);
     color: white;
-    border-radius: 3px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 5px 10px 5px 10px;
+    cursor: pointer;
+    border-radius: 50%;
     transition: background-color 0.3s ease, color 0.3s ease;
+    margin-left: 4px;
 }
+
+
+
+
 
 .search-btn:hover {
     background-color:rgb(46, 46, 172);
@@ -246,4 +249,29 @@
     .head h2 {
         font-size: 20px;
     }
+}
+.select-quantity{
+    margin-bottom: 4px;
+}
+.review {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+
+
+}
+
+.btn-del{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-left: 4px;
+}
+.btn-del:hover{
+    background-color: rgb(204, 32, 32);
 }
