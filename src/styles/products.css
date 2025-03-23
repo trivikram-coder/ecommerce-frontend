@@ -283,25 +283,4 @@
 
 }
 
-/* .btn-del {
-    position: absolute;
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-left: 23%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
 
-.btn-del:hover {
-    background-color: #e60000;
-    transform: scale(1.1);
-} */
