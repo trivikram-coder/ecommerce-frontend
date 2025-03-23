@@ -4,6 +4,7 @@ import Nav from './pages/Nav'
 const App = () => {
   return (
    <Nav/>
+   
   )
 }
 

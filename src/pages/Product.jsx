@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../styles/products.css';
 import { Cuboid, Heart, Search, ShoppingBag, User,X } from 'lucide-react';
 import productsDetails from '../data/data';
-
+import { Link } from 'react-router-dom';
 const Products = () => {
   const[items,setItems]=useState(productsDetails)
   const[filtered,setFiltered]=useState(productsDetails)
@@ -46,22 +46,28 @@ const Products = () => {
 
 
           <button className="btn-del" onClick={()=>{setSearch('')
-          setItems(filtered)
-          }}>
-      <X size={20} />
-    </button>
-          <div className='search-btn'>
+            setItems(filtered)
+            }}>
+          <X size={23} />
+        </button>
+            <div className='search-btn'>
             
-            <Search size={20} onClick={(e)=>searchProduct(search)}/></div>
-        </div>
-        <div className="right">
-          <div className="nav"><User size={20}/> Account</div>
-          <div className="nav"><Heart size={20}/> Wishlist</div>
-          <div className="nav"><ShoppingBag size={20}/> Cart</div>
-        </div>
-      </div>
-      </header>
-      {/* Welcome Section */}
+            <Search size={20} onClick={(e)=>searchProduct(search)} style={{ textDecoration: 'none' }}/></div>
+          </div>
+          <div className="right">
+          
+            <div className="nav">
+            
+            <Link to='/signup' style={{ textDecoration: 'none',color:'white' }}> <User size={23} className='text'/> Account
+            </Link>
+             
+            </div>
+            <div className="nav"><Heart size={20} style={{ textDecoration: 'none' }}/> Wishlist</div>
+            <div className="nav"><ShoppingBag size={20} style={{ textDecoration: 'none' }}/> Cart</div>
+          </div>
+          </div>
+          </header>
+          {/* Welcome Section */}
       <div className="main-body">
         
       <div className="head">
@@ -89,12 +95,14 @@ const Products = () => {
       <div className="col-md-3" key={item.id}>
         <div className="card h-100 d-flex flex-column">
           <div className='image-container'>
+            <Link to='/item' state={{item}}>
           <img 
             src={item.image} 
-            className="product-image h-100" 
+            className="product-image" 
             alt={item.title} 
-           
+           style={{width:'100%',height:'300px',padding:'26px'}}
           />
+          </Link>
           </div>
           <div className="card-body d-flex flex-column flex-grow-1">
             <h5 className="card-title">{item.title}</h5>
