@@ -1,3 +1,4 @@
+import { ShoppingBag } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +10,7 @@ const Signup = () => {
         <div className="form">
            
        <form className='inputs'>
-       <h2>Vk Store</h2>
+       <h2>Vk Store <ShoppingBag size={28}/></h2>
        <h3>Register</h3>
                     <div className="form-group">
                         <label htmlFor="Email">Email</label>
