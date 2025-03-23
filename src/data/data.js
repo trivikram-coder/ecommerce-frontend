@@ -240,4 +240,10 @@ const productsDetails=[
     }
   }
 ]
-export default productsDetails;
+let productsDetailsU = productsDetails.map((item) => (
+  {
+    ...item,
+    quantity: 1
+  }
+));
+export default productsDetailsU;

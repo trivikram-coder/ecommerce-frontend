@@ -31,8 +31,10 @@ const Item = () => {
       <div className="item-det">
         <h4>{item.title}</h4>
         <p>{item.description.toUpperCase()}</p>
+        <p>Category: {item.category}</p>
+        <p>Quantity:{item.quantity}</p>
         <h3>Price: ${item.price}</h3>
-
+        
         <button className="btn btn-outline-dark">Add To Cart</button>
       </div>
       
