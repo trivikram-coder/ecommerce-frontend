@@ -7,7 +7,7 @@ const Products = () => {
   const[items,setItems]=useState(productsDetails)
   const[filtered,setFiltered]=useState(productsDetails)
   const[search,setSearch]=useState('');
-  
+  const[quan,setQuan]=useState(1);
   function searchProduct(name){
   
     if(name===''){
@@ -18,7 +18,7 @@ const Products = () => {
     setItems(filter)
   }
   function categoryFilter(e){
-    if(e.target.tagName==='DIV'||'P'||"CUBOID"||"STRONG"){
+    if(["DIV","P","CUBOID","STRONG"].includes(e.target.tagName)){
   if(e.target.innerText==='Electronics'){
     const filter=filtered.filter(item=>item.category==='electronics')
     setItems(filter)
@@ -33,6 +33,14 @@ const Products = () => {
     setItems(filter)
     }
   }
+}
+function setQuantity(e, id) {
+  setItems((prevItems) =>
+    prevItems.map((item) =>
+      item.id === id ? { ...item, quantity: parseInt(e.target.value) } : item
+    )
+  );
+ 
 }
   return (
     <div className="main-container">
@@ -125,8 +133,8 @@ const Products = () => {
             <p className="card-text">${item.price}</p>
             <div className="flex flex-col items-center">
              
-  <select className="border rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500">
-    <option value="" disabled>Select quantity</option>
+ 
+  <select className="border rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500" onChange={(e) => setQuantity(e, item.id)}>
     {[1, 2, 3, 4, 5].map((num) => (
       <option key={num} value={num}>{num}</option>
     ))}
@@ -134,6 +142,7 @@ const Products = () => {
 </div>
 
             <a href="#" className="btn btn-primary mt-auto">Add to Cart</a>
+         
           </div>
         </div>
       </div>

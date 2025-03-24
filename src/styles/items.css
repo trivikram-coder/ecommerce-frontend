@@ -104,3 +104,28 @@
     transform: scale(1.1);
     transition: all 0.3s ease;
 }
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 500;
+}
+.minus{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.plus, .minus {
+    cursor: pointer;
+    background-color: blue;
+    border-radius: 50%;
+    color: #c8d1da;
+    transition: transform 0.2s ease-in-out;
+}
+
+.plus:hover, .minus:hover {
+    transform: scale(1.2);
+    color: #346eab;
+}
+
+
