@@ -10,7 +10,7 @@ const Signin = () => {
         <div className="form">
        <form className='inputs'>
        <h2>Vk Store <ShoppingBag size={26}/></h2>
-       <h3 >Login</h3>
+       <h3 >Sign in</h3>
                     <div className="form-group">
                         <label htmlFor="Email">Email</label>
                         <br />
@@ -36,8 +36,8 @@ const Signin = () => {
                     </div>
                     <div className="form-group">
                   
-                        <button className='btn btn-primary w-100'>Login</button>
-                        <Link to='/signup' className='btn btn-dark'>Register</Link>
+                        <button className='btn btn-primary w-100'>Sign in</button>
+                        <Link to='/signup' className='btn btn-dark'>Sign up</Link>
                     </div>
                     </form>
                     </div>

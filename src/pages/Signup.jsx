@@ -11,7 +11,7 @@ const Signup = () => {
            
        <form className='inputs'>
        <h2>Vk Store <ShoppingBag size={28}/></h2>
-       <h3>Register</h3>
+       <h3>Sign up</h3>
                     <div className="form-group">
                         <label htmlFor="Email">Email</label>
                         <br />
@@ -48,8 +48,8 @@ const Signup = () => {
                     </div>
                     <div className="form-group">
                   
-                      <button className='btn btn-primary'>Register</button>
-                      <Link to='/product' className='btn btn-dark'>Login</Link>
+                      <button className='btn btn-primary'>Sign up</button>
+                      <Link to='/product' className='btn btn-dark'>Sign in</Link>
                     </div>
                     </form>
                     </div>
