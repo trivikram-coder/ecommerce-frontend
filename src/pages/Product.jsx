@@ -17,8 +17,23 @@ const Products = () => {
     const filter=items.filter(item=>item.title.toLowerCase().includes(name.toLowerCase()))
     setItems(filter)
   }
-  
-
+  function categoryFilter(e){
+    if(e.target.tagName==='DIV'||'P'||"CUBOID"||"STRONG"){
+  if(e.target.innerText==='Electronics'){
+    const filter=filtered.filter(item=>item.category==='electronics')
+    setItems(filter)
+    }
+  if(e.target.innerText==='Clothing'){
+    const filter=filtered.filter(item=>item.category==="men's clothing" || item.category==="women's clothing")
+    console.log(filter)
+    setItems(filter)
+    }
+  if(e.target.innerText==='Jewellery'){
+    const filter=filtered.filter(item=>item.category==='jewelery')
+    setItems(filter)
+    }
+  }
+}
   return (
     <div className="main-container">
       {/* Header Section */}
@@ -80,11 +95,11 @@ const Products = () => {
         </div>
         {/* Categories */}
           <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
-          <div className='category'>
+          <div className='category' onClick={categoryFilter}>
                
             <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Electronics</strong></p></div>
             <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Clothing</strong></p></div>
-            <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Grocery</strong></p></div>
+            <div className='cuboid'><Cuboid size={24}/> <p className='cat-name'><strong>Jewellery</strong></p></div>
           </div>
 
           {/* Product Cards Grid */}
