@@ -36,7 +36,7 @@ const Products = () => {
 }
   return (
     <div className="main-container">
-      {/* Header Section */}
+      {/* {Head Section} */}
       <header>
       <div className="header bg-dark">
         <div className="left">
