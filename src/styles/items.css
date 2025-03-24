@@ -111,9 +111,8 @@
     font-size: 18px;
     font-weight: 500;
 }
-.minus{
-    margin-left: 3px;
-    margin-right: 3px;
+.minus,.plus{
+    margin: 5px;
 }
 .plus, .minus {
     cursor: pointer;

@@ -1,40 +1,40 @@
 import React, { useState } from 'react';
-import { useLocation,Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import '../styles/items.css';
 import { ArrowBigLeft, Minus, Plus } from 'lucide-react';
+
 const Item = () => {
   const location = useLocation();
   const item = location.state?.item;
-  const[quan,setQuan]=useState(item.quantity)
-  const[msg,setMsg]=useState("")
+  
+  const [quan, setQuan] = useState(item?.quantity || 1);
+  const [price, setPrice] = useState(item?.price || 0);
+  const [msg, setMsg] = useState("");
+
   if (!item) {
     return <h2 className="text-center mt-5">Item not found!</h2>;
   }
 
   const handleIncreaseQuantity = () => {
-    if(quan>=5){
-      setMsg("Quantity Full")
-    }
-    else{
-    setQuan(item.quantity+=1)
+    if (quan >= 5) {
+      setMsg("Quantity Full");
+    } else {
+      const newQuan = quan + 1;
+      setQuan(newQuan);
+      setPrice(newQuan * item.price);
+      setMsg("");
     }
   };
 
   const handleDecreaseQuantity = () => {
-    // Logic to decrease the quantity
-    if(quan>1){
-      
-      setQuan(item.quantity-=1)
+    if (quan > 1) {
+      const newQuan = quan - 1;
+      setQuan(newQuan);
+      setPrice(newQuan * item.price);
+      setMsg("");
+    } else {
+      setMsg("Quantity should not be less than 1");
     }
-    else{
-      setQuan("Quantity should not less than 1")
-    }
-    console.log("Decrease quantity");
-  };
-
-  const handleAddToCart = () => {
-    // Logic to add the item to the cart
-    console.log("Add to cart");
   };
 
   return (
@@ -63,15 +63,13 @@ const Item = () => {
           <p>
             Quantity:
             <Minus size={22} className='minus' onClick={handleDecreaseQuantity} />
-            
-            {item.quantity}
+            {quan}
             <Plus size={22} className='plus' onClick={handleIncreaseQuantity} />
-            
           </p>
           {msg && <p className="text-danger">{msg}</p>}
-          <h3>Price: ${item.price}</h3>
+          <h3>Price: ${price.toFixed(2)}</h3>
           <p></p>
-          <button className="btn btn-outline-dark" onClick={handleAddToCart}>
+          <button className="btn btn-outline-dark">
             Add To Cart
           </button>
         </div>
