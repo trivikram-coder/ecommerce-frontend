@@ -13,37 +13,24 @@ const Signup = () => {
        <h2>Vk Store <ShoppingBag size={28}/></h2>
        <h3>Sign up</h3>
                     <div className="form-group">
-                        <label htmlFor="Email">Email</label>
-                        <br />
-                        <input
-                            type="email"
-                            placeholder="Enter Email"
-                            className="email"
-                           required
-                        />
-                        <br />
+                                         <div className="form-floating mb-3">
+  <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com"/>
+  <label htmlFor="floatingInput">Email address</label>
+</div>
                        
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Password">Password</label>
-                        <br />
-                        <input
-                            type="password"
-                            placeholder="Enter password"
-                            className="pass"
-                            required
-                        />
+                                            <div className="form-floating mb-3">
+  <input type="password" className="form-control" id="floatingInput" placeholder="password"/>
+  <label htmlFor="floatingInput">Password</label>
+</div>
                       
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Password">Confirm Password</label>
-                        <br />
-                        <input
-                            type="password"
-                            placeholder="Confirm password"
-                            className="pass"
-                            required
-                        />
+                                        <div className="form-floating mb-3">
+  <input type="password" className="form-control" id="floatingInput" placeholder="confirm password"/>
+  <label htmlFor="floatingInput">Confirm password</label>
+</div>
                       
                     </div>
                     <div className="form-group">
