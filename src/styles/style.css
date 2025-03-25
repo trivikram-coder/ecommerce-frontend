@@ -35,13 +35,10 @@ body h2 {
     border: 1.5px solid black;
     margin-top: 5px;
     border-radius: 8px;
-    height: 40px;
-   width: 300px;
+ 
+   width: 350px; 
 }
-.form-group input::placeholder{
-    font-size: 16px;
-    margin-left: 3px;
-}
+
 .form-group button,.btn{
     margin-top: 10px;
     width: 100%;
