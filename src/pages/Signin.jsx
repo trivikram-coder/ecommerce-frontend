@@ -3,36 +3,23 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 const Signin = () => {
     return (
-        <>
-        
-        
-           
+        <> 
         <div className="form">
        <form className='inputs'>
        <h2>Vk Store <ShoppingBag size={26}/></h2>
        <h3 >Sign in</h3>
                     <div className="form-group">
-                        <label htmlFor="Email">Email</label>
-                        <br />
-                        <input
-                            type="email"
-                            placeholder="Enter Email"
-                            className="email"
-                          required 
-                        />
-                        <br />
+                    <div className="form-floating mb-3">
+  <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com"/>
+  <label htmlFor="floatingInput">Email address</label>
+</div>
                        
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Password">Password</label>
-                        <br />
-                        <input
-                            type="password"
-                            placeholder="Enter password"
-                            className="pass"
-                            required
-                        />
-                      
+                    <div className="form-floating">
+  <input type="password" className="form-control" id="floatingPassword" placeholder="Password"/>
+  <label htmlForfor="floatingPassword">Password</label>
+</div>
                     </div>
                     <div className="form-group">
                   
