@@ -1,48 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&display=swap');
+/* Apply border-box to all elements */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto+Mono:wght@100..700&family=Roboto+Slab:wght@100..900&display=swap');
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    padding-top: 80px; /* Ensure body content doesn't get overlapped by fixed header */
+    background-color: #f5f5f5;
+}
+
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    min-height: 70px;
-    font-family: 'Poppins', sans-serif;
+    height: 70px;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     background-color: #3986d3;
-    z-index: 100;
+    z-index: 1000;
     padding: 0 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add slight shadow for better visibility */
 }
 
-.left {
-    display: flex;
-    font-family:'Poppins', sans-serif;
-    align-items: center;
-    color: rgb(221, 221, 228);
-    margin-left: 10px;
-}
 
-.left h4 {
-    padding: 5px 10px;
-    transition: all 0.3s ease;
-}
+/* Left Section */
 
-.left h4:hover {
-    cursor: pointer;
-    border: 1px solid white;
-    border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.2);
-}
 
+
+
+
+/* Middle Section */
 .middle {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 65px;
 }
 
+/* Right Section */
 .right {
     display: flex;
     align-items: center;
@@ -51,12 +53,11 @@
     font-weight: bold;
     cursor: pointer;
     color: white;
-    margin-right: 10px;
 }
 
 .nav {
     padding: 5px 10px;
-   text-decoration: none;
+    text-decoration: none;
     transition: all 0.3s ease;
     color: white;
 }
@@ -67,44 +68,32 @@
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.head h2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 20vh;
-    font-size: 24px;
-    font-weight: bold;
-    margin-top: 20px;
-    text-transform: uppercase;
-    color: white;
-    background: linear-gradient(to right, #0000ff, #87ceeb);
-    width: 100%;
-}
-
-.category {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    padding: 10px;
-}
-
-/* Search Box Styling */
-.search-box {
-    width: 430px;
-    height: 40px;
-    border-radius: 25px;
-    border: 1px solid #ccc;
-    padding: 5px 40px 5px 15px; /* Adjust padding to prevent text overlap */
-    font-size: 16px;
-    transition: all 0.3s ease;
-    margin-left: 5px;
+/* Search Box */
+.search-box-wrapper {
     position: relative;
 }
 
-/* Delete (X) Button Styling */
+.search-box {
+    width: 400px;
+    height: 40px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    padding: 5px 40px 5px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.search-box:hover,
+.search-box:focus {
+    border: 1px solid black;
+    outline: none;
+    transform: scale(1.05);
+}
+
+/* Delete (X) Button */
 .btn-del {
     position: absolute;
-    right: 40%; /* Adjust as needed */
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     background-color: #ff4d4d;
@@ -119,49 +108,39 @@
     justify-content: center;
     align-items: center;
     font-size: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover Effect */
 .btn-del:hover {
     background-color: #ff1a1a;
     transform: scale(1.1);
 }
 
-
-.search-box:hover,
-.search-box:focus {
-    border: 1px solid black;
-    outline: none;
-    transform: scale(1.05);
-}
-
-.search-box::placeholder {
-    font-weight: 400;
-    font-size: 16px;
-}
+/* Search Button */
 .search-btn {
     background-color: rgb(0, 4, 255);
     color: white;
     border: none;
-    padding: 5px 10px 5px 10px;
+    padding: 5px 10px;
     cursor: pointer;
     border-radius: 50%;
     transition: background-color 0.3s ease, color 0.3s ease;
     margin-left: 4px;
 }
-.image-container{
-    width: 100%;
-
-}
-
-
-
 
 .search-btn:hover {
-    background-color:rgb(46, 46, 172);
+    background-color: rgb(46, 46, 172);
 }
 
+/* Category Section */
+.category {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+/* Cuboid */
 .cuboid {
     display: flex;
     flex-direction: column;
@@ -178,24 +157,27 @@
     transform: scale(1.05);
 }
 
-.cuboid img {
-    width: 200px;
-    border-radius: 8px;
-    max-width: 100%;
+/* Image Container */
+.image-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
     height: auto;
-}
-
-.cart {
-    padding: 10px;
-}
-
-.cart img {
-    width: 200px;
     border-radius: 8px;
-    max-width: 100%;
-    height: auto;
 }
 
+/* Card Hover Effect */
+.card:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
 .footer-box {
     margin-top: auto;
     width: 100%;
@@ -207,52 +189,22 @@
     color: white;
     text-align: center;
 }
-.card:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
 
-
-
+/* Responsive Design */
 @media (max-width: 1024px) {
-    .header {
-        padding: 10px;
-    }
-
-    .middle {
-        margin-left: 20px;
-    }
-
     .search-box {
         width: 350px;
     }
-
-    .right {
-        gap: 10px;
-        font-size: 14px;
-    }
-
+    
     .category {
         flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .cuboid {
-        padding: 15px;
     }
 }
 
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
-        align-items: center;
         text-align: center;
-    }
-
-    .middle {
-        margin-left: 0;
     }
 
     .search-box {
@@ -260,7 +212,7 @@
     }
 
     .btn-del {
-        right: 10%;
+        right: 5%;
     }
 
     .category {
@@ -268,21 +220,8 @@
         align-items: center;
     }
 
-    .cuboid {
-        width: 80%;
-        padding: 12px;
-    }
-
-    .right {
-        font-size: 14px;
-    }
-
     .image-container {
         height: 180px;
-    }
-
-    .cart img {
-        width: 160px;
     }
 }
 
@@ -293,7 +232,6 @@
     }
 
     .search-btn {
-        padding: 4px 8px;
         font-size: 14px;
     }
 
@@ -307,37 +245,12 @@
         font-size: 22px;
     }
 
-    .cuboid {
-        width: 90%;
-    }
-
-    .cuboid img {
-        width: 140px;
-    }
-
-    .cart img {
-        width: 140px;
-    }
-
     .image-container {
         height: 160px;
     }
 }
 
 @media (max-width: 480px) {
-    .header {
-        padding: 5px;
-    }
-
-    .left h4 {
-        font-size: 16px;
-    }
-
-    .nav {
-        font-size: 12px;
-        padding: 3px 6px;
-    }
-
     .search-box {
         width: 70%;
         font-size: 12px;
@@ -354,35 +267,45 @@
         font-size: 12px;
     }
 
-    .category {
-        gap: 10px;
-    }
-
-    .cuboid {
-        padding: 10px;
-    }
-
-    .cuboid img, .cart img {
-        width: 120px;
+    .head h2 {
+        font-size: 18px;
     }
 
     .image-container {
         height: 140px;
     }
-
-    .head h2 {
-        font-size: 18px;
-    }
 }
 
-.select-quantity{
+/* Quantity Selector */
+.select-quantity {
     margin-bottom: 4px;
 }
+
+/* Reviews Section */
 .review {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 15px;
-
-
 }
+/* VK Store */
+.vk-store {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px;
+    font-weight: bold;
+    color: rgb(221, 221, 228);
+    margin-left: 10px;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.vk-store:hover {
+    cursor: pointer;
+    background-color: rgba(94, 103, 225, 0.2);
+    transform: scale(1.05);
+}
+

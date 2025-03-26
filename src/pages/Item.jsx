@@ -81,7 +81,7 @@ const Item = () => {
             <p>Your One-Stop Destination For Quality Products At The Best Prices.</p>
             <p>
               Follow Us On
-              <a href="/signup" className="text-light mx-2">Facebook</a> |
+              <a href="#" className="text-light mx-2">Facebook</a> |
               <a href="#" className="text-light mx-2">Instagram</a> |
               <a href="#" className="text-light mx-2">Twitter</a>
             </p>
