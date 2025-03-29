@@ -10,7 +10,7 @@
 body {
     font-family: 'Poppins', sans-serif;
     padding-top: 80px; /* Ensure body content doesn't get overlapped by fixed header */
-    background-color: #f5f5f5;
+    background-color: lightgray;
 }
 
 /* Header */

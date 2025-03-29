@@ -240,10 +240,28 @@ const productsDetails=[
     }
   }
 ]
-let productsDetailsU = productsDetails.map((item) => (
-  {
-    ...item,
-    quantity: 1
-  }
-));
-export default productsDetailsU;
+const calculateDiscount = (price) => {
+  if (price > 500) return 20; // 20% discount for products above $500
+  if (price > 100) return 15; // 15% discount for products above $100
+  if (price > 50) return 10; // 10% discount for products above $50
+  if (price > 20) return 5;  // 5% discount for products above $20
+  return 2; // 2% discount for products below $20
+};
+
+const productsWithDiscounts = productsDetails.map(product => {
+  const discountPercentage = calculateDiscount(product.price);
+  const discountAmount = (product.price * discountPercentage) / 100;
+  const finalPrice = product.price - discountAmount;
+
+  return {
+      ...product,
+      discountPercentage:`${discountPercentage}%`,
+      discountAmount: discountAmount.toFixed(2),
+      offerPrice: parseFloat(finalPrice.toFixed(2)),
+  };
+});
+
+
+
+
+export default productsWithDiscounts;

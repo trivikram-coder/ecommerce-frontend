@@ -38,7 +38,38 @@ const Products = () => {
   function setQuantity(e, id) {
     setItems(prevItems => prevItems.map(item => (item.id === id ? { ...item, quantity: parseInt(e.target.value) } : item)));
   }
+// async function addtoCart(data){
+  
+//   const itemData={
+//     title:data.title,
+//     category:data.category,
+//     description:data.description,
+//     image:data.image,
+//     price:`$${data.price}`,
+//     discountPercentage:data.discountPercentage,
+//     offerPrice:`$${data.offerPrice}`,
+//     reviews:data.rating.rate
+//   }
+  
+//   const res=await fetch("http://localhost:3000/cart/add",{
+//     method:"POST",
+//     headers:{
+//       "content-type":"application/json"
+//     },
+//     body:JSON.stringify(itemData)
+//   })
+//   if(res.status===201){
+//     localStorage.setItem("Token",res.text())
+//   }
 
+// }
+
+//Getting data
+// useEffect(()=>{
+//   fetch("http://localhost:3000/cart/get")
+//   .then(res=>res.json())
+//   .then(data=>setItems(data))
+// },[])
   return (
     <div className="main-container">
       <header>
@@ -111,11 +142,11 @@ const Products = () => {
                   </div>
                   <div className="card-body d-flex flex-column flex-grow-1">
                     <h5 className="card-title">{item.title}</h5>
-                    <p className="card-text">${item.price}</p>
+                    <p className="card-text"><del className='p-1 text-danger'>{item.price}</del><span className='text-success'> {item.offerPrice}({item.discountPercentage} off)</span></p>
                     <select className="border rounded-md p-2 w-full" onChange={(e) => setQuantity(e, item.id)}>
                       {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
                     </select>
-                    <a href="#" className="btn btn-primary mt-auto">Add to Cart</a>
+                    <button  className="btn btn-primary mt-auto" >Add to Cart</button>
                   </div>
                 </div>
               </div>
