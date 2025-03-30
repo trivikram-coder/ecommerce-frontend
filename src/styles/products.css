@@ -249,7 +249,12 @@ body {
         height: 160px;
     }
 }
-
+@media (prefers-color-scheme: dark) {
+    body {
+      background-color: black;
+      color: white;
+    }
+  }
 @media (max-width: 480px) {
     .search-box {
         width: 70%;
