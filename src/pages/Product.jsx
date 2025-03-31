@@ -175,7 +175,7 @@ function setQuantity(e, id) {
                   </div>
                   <div className="card-body d-flex flex-column flex-grow-1">
                     <h5 className="card-title">{item.title}</h5>
-                    <p className="card-text"><del className='p-1 text-danger'>{item.price}</del><span className='text-success'> {item.offerPrice}({item.discountPercentage} off)</span></p>
+                    <p className="card-text"><del className='p-1 text-danger'>{item.price}</del><span className='text-success'> ${item.offerPrice}({item.discountPercentage} off)</span></p>
                     <select className="border rounded-md p-2 w-full" onChange={(e) => setQuantity(e, item.id)}>
                       {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
                     </select>

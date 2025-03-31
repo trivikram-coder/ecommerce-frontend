@@ -51,7 +51,7 @@
     margin-top: 15px;
 }
 
-.btn-outline-dark {
+.btn-outline-dark,.btn-primary {
     display: block;
     width: 100%;
     max-width: 250px;
