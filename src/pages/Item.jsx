@@ -70,7 +70,7 @@ const Item = () => {
           <h3>
            Price: <del> ${item.price.toFixed(2)}</del> ${price.toFixed(2)}</h3>
           <p></p>
-          <button className='btn btn-primary'>Buy now</button>
+          <button className='btn btn-primary buy-now'>Buy now</button>
           <button className="btn btn-outline-dark">
             Add To Cart
           </button>
