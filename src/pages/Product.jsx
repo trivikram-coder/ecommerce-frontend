@@ -8,7 +8,14 @@ const Products = () => {
   const [items, setItems] = useState(productsDetails);
   const [filtered, setFiltered] = useState(productsDetails);
   const [search, setSearch] = useState('');
+  const[user,setUser]=useState(null)
   const navigate = useNavigate();
+useEffect(()=>{
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  if (storedUser) {
+      setUser(storedUser); // Set user state
+  } 
+},[])
 
   function searchProduct(name) {
     if (name === '') {
@@ -35,9 +42,35 @@ const Products = () => {
     }
   }
 
-  function setQuantity(e, id) {
+function setQuantity(e, id) {
     setItems(prevItems => prevItems.map(item => (item.id === id ? { ...item, quantity: parseInt(e.target.value) } : item)));
   }
+  async function account() {
+    try {
+      const res = await fetch("https://backend-server-538r.onrender.com/user/details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rollNo: user?.rollNo }),
+      });
+  
+      if (res.ok) {
+        const data = await res.json(); // Convert response to JSON
+        console.log("User Data:", data); // Check the data in console
+        if(user){
+          return navigate("/account", { state: { userData: data } });
+        }
+        navigate("/")
+ // Navigate to Account page with data
+      } else {
+        console.error("Failed to fetch user details");
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  }
+  
 // async function addtoCart(data){
   
 //   const itemData={
@@ -107,7 +140,7 @@ const Products = () => {
             </div>
           </div>
           <div className="right">
-            <div className="nav" onClick={() => navigate('/')}> <User size={23} /> Account</div>
+            <div className="nav" onClick={account}> <User size={23} /> Account</div>
             <div className="nav"> <Heart size={20} /> Wishlist</div>
             <div className="nav"> <ShoppingBag size={20} /> Cart</div>
           </div>

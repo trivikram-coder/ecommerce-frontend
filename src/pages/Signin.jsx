@@ -18,8 +18,8 @@ const Signin = () => {
         });
     }
 
-    async function signin(e) {
-        e.preventDefault();
+    async function signin() {
+     
         try {
             const response = await fetch("https://backend-server-538r.onrender.com/user/signin", {
                 method: "POST",
@@ -28,12 +28,14 @@ const Signin = () => {
                 },
                 body: JSON.stringify(formData)
             });
-            const data = await response.json();
+    
+            const data = await response.json(); // Extract JSON from response
+    
             if (response.ok) {
                 setRes("Login successful!");
-               
-              navigate('/product')
-
+                navigate('/product');
+                localStorage.setItem("user", JSON.stringify(data)); // Store user data
+                 // Redirect to products page
             } else {
                 setRes(data.message || "Invalid credentials");
             }
@@ -41,6 +43,7 @@ const Signin = () => {
             setRes("Error connecting to the server");
         }
     }
+    
 
     return (
         <div className='body'> 
