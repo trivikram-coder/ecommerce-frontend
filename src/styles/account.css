@@ -1,31 +1,43 @@
 .profile-section {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .profile-img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #007bff;
-    padding: 3px;
-  }
-  
-  .info-section {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 15px;
-    width: 100%;
-    max-width: 400px;
-    margin: 10px auto;
-    font-size: 16px;
-  }
-  
-  .btn-danger {
-    font-size: 16px;
-    padding: 10px 20px;
-    border-radius: 8px;
-  }
-  
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #febd69;
+  padding: 3px;
+  background: white;
+}
+
+.info-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 450px;
+  margin: 15px auto;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  font-family: 'Roboto', sans-serif;
+}
+
+.btn-danger {
+  font-size: 18px;
+  padding: 12px;
+  border-radius: 6px;
+  width: 200px;
+  background-color: #febd69;
+  border: none;
+  color: #232f3e;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #f3a847;
+}

@@ -8,7 +8,7 @@ const Item = () => {
   const item = location.state?.item;
   
   const [quan, setQuan] = useState(item?.quantity || 1);
-  const [price, setPrice] = useState(item?.price || 0);
+  const [price, setPrice] = useState(item?.offerPrice || 0);
   const [msg, setMsg] = useState("");
 
   if (!item) {
@@ -21,7 +21,7 @@ const Item = () => {
     } else {
       const newQuan = quan + 1;
       setQuan(newQuan);
-      setPrice(newQuan * item.price);
+      setPrice(newQuan * item.offerPrice);
       setMsg("");
     }
   };
@@ -30,7 +30,7 @@ const Item = () => {
     if (quan > 1) {
       const newQuan = quan - 1;
       setQuan(newQuan);
-      setPrice(newQuan * item.price);
+      setPrice(newQuan * item.offerPrice);
       setMsg("");
     } else {
       setMsg("Quantity should not be less than 1");
@@ -67,7 +67,8 @@ const Item = () => {
             <Plus size={22} className='plus' onClick={handleIncreaseQuantity} />
           </p>
           {msg && <p className="text-danger">{msg}</p>}
-          <h3>Price: ${price.toFixed(2)}</h3>
+          <h3>
+           Price: <del> ${item.price.toFixed(2)}</del> {price.toFixed(2)}</h3>
           <p></p>
           <button className="btn btn-outline-dark">
             Add To Cart
