@@ -179,7 +179,14 @@ function setQuantity(e, id) {
                     <select className="border rounded-md p-2 w-full" onChange={(e) => setQuantity(e, item.id)}>
                       {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
                     </select>
-                    <button  className="btn btn-primary mt-auto" >Add to Cart</button>
+                    <button class="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill">
+  Buy Now
+</button>
+
+<button class="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2">
+  Add to Cart
+</button>
+
                   </div>
                 </div>
               </div>

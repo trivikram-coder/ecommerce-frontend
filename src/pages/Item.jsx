@@ -16,14 +16,12 @@ const Item = () => {
   }
 
   const handleIncreaseQuantity = () => {
-    if (quan >= 5) {
-      setMsg("Quantity Full");
-    } else {
+   
       const newQuan = quan + 1;
       setQuan(newQuan);
       setPrice(newQuan * item.offerPrice);
       setMsg("");
-    }
+    
   };
 
   const handleDecreaseQuantity = () => {
@@ -70,8 +68,8 @@ const Item = () => {
           <h3>
            Price: <del> ${item.price.toFixed(2)}</del> ${price.toFixed(2)}</h3>
           <p></p>
-          <button className='btn btn-primary buy-now'>Buy now</button>
-          <button className="btn btn-outline-dark">
+          <button className='btn btn-primary buy-now fw-bold px-4 py-2 shadow-sm rounded-pill ms-2'>Buy now</button>
+          <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2">
             Add To Cart
           </button>
         </div>
