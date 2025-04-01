@@ -1,7 +1,7 @@
 import { ShoppingBag } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../styles/signup.css';
+
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -203,16 +203,19 @@ console.log(formData)
 
             <div className="form-group">
               <div className="form-floating mb-3">
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+              <input
+  type="password"
+  className="form-control"
+  id="password"
+  placeholder="Password"
+  name="password"
+  value={formData.password}
+  onChange={handleChange}
+  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+  title="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character (@$!%*?&)"
+  required
+/>
+
                 <label htmlFor="password">Password</label>
               </div>
             </div>
