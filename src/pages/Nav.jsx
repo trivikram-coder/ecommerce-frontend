@@ -7,6 +7,7 @@ import Item from './Item'
 import Account from './Account'
 import Cart from './Cart'
 import Wishlist from './Wishlist'
+import Checkout from './Checkout'
 const Nav = () => {
   return (
     <BrowserRouter>
@@ -17,7 +18,7 @@ const Nav = () => {
   <Route path='/item' element={<Item/>}/>
   <Route path='/account' element={<Account/>}/>
   <Route path="/wishlist" element={<Wishlist />} />
-
+<Route path='/checkout' element={<Checkout/>}/>
   <Route path='/cart' element={<Cart/>}/>
     </Routes>
     </BrowserRouter>

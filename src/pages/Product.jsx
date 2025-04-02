@@ -10,9 +10,15 @@ const Products = () => {
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
-
+  const[cartCount,setCartCount]=useState(0)
+const[wishCount,setWishCount]=useState(0)
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Load cart count when the component mounts
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
+  }, []);
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
@@ -32,13 +38,14 @@ const Products = () => {
     const existingItemIndex = cart.findIndex((item) => item.id === product.id);
     if (existingItemIndex !== -1) {
       cart[existingItemIndex].quantity = quantity; 
-      alert(`Updated ${product.title} quantity to ${quantity}`);
+     
     } else {
       cart.push({ ...product, quantity });
-      alert(`${product.title} added to cart!`);
+      
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
+    setCartCount(cart.reduce((total, item) => total + item.quantity, 0))
   };
 
   function searchProduct(name) {
@@ -88,16 +95,26 @@ const Products = () => {
     }
   }
 
+  useEffect(() => {
+    // Load wish count when the component mounts
+    const wish = JSON.parse(localStorage.getItem("wishlist")) || [];
+    setWishCount(wish.length);
+  }, []);
+  
   function addToWishlist(product) {
     let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    
     if (!wishlist.some((item) => item.id === product.id)) {
       wishlist.push(product);
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
-      alert(`${product.title} added to wishlist!`);
     } else {
       alert(`${product.title} is already in your wishlist.`);
     }
+  
+    // Update wishlist count
+    setWishCount(wishlist.length);
   }
+  
 
   return (
     <div className="main-container">
@@ -128,8 +145,8 @@ const Products = () => {
           </div>
           <div className="right">
             <div className="nav" onClick={account}><User size={23} /> Account</div>
-            <div className="nav" onClick={() => navigate('/wishlist')}><Heart size={20} /> Wishlist</div>
-            <div className="nav" onClick={() => navigate('/cart')}><ShoppingBag size={20} /> Cart</div>
+            <div className="nav" onClick={() => navigate('/wishlist')}><Heart size={20} /> Wishlist({wishCount})</div>
+            <div className="nav" onClick={() => navigate('/cart')}><ShoppingBag size={20} /> Cart({cartCount})</div>
           </div>
         </div>
       </header>
@@ -196,6 +213,7 @@ const Products = () => {
         <p>Your one-stop destination for quality products at the best prices.</p>
         <p>Follow us on <a href="#" className="text-light mx-2">Facebook</a> | <a href="#" className="text-light mx-2">Instagram</a> | <a href="#" className="text-light mx-2">Twitter</a></p>
       </footer>
+      
     </div>
   );
 };

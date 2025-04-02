@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const Cart = () => {
+  const navigate=useNavigate()
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const Cart = () => {
       {cartItems.length > 0 && (
         <div className="text-center mt-4">
           <h4>Total: ${totalAmount.toFixed(2)}</h4>
-          <button className="btn btn-primary w-50 mt-3">Proceed to Checkout</button>
+          <button className="btn btn-primary w-50 mt-3" onClick={()=>navigate("/checkout")}>Proceed to Checkout</button>
         </div>
       )}
 

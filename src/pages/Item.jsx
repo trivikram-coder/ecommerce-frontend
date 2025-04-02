@@ -14,7 +14,21 @@ const Item = () => {
   if (!item) {
     return <h2 className="text-center mt-5">Item not found!</h2>;
   }
+  const addToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const quantity = quan[product.id] || 1; 
 
+    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
+    if (existingItemIndex !== -1) {
+      cart[existingItemIndex].quantity = quantity; 
+     
+    } else {
+      cart.push({ ...product, quantity });
+      
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
   const handleIncreaseQuantity = () => {
    
       const newQuan = quan + 1;
@@ -69,7 +83,7 @@ const Item = () => {
            Price: <del> ${item.price.toFixed(2)}</del> ${price.toFixed(2)}</h3>
           <p></p>
           <button className='btn btn-primary buy-now fw-bold px-4 py-2 shadow-sm rounded-pill ms-2'>Buy now</button>
-          <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2">
+          <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2" onClick={addToCart(item)}>
             Add To Cart
           </button>
         </div>
