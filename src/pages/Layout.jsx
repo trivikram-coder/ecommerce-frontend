@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/products.css';
 import { Cuboid, Heart, Search, ShoppingBag, User, X } from 'lucide-react';
-import productsDetails from '../data/data';
+import productsDetails from '../data/Data';
 import Wishlist from './Wishlist';
 import Cart from './Cart';
 import Account from './Account';

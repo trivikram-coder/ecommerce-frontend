@@ -57,7 +57,7 @@ const[wishCount,setWishCount]=useState(0)
   }
   async function account() {
     try {
-      const res = await fetch("https://backend-server-538r.onrender.com/user/details", {
+      const res = await fetch("http://localhost:3000/user/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rollNo: user?.rollNo }),
@@ -67,7 +67,7 @@ const[wishCount,setWishCount]=useState(0)
         if (user) {
           return navigate("/account", { state: { userData: data } });
         }
-        navigate("/");
+        navigate("/signin");
       } else {
         console.error("Failed to fetch user details");
       }
