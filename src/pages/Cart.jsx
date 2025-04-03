@@ -70,7 +70,7 @@ const Cart = () => {
 </div>
 
 
-                  <button className="btn btn-danger w-100 mt-2" onClick={() => removeItem(item.id)}>Remove</button>
+                  <button className="btn btn-outline-danger w-100 mt-2" onClick={() => removeItem(item.id)}>Remove</button>
                 </div>
               </div>
             </div>

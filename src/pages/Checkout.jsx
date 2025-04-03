@@ -31,7 +31,7 @@ const Checkout = () => {
     e.preventDefault();
     alert('Order Placed Successfully!');
     localStorage.removeItem('cart');
-    navigate('/');
+    navigate('/product');
   };
 
   return (
