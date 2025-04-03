@@ -221,5 +221,10 @@ const productsDetails = [
       rating: { rate: 3.6, count: 145 }
     }
   ];
-  
-  export default productsDetails;
+  let productDetailsP=productsDetails.map(item=>(
+    {
+      ...item,
+      quantity:1
+    }
+  ))
+  export default productDetailsP;

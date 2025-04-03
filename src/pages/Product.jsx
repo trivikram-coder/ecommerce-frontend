@@ -31,7 +31,7 @@ const[wishCount,setWishCount]=useState(0)
     setQuantities((prev) => ({ ...prev, [id]: quantity }));
   };
 
-  const addToCart = (product) => {
+  const addToCart = async(product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     const quantity = quantities[product.id] || 1; 
 
@@ -46,6 +46,21 @@ const[wishCount,setWishCount]=useState(0)
 
     localStorage.setItem('cart', JSON.stringify(cart));
     setCartCount(cart.reduce((total, item) => total + item.quantity, 0))
+    console.log(product)
+    try {
+      const response=await fetch("http://localhost:3000/cart/add",
+        {
+          method:"POST",
+          headers:{
+            "content-type":"application/json"
+          },
+          body:JSON.stringify(product)
+        }
+      )
+    } catch (error) {
+      console.error(error);
+      
+    }
   };
 
   function searchProduct(name) {
@@ -76,7 +91,7 @@ const[wishCount,setWishCount]=useState(0)
     }
   }
 
-
+ 
   function categoryFilter(e) {
     if (["DIV", "P", "CUBOID", "STRONG"].includes(e.target.tagName)) {
       const categoryMap = {
@@ -172,6 +187,7 @@ const[wishCount,setWishCount]=useState(0)
               <div className="col-md-3" key={item.id}>
                 <div className="card h-100 d-flex flex-column">
                   <div className='image-container'>
+                    
                     <Link to='/item' state={{ item }}>
                       <img src={item.image} className="product-image" alt={item.title} style={{ width: '100%', height: '300px', padding: '26px' }} />
                     </Link>
