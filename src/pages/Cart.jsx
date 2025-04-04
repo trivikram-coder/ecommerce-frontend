@@ -78,7 +78,7 @@ const Cart = () => {
   <input
     type="number"
     className="form-control form-control-sm text-center mx-2"
-    style={{ width: '50px' }}
+    style={{ width: '80px' }}
     value={item.quantity || 1}
     onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
     min="1"

@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/products.css';
 import { Cuboid, Heart, Search, ShoppingBag, User, X } from 'lucide-react';
-import productsDetails from '../data/data';
+// import productsDetails from '../data/data';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Products = () => {
-  const [items, setItems] = useState(productsDetails);
-  const [filtered, setFiltered] = useState(productsDetails);
+   
+  const [items, setItems] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
   const[cartCount,setCartCount]=useState(0)
 const[wishCount,setWishCount]=useState(0)
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Load cart count when the component mounts
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
-  }, []);
+useEffect(() => {
+  fetch("http://localhost:3000/product/get")
+    .then((response) => response.json())
+    .then((data) => {
+      setItems(data);
+      setFiltered(data); // Store the original data for filtering
+    })
+    .catch((error) => console.error("Error fetching products:", error));
+},[])
+ 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
@@ -32,21 +37,10 @@ const[wishCount,setWishCount]=useState(0)
   };
 
   const addToCart = async(product) => {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const quantity = quantities[product.id] || 1; 
+ 
 
-    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingItemIndex !== -1) {
-      cart[existingItemIndex].quantity = quantity; 
-     
-    } else {
-      cart.push({ ...product, quantity });
-      
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    setCartCount(cart.reduce((total, item) => total + item.quantity, 0))
-    console.log(product)
+ 
+    
     try {
       const response=await fetch("http://localhost:3000/cart/add",
         {
@@ -57,6 +51,12 @@ const[wishCount,setWishCount]=useState(0)
           body:JSON.stringify(product)
         }
       )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+        setCartCount((prevCount) => prevCount + 1); // Increment cart count
+      }
+    )
     } catch (error) {
       console.error(error);
       

@@ -1,7 +1,8 @@
 import { ShoppingBag } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import '../styles/forms.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const Signup = () => {
     rollNo: "",
     section: "",
     address: "",
-    email:"",
+    email: "",
     mobileNo: "",
     password: ""
   });
@@ -26,218 +27,99 @@ const Signup = () => {
 
   async function signup(e) {
     e.preventDefault();
-console.log(formData)
-    // Check if all fields are filled
+
     for (let key in formData) {
       if (!formData[key]) {
         setRes("All fields are required.");
         return;
       }
     }
-    const response=await fetch("https://backend-server-538r.onrender.com/user/signup",{
-      method:"POST",
-      headers:{
-        "content-type":"application/json"
-      },
-      body:JSON.stringify(formData)
-    })
-    if(response.status===201){
-      console.log("Created")
-    }
-    else if(response.status===400){
-      setRes("User Already Exists")
+
+    try {
+      const response = await fetch("https://backend-server-538r.onrender.com/user/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.status === 201) {
+        setRes("User created successfully");
+        navigate("/");
+      } else if (response.status === 400) {
+        setRes("User Already Exists");
+      }
+    } catch (error) {
+      setRes("Server error. Try again later.");
     }
   }
+
   return (
-    <>
-      <div className="body">
-        <div className="form">
-          <form className="inputs" onSubmit={signup}>
-            <h2>
-              Vk Store <ShoppingBag size={28} />
-            </h2>
-            <h3>Sign up</h3>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  placeholder="Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="name">Name</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="fatherName"
-                  placeholder="Father Name"
-                  name="fatherName"
-                  value={formData.fatherName}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="fatherName">Father Name</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="date"
-                  className="form-control"
-                  id="DOB"
-                  name="DOB"
-                  value={formData.DOB}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="DOB">Date Of Birth</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="branch"
-                  placeholder="Branch"
-                  name="branch"
-                  value={formData.branch}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="branch">Branch</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="rollNo"
-                  placeholder="Roll Number"
-                  name="rollNo"
-                  value={formData.rollNo}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="rollNo">Roll Number</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="section"
-                  placeholder="Section"
-                  name="section"
-                  value={formData.section}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="section">Section</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="address"
-                  placeholder="Address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="address">Address</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="number"
-                  className="form-control"
-                  id="mobileNo"
-                  placeholder="Mobile Number"
-                  name="mobileNo"
-                  value={formData.mobileNo}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="mobileNo">Mobile Number</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                <label htmlFor="email">Email</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-floating mb-3">
-              <input
-  type="password"
-  className="form-control"
-  id="password"
-  placeholder="Password"
-  name="password"
-  value={formData.password}
-  onChange={handleChange}
-  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
-  title="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character (@$!%*?&)"
-  required
-/>
-
-                <label htmlFor="password">Password</label>
-              </div>
-            </div>
-
-            {res && <p className="text-danger mt-2">{res}</p>}
-
-            <div className="form-group">
-              <button type="submit" className="btn btn-primary" onClick={signup}>
-                Sign up
-              </button>
-              <Link to="/" className="btn btn-dark">
-                Sign in
-              </Link>
-            </div>
-          </form>
+    <div className="form-container d-flex justify-content-center align-items-center min-vh-100">
+      <div className="card form-card p-4">
+        <div className="text-center mb-4">
+          <h2 className="mb-1 brand-title">Vk Store <ShoppingBag size={26} /></h2>
+          <h5 className="text-muted">Sign Up</h5>
         </div>
-      </div>
 
-      <div className="footer" style={{ textAlign: "center", padding: "10px", marginTop: "40px" }}>
-        <p>&copy; 2025 Vk Store. All Rights Reserved</p>
+        <form onSubmit={signup}>
+          {[
+            { id: "name", label: "Name", type: "text" },
+            { id: "fatherName", label: "Father Name", type: "text" },
+            { id: "DOB", label: "Date of Birth", type: "date" },
+            { id: "branch", label: "Branch", type: "text" },
+            { id: "rollNo", label: "Roll Number", type: "text" },
+            { id: "section", label: "Section", type: "text" },
+            { id: "address", label: "Address", type: "text" },
+            { id: "mobileNo", label: "Mobile Number", type: "number" },
+            { id: "email", label: "Email", type: "email" },
+          ].map((field) => (
+            <div className="form-floating mb-3" key={field.id}>
+              <input
+                type={field.type}
+                className="form-control"
+                id={field.id}
+                placeholder={field.label}
+                name={field.id}
+                value={formData[field.id]}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor={field.id}>{field.label}</label>
+            </div>
+          ))}
+
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              placeholder="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+              title="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+              required
+            />
+            <label htmlFor="password">Password</label>
+          </div>
+
+          {res && <p className="text-danger text-center">{res}</p>}
+
+          <div className="d-grid mb-2">
+            <button type="submit" className="btn btn-primary">Sign Up</button>
+          </div>
+
+          <div className="d-grid mb-3">
+            <Link to="/signin" className="btn btn-dark">Sign In</Link>
+          </div>
+        </form>
+
+        <footer className="text-center mt-2 small text-muted">
+          &copy; 2025 Vk Store. All Rights Reserved.
+        </footer>
       </div>
-    </>
+    </div>
   );
 };
 

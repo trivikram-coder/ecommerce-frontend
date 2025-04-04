@@ -1,123 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: lightgray !important;
-    transition: none;
-    margin: 0;
-    padding: 0;
-}
-
-/* Centering form properly */
-.form, .form1 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-/* Form container */
-.inputs {
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+/* Center form with background */
+.form-container {
+    background: #f8f9fa;
+    padding: 2rem;
+  }
+  
+  /* Card styling */
+  .form-card {
+    max-width: 400px;
     width: 100%;
-    max-width: 400px; /* Limits width to prevent overflow */
-    text-align: center;
-}
-
-/* Headings */
-.inputs h3 {
-    font-weight: 600;
-    color: rgb(22, 19, 19);
-}
-
-body h2 {
-    text-align: center;
-    color: #4A90E2;
-    font-size: 28px;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+  }
+  
+  /* Brand title */
+  .brand-title {
     font-weight: bold;
-    margin-bottom: 20px;
-}
-
-/* Form elements */
-.form-group {
-    font-size: 16px;
-    margin-bottom: 15px;
-    padding: 5px;
-    text-align: left;
-}
-
-.form-group input {
-    border: 1.5px solid black;
-    border-radius: 8px;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    transition: 0.3s ease-in-out;
-}
-
-/* Input focus effect */
-.form-group input:focus {
-    outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0px 0px 5px rgba(74, 144, 226, 0.5);
-}
-
-/* Buttons */
-.form-group button, .btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
+    color: #0d6efd;
+  }
+  
+  /* Toggle password button */
+  .toggle-password {
+    background-color: transparent;
     border: none;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
-}
-
-/* Primary Button */
-.btn-primary {
-    background-color: #4A90E2;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #357ABD;
-}
-
-/* Dark Button */
-.btn-dark {
-    background-color: #333;
-    color: white;
-}
-
-.btn-dark:hover {
-    background-color: #222;
-}
-
-/* Footer */
-.footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    flex-wrap: wrap;
-}
-
-.footer p {
-    color: black;
-    margin-top: 20px;
-    text-align: center;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .inputs {
-        padding: 30px;
-        width: 90%;
+    font-size: 1.2rem;
+    color: #6c757d;
+  }
+  
+  /* Remove outline from toggle */
+  .toggle-password:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  /* Responsive tweaks */
+  @media (max-width: 576px) {
+    .form-card {
+      padding: 1.5rem;
     }
-}
+  }
+  

@@ -14,20 +14,27 @@ const Item = () => {
   if (!item) {
     return <h2 className="text-center mt-5">Item not found!</h2>;
   }
-  const addToCart = (product) => {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const quantity = quan[product.id] || 1; 
-
-    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingItemIndex !== -1) {
-      cart[existingItemIndex].quantity = quantity; 
-     
-    } else {
-      cart.push({ ...product, quantity });
+  const addToCart = async(product) => {
+    try {
+      const response=await fetch("http://localhost:3000/cart/add",
+        {
+          method:"POST",
+          headers:{
+            "content-type":"application/json"
+          },
+          body:JSON.stringify(product)
+        }
+      )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+      
+      }
+    )
+    } catch (error) {
+      console.error(error);
       
     }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
   }
   const handleIncreaseQuantity = () => {
    
