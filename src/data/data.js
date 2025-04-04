@@ -227,4 +227,40 @@ const productsDetails = [
       quantity:1
     }
   ))
-  export default productDetailsP;
+  async function det() {
+    try {
+        const response = await fetch("http://localhost:3000/product/get");
+        if (!response.ok) {
+            throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+}
+
+async function updateProductDetails() {
+    try {
+        const fetchedData = await det();
+
+        // Ensure newly fetched products also have `quantity` added
+        const updatedFetchedData = fetchedData.map(item => ({
+            ...item,
+            quantity: 1
+        }));
+
+        // Concatenate instead of pushing
+        productDetailsP = [...productDetailsP, ...updatedFetchedData];
+
+        console.log(productDetailsP);
+    } catch (error) {
+        console.error("Error updating product details:", error);
+    }
+}
+
+// Fetch and update product details
+updateProductDetails();
+
+export default productDetailsP;

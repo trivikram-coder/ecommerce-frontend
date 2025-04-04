@@ -5,14 +5,31 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    setCartItems(cart);
+    fetch("http://localhost:3000/cart/get")
+      .then((response) => response.json())
+      .then((data) => {
+        setCartItems(data)
+      })
+      .catch((error) => console.error('Error fetching cart items:', error));
+    
   }, []);
 
   const removeItem = (id) => {
     const updatedCart = cartItems.filter(item => item.id !== id);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-    setCartItems(updatedCart);
+
+    fetch("http://localhost:3000/cart/remove", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.message);
+      setCartItems(updatedCart); // Update state only after successful API call
+    })
+    .catch((error) => console.error('Error removing item:', error));
   };
 
   const updateQuantity = (id, quantity) => {
@@ -22,7 +39,13 @@ const Cart = () => {
       item.id === id ? { ...item, quantity } : item
     );
 
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    fetch("http://localhost:3000/cart/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id, quantity })
+    })
     setCartItems(updatedCart);
   };
 
