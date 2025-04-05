@@ -36,33 +36,54 @@ useEffect(() => {
     setQuantities((prev) => ({ ...prev, [id]: quantity }));
   };
 
-  const addToCart = async(product) => {
- 
-
- 
-    
-    try {
-      const response=await fetch("http://localhost:3000/cart/add",
-        {
-          method:"POST",
-          headers:{
-            "content-type":"application/json"
-          },
-          body:JSON.stringify(product)
-        }
-      )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.message);
-        setCartCount((prevCount) => prevCount + 1); // Increment cart count
-      }
-    )
-    } catch (error) {
-      console.error(error);
-      
+  const addToCart = async (product) => {
+    // Get existing cart from localStorage or initialize empty
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+    // Check if the product already exists in the cart
+    const existingItem = cart.find((item) => item.id === product.id);
+  
+    // Get the quantity from the state (quantities object) or default to 1
+    const quantity = quantities[product.id] || 1;
+  
+    if (existingItem) {
+      // If product exists, just update the quantity
+      existingItem.quantity += quantity;
+    } else {
+      // Add quantity field to product and push it to cart
+      product.quantity = quantity;
+      cart.push(product);
     }
+  
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+  
+    try {
+      // Make API call to backend to sync cart
+      const response = await fetch("http://localhost:3000/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(product)
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log(data.message);
+        alert(`${product.title} added to cart`);
+      } else {
+        console.error("Failed to add product to backend cart:", data.message);
+      }
+    } catch (error) {
+      console.error("Error while adding to cart:", error);
+    }
+  
+    // Update cart count state (assuming you have this state declared)
+    setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
   };
-
+  
   function searchProduct(name) {
     setItems(
       name === ''
@@ -82,7 +103,7 @@ useEffect(() => {
         if (user) {
           return navigate("/account", { state: { userData: data } });
         }
-        navigate("/signin");
+        navigate("/");
       } else {
         console.error("Failed to fetch user details");
       }
@@ -115,7 +136,11 @@ useEffect(() => {
     const wish = JSON.parse(localStorage.getItem("wishlist")) || [];
     setWishCount(wish.length);
   }, []);
-  
+  useEffect(()=>{
+    // Load cart count when the component mounts
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCartCount(cart.length);
+  },[])
   function addToWishlist(product) {
     let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     
@@ -129,7 +154,22 @@ useEffect(() => {
     // Update wishlist count
     setWishCount(wishlist.length);
   }
-  
+  async function buy(items) {
+    const response=await fetch("http://localhost:3000/cart/add", {
+      method:"POST",
+      headers:{
+        "content-type":"application/json"
+      },
+      body:JSON.stringify(items)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.message);
+      setCartCount(cartCount + 1); 
+      navigate("/checkout")
+      
+    })
+  }
 
   return (
     <div className="main-container">
@@ -209,7 +249,7 @@ useEffect(() => {
                     </div>
 
                     <div className='d-flex flex-wrap gap-2 justify-content-center mt-auto'>
-                      <button className="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill">Buy Now</button>
+                      <button className="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={()=>buy(item)}>Buy Now</button>
                       <button className="btn btn-dark fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={() => addToCart(item)}>Add to Cart</button>
                       <button className="btn btn-outline-danger fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={() => addToWishlist(item)}>
                         <Heart size={18} /> Add to Wishlist

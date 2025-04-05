@@ -9,12 +9,13 @@ import Checkout from './pages/Checkout'
 import Cart from './pages/Cart'
 import { BrowserRouter,Routes,Route,Link } from 'react-router-dom'
 import Nav from './pages/Nav'
+import OrderPlaced from './pages/OrderPlaced'
 const App = () => {
   return (
     <BrowserRouter>
    
     <Routes>
-      <Route path='/signin' element={<Signin/>}/>
+      <Route path='/' element={<Signin/>}/>
       
   <Route path='/signup' element={<Signup/>}/>
   <Route path='/product' element={<Products/>}/>
@@ -23,6 +24,7 @@ const App = () => {
   <Route path="/wishlist" element={<Wishlist />} />
 <Route path='/checkout' element={<Checkout/>}/>
   <Route path='/cart' element={<Cart/>}/>
+  <Route path='/order-placed' element={<OrderPlaced/>}/>
     </Routes>
     </BrowserRouter>
   )

@@ -18,9 +18,19 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    setCart(cartItems);
-    setTotal(cartItems.reduce((acc, item) => acc + item.offerPrice * item.quantity, 0));
+    // const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    fetch("http://localhost:3000/cart/get")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      setCart(data);
+      const totalPrice = data.reduce((acc, item) => acc + (item.offerPrice * item.quantity), 0);
+      setTotal(totalPrice);
+    })
+    .catch((error) => {
+      console.error("Error fetching cart data:", error);
+    });
+   
   }, []);
 
   const handleChange = (e) => {
@@ -31,7 +41,7 @@ const Checkout = () => {
     e.preventDefault();
     alert('Order Placed Successfully!');
     localStorage.removeItem('cart');
-    navigate('/product');
+    navigate('/order-placed');
   };
 
   return (

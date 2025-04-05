@@ -111,7 +111,7 @@ const Signup = () => {
           </div>
 
           <div className="d-grid mb-3">
-            <Link to="/signin" className="btn btn-dark">Sign In</Link>
+            <Link to="/" className="btn btn-dark">Sign In</Link>
           </div>
         </form>
 
