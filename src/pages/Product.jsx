@@ -8,7 +8,7 @@ const Products = () => {
    
   const [items, setItems] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search1, setSearch] = useState('');
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
   const[cartCount,setCartCount]=useState(0)
