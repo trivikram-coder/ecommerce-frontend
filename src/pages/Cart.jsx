@@ -110,7 +110,7 @@ const Cart = () => {
       )}
 
       {/* Footer Section */}
-      <footer className="bg-dark text-light text-center py-3 mt-5">
+      {/* <footer className="bg-dark text-light text-center py-3 mt-5">
         <p>&copy; 2025 VK Store. All Rights Reserved.</p>
         <p>Your one-stop destination for quality products at the best prices.</p>
         <p>
@@ -119,7 +119,7 @@ const Cart = () => {
           <a href="#" className="text-light mx-2">Instagram</a> | 
           <a href="#" className="text-light mx-2">Twitter</a>
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 };

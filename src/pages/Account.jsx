@@ -18,8 +18,10 @@ const Account = () => {
 
   const handleSignOut = () => {
     localStorage.removeItem("user");
-    navigate("/product", { replace: true });
+    navigate("/product", { replace: true, state: null }); // clear state explicitly
+    window.location.reload(); // hard reload to clear in-memory state (optional fallback)
   };
+  
 
   if (!userData) {
     return (

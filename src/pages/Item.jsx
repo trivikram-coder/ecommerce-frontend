@@ -95,20 +95,7 @@ const Item = () => {
           </button>
         </div>
       </div>
-      <footer className='footercl bg-dark text-light'>
-        <div className="footer-box bg-dark text-light">
-          <div className="foot bg-dark text-light d-flex justify-content-center align-items-center flex-column p-3">
-            <p>&copy; 2025 VK Store. All Rights Reserved.</p>
-            <p>Your One-Stop Destination For Quality Products At The Best Prices.</p>
-            <p>
-              Follow Us On
-              <a href="#" className="text-light mx-2">Facebook</a> |
-              <a href="#" className="text-light mx-2">Instagram</a> |
-              <a href="#" className="text-light mx-2">Twitter</a>
-            </p>
-          </div>
-        </div>
-      </footer>
+      
     </>
   );
 };

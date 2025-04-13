@@ -12,7 +12,9 @@ const Products = () => {
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
   const[cartCount,setCartCount]=useState(0)
-const[wishCount,setWishCount]=useState(0)
+    const[wishCount,setWishCount]=useState(0)
+
+
   const navigate = useNavigate();
 useEffect(() => {
   fetch("http://localhost:3000/product/get")
@@ -24,65 +26,14 @@ useEffect(() => {
     .catch((error) => console.error("Error fetching products:", error));
 },[])
  
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
+
 
   const handleQuantityChange = (id, value) => {
     const quantity = Math.max(1, parseInt(value) || 1); 
     setQuantities((prev) => ({ ...prev, [id]: quantity }));
   };
 
-  const addToCart = async (product) => {
-    // Get existing cart from localStorage or initialize empty
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
   
-    // Check if the product already exists in the cart
-    const existingItem = cart.find((item) => item.id === product.id);
-  
-    // Get the quantity from the state (quantities object) or default to 1
-    const quantity = quantities[product.id] || 1;
-  
-    if (existingItem) {
-      // If product exists, just update the quantity
-      existingItem.quantity += quantity;
-    } else {
-      // Add quantity field to product and push it to cart
-      product.quantity = quantity;
-      cart.push(product);
-    }
-  
-    // Save the updated cart back to localStorage
-    localStorage.setItem("cart", JSON.stringify(cart));
-  
-    try {
-      // Make API call to backend to sync cart
-      const response = await fetch("http://localhost:3000/cart/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(product)
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log(data.message);
-        alert(`${product.title} added to cart`);
-      } else {
-        console.error("Failed to add product to backend cart:", data.message);
-      }
-    } catch (error) {
-      console.error("Error while adding to cart:", error);
-    }
-  
-    // Update cart count state (assuming you have this state declared)
-    setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
-  };
   
   function searchProduct(name) {
     setItems(
@@ -91,28 +42,40 @@ useEffect(() => {
         : filtered.filter((item) => item.title.toLowerCase().includes(name.toLowerCase()))
     );
   }
-  async function account() {
-    try {
-      const res = await fetch("http://localhost:3000/user/details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rollNo: user?.rollNo }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (user) {
-          return navigate("/account", { state: { userData: data } });
-        }
-        navigate("/");
-      } else {
-        console.error("Failed to fetch user details");
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  }
+  // async function account() {
+  //   try {
+  //     const res = await fetch("http://localhost:3000/user/details", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ rollNo: user?.rollNo }),
+  //     });
+  //     if (res.ok) {
+  //       const data = await res.json();
+  //       if (user) {
+  //         return navigate("/account", { state: { userData: data } });
+  //       }
+  //       navigate("/");
+  //     } else {
+  //       console.error("Failed to fetch user details");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user details:", error);
+  //   }
+  // }
 
- 
+  function addToWishlist(product) {
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    
+    if (!wishlist.some((item) => item.id === product.id)) {
+      wishlist.push(product);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    } else {
+      alert(`${product.title} is already in your wishlist.`);
+    }
+  
+    // Update wishlist count
+    setWishCount(wishlist.length);
+  }
   function categoryFilter(e) {
     if (["DIV", "P", "CUBOID", "STRONG"].includes(e.target.tagName)) {
       const categoryMap = {
@@ -131,29 +94,53 @@ useEffect(() => {
     }
   }
 
-  useEffect(() => {
-    // Load wish count when the component mounts
-    const wish = JSON.parse(localStorage.getItem("wishlist")) || [];
-    setWishCount(wish.length);
-  }, []);
-  useEffect(()=>{
-    // Load cart count when the component mounts
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartCount(cart.length);
-  },[])
-  function addToWishlist(product) {
-    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    
-    if (!wishlist.some((item) => item.id === product.id)) {
-      wishlist.push(product);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    } else {
-      alert(`${product.title} is already in your wishlist.`);
-    }
-  
-    // Update wishlist count
-    setWishCount(wishlist.length);
-  }
+  const addToCart = async (product) => {
+     // Get existing cart from localStorage or initialize empty
+     const cart = JSON.parse(localStorage.getItem("cart")) || [];
+   
+     // Check if the product already exists in the cart
+     const existingItem = cart.find((item) => item.id === product.id);
+   
+     // Get the quantity from the state (quantities object) or default to 1
+     const quantity = quantities[product.id] || 1;
+   
+     if (existingItem) {
+       // If product exists, just update the quantity
+       existingItem.quantity += quantity;
+     } else {
+       // Add quantity field to product and push it to cart
+       product.quantity = quantity;
+       cart.push(product);
+     }
+   
+     // Save the updated cart back to localStorage
+     localStorage.setItem("cart", JSON.stringify(cart));
+   
+     try {
+       // Make API call to backend to sync cart
+       const response = await fetch("http://localhost:3000/cart/add", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json"
+         },
+         body: JSON.stringify(product)
+       });
+   
+       const data = await response.json();
+   
+       if (response.ok) {
+         console.log(data.message);
+         alert(`${product.title} added to cart`);
+       } else {
+         console.error("Failed to add product to backend cart:", data.message);
+       }
+     } catch (error) {
+       console.error("Error while adding to cart:", error);
+     }
+   
+     // Update cart count state (assuming you have this state declared)
+     setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
+   };
   async function buy(items) {
     const response=await fetch("http://localhost:3000/cart/add", {
       method:"POST",
@@ -173,7 +160,7 @@ useEffect(() => {
 
   return (
     <div className="main-container">
-      <header>
+      {/* <header>
         <div className="header bg-dark">
           <div className="left">
             <h4 className="vk-store">VK Store <ShoppingBag size={24} /></h4>
@@ -204,14 +191,21 @@ useEffect(() => {
             <div className="nav" onClick={() => navigate('/cart')}><ShoppingBag size={20} /> Cart({cartCount})</div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <div className="main-body">
-        <div className="head bg-primary py-3">
-          <h2 className="text-center text-light fw-bold">
-            Welcome to VK Store <ShoppingBag size={28} />
-          </h2>
-        </div>
+      <div className="head bg-primary py-3 text-center text-white">
+  <div className="container">
+    <h1 className="display-5 fw-bold mb-2">
+      Welcome to <span className="text-warning">VK Store</span>
+      <span className="ms-2"><ShoppingBag size={30} /></span>
+    </h1>
+    <p className="lead fw-semibold">
+      Discover top deals and latest collections – shop smart, live stylish!
+    </p>
+  </div>
+</div>
+
 
         <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
         <div className='category' onClick={categoryFilter}>
@@ -264,12 +258,12 @@ useEffect(() => {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-dark text-light text-center py-3 mt-4">
+      {/* <footer className="bg-dark text-light text-center py-3 mt-4">
         <p>&copy; 2025 VK Store. All Rights Reserved.</p>
         <p>Your one-stop destination for quality products at the best prices.</p>
         <p>Follow us on <a href="#" className="text-light mx-2">Facebook</a> | <a href="#" className="text-light mx-2">Instagram</a> | <a href="#" className="text-light mx-2">Twitter</a></p>
       </footer>
-      
+       */}
     </div>
   );
 };
