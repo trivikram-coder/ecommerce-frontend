@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link,useNavigate } from 'react-router-dom';
 import '../styles/items.css';
 import { ArrowBigLeft, Minus, Plus } from 'lucide-react';
-
 const Item = () => {
+  const navigate=useNavigate();
   const location = useLocation();
   const item = location.state?.item;
   
@@ -16,7 +16,7 @@ const Item = () => {
   }
   const addToCart = async(product) => {
     try {
-      const response=await fetch("http://localhost:3000/cart/add",
+      const response=await fetch("https://backend-server-3-ycun.onrender.com/cart/add",
         {
           method:"POST",
           headers:{
@@ -89,7 +89,7 @@ const Item = () => {
           <h3>
            Price: <del> ${item.price.toFixed(2)}</del> ${price.toFixed(2)}</h3>
           <p></p>
-          <button className='btn btn-primary buy-now fw-bold px-4 py-2 shadow-sm rounded-pill ms-2'>Buy now</button>
+          <Link to='/checkout' state={{item}} className='btn btn-primary buy-now fw-bold px-4 py-2 shadow-sm rounded-pill ms-2'>Buy now</Link>
           <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2" onClick={addToCart(item)}>
             Add To Cart
           </button>

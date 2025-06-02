@@ -3,48 +3,19 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, X, Heart, User } from 'lucide-react';
 import { useState,useEffect } from 'react';
 const Layout = () => {
-  const [search, setSearch] = useState('');
-  const [items, setItems] = useState([]);
+  
   const[cartCount,setCartCount]=useState(0)
   const[wishCount,setWishCount]=useState(0)
   const[user,setUser]=useState(null)
   useEffect(()=>{
 setUser(JSON.parse(localStorage.getItem('user')))
   },[])
-  console.log(user)
+
   const navigate = useNavigate();
 
-//   async function account() {
-//     try {
-//       const res = await fetch("http://localhost:3000/user/details", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ rollNo: user?.rollNo }),
-//       });
-//       if (res.ok) {
-//         const data = await res.json();
-//         if (user) {
-//           return navigate("/account", { state: { userData: data } });
-//         }
-//         navigate("/");
-//       } else {
-//         console.error("Failed to fetch user details");
-//       }
-//     } catch (error) {
-//       console.error("Error fetching user details:", error);
-//     }
-//   }
 
-// useEffect(() => {
-//     const storedUser = JSON.parse(localStorage.getItem('user'));
-//     if (storedUser) {
-//       setUser(storedUser);
-//     }
-//   }, []);
-  const searchProduct = (query) => {
-    // Add your product search logic here
-    console.log('Searching for', query);
-  };
+
+  
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
@@ -78,7 +49,7 @@ setUser(JSON.parse(localStorage.getItem('user')))
   }
   async function account() {
     try {
-      const res = await fetch("http://localhost:3000/user/details", {
+      const res = await fetch("https://backend-server-3-ycun.onrender.com/user/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rollNo: user?.rollNo }),
@@ -90,10 +61,10 @@ setUser(JSON.parse(localStorage.getItem('user')))
         }
         navigate("/");
       } else {
-        console.error("Failed to fetch user details");
+        alert("Failed to fetch user details");
       }
     } catch (error) {
-      console.error("Error fetching user details:", error);
+    alert("Error fetching user details:", error);
     }
   }
  
@@ -104,26 +75,7 @@ setUser(JSON.parse(localStorage.getItem('user')))
           <div className="left cursor-pointer">
             <h4 className="vk-store btn">VK Store <ShoppingBag size={24} /></h4>
           </div>
-          <div className="middle">
-            <div className="search-box-wrapper">
-              <input
-                type="text"
-                value={search}
-                placeholder="Search"
-                className="search-box"
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  searchProduct(e.target.value);
-                }}
-              />
-              <button className="btn-del" onClick={() => setSearch('')}>
-                <X size={20} />
-              </button>
-            </div>
-            <div className="search-btn" onClick={() => searchProduct(search)}>
-              <Search size={20} />
-            </div>
-          </div>
+          
           <div className="right">
             <div className="nav btn cursor-pointer" onClick={account}>
               <User size={23} /> Account

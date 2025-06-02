@@ -8,7 +8,7 @@ const Products = () => {
    
   const [items, setItems] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [search1, setSearch] = useState('');
+  const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
   const[cartCount,setCartCount]=useState(0)
@@ -17,7 +17,7 @@ const Products = () => {
 
   const navigate = useNavigate();
 useEffect(() => {
-  fetch("http://localhost:3000/product/get")
+  fetch("https://backend-server-3-ycun.onrender.com/product/get")
     .then((response) => response.json())
     .then((data) => {
       setItems(data);
@@ -42,27 +42,7 @@ useEffect(() => {
         : filtered.filter((item) => item.title.toLowerCase().includes(name.toLowerCase()))
     );
   }
-  // async function account() {
-  //   try {
-  //     const res = await fetch("http://localhost:3000/user/details", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ rollNo: user?.rollNo }),
-  //     });
-  //     if (res.ok) {
-  //       const data = await res.json();
-  //       if (user) {
-  //         return navigate("/account", { state: { userData: data } });
-  //       }
-  //       navigate("/");
-  //     } else {
-  //       console.error("Failed to fetch user details");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user details:", error);
-  //   }
-  // }
-
+ 
   function addToWishlist(product) {
     let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     
@@ -118,7 +98,7 @@ useEffect(() => {
    
      try {
        // Make API call to backend to sync cart
-       const response = await fetch("http://localhost:3000/cart/add", {
+       const response = await fetch("https://backend-server-3-ycun.onrender.com/cart/add", {
          method: "POST",
          headers: {
            "Content-Type": "application/json"
@@ -141,59 +121,48 @@ useEffect(() => {
      // Update cart count state (assuming you have this state declared)
      setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
    };
-  async function buy(items) {
-    const response=await fetch("http://localhost:3000/cart/add", {
-      method:"POST",
-      headers:{
-        "content-type":"application/json"
-      },
-      body:JSON.stringify(items)
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.message);
-      setCartCount(cartCount + 1); 
-      navigate("/checkout")
+  // async function buy(items) {
+  //   const response=await fetch("https://backend-server-3-ycun.onrender.com/cart/add", {
+  //     method:"POST",
+  //     headers:{
+  //       "content-type":"application/json"
+  //     },
+  //     body:JSON.stringify(items)
+  //   })
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     console.log(data.message);
+  //     setCartCount(cartCount + 1); 
+  //     navigate("/checkout")
       
-    })
-  }
+  //   })
+  // }
 
   return (
     <div className="main-container">
-      {/* <header>
-        <div className="header bg-dark">
-          <div className="left">
-            <h4 className="vk-store">VK Store <ShoppingBag size={24} /></h4>
-          </div>
-          <div className="middle">
-            <div className="search-box-wrapper">
-              <input
-                type="text"
-                value={search}
-                placeholder="Search"
-                className="search-box"
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  searchProduct(e.target.value);
-                }}
-              />
-              <button className="btn-del" onClick={() => { setSearch(''); setItems(filtered); }} >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="search-btn" onClick={() => searchProduct(search)}>
-              <Search size={20} />
-            </div>
-          </div>
-          <div className="right">
-            <div className="nav" onClick={account}><User size={23} /> Account</div>
-            <div className="nav" onClick={() => navigate('/wishlist')}><Heart size={20} /> Wishlist({wishCount})</div>
-            <div className="nav" onClick={() => navigate('/cart')}><ShoppingBag size={20} /> Cart({cartCount})</div>
-          </div>
-        </div>
-      </header> */}
+      
 
       <div className="main-body">
+       
+                      <div className="middle">
+                         <input
+                        type="text"
+                        value={search}
+                        placeholder="Search products"
+                        className="search-box"
+                        onChange={(e) => {
+                          setSearch(e.target.value);
+                        
+                        }}
+                      />
+                              
+                                    
+                                   
+                        
+                                  <div className="search-btn" onClick={() => searchProduct(search)}>
+                                    <Search size={20} />
+                                  </div>
+                                </div>
       <div className="head bg-primary py-3 text-center text-white">
   <div className="container">
     <h1 className="display-5 fw-bold mb-2">
@@ -243,7 +212,7 @@ useEffect(() => {
                     </div>
 
                     <div className='d-flex flex-wrap gap-2 justify-content-center mt-auto'>
-                      <button className="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={()=>buy(item)}>Buy Now</button>
+                      <Link to='/checkout' state={{item}} className="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill" >Buy Now</Link>
                       <button className="btn btn-dark fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={() => addToCart(item)}>Add to Cart</button>
                       <button className="btn btn-outline-danger fw-bold px-4 py-2 shadow-sm rounded-pill" onClick={() => addToWishlist(item)}>
                         <Heart size={18} /> Add to Wishlist
@@ -257,13 +226,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Footer Section */}
-      {/* <footer className="bg-dark text-light text-center py-3 mt-4">
-        <p>&copy; 2025 VK Store. All Rights Reserved.</p>
-        <p>Your one-stop destination for quality products at the best prices.</p>
-        <p>Follow us on <a href="#" className="text-light mx-2">Facebook</a> | <a href="#" className="text-light mx-2">Instagram</a> | <a href="#" className="text-light mx-2">Twitter</a></p>
-      </footer>
-       */}
+     
     </div>
   );
 };

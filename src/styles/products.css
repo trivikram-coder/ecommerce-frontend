@@ -114,22 +114,23 @@ body {
 }
 
 /* Search Box */
-.search-box-wrapper {
+/* .search-box-wrapper {
   position: relative;
-  width: 100%;
+  width: 50%;
   max-width: 450px;
-}
+} */
 
 .search-box {
-  width: 100%;
+  width: 40%;
   height: 42px;
-  border-radius: 25px;
-  border: 1px solid #e1e5e9;
+  border-radius: 10px;
+  border: 1px solid #4a90e2;
   padding: 8px 45px 8px 20px;
   font-size: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+  background-color: #ffff;
 }
 
 .search-box:hover,

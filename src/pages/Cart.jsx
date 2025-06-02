@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 const Cart = () => {
   const navigate=useNavigate()
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/cart/get")
+    fetch("https://backend-server-3-ycun.onrender.com/cart/get")
       .then((response) => response.json())
       .then((data) => {
         setCartItems(data)
@@ -18,7 +18,7 @@ const Cart = () => {
     const updatedCart = cartItems.filter(item => item.id !== id);
 
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-    fetch("http://localhost:3000/cart/remove", {
+    fetch("https://backend-server-3-ycun.onrender.com/cart/remove", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -40,7 +40,7 @@ const Cart = () => {
       item.id === id ? { ...item, quantity } : item
     );
 
-    fetch("http://localhost:3000/cart/update", {
+    fetch("https://backend-server-3-ycun.onrender.com/cart/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -105,21 +105,11 @@ const Cart = () => {
       {cartItems.length > 0 && (
         <div className="text-center mt-4">
           <h4>Total: ${totalAmount.toFixed(2)}</h4>
-          <button className="btn btn-primary w-50 mt-3" onClick={()=>navigate("/checkout")}>Proceed to Checkout</button>
+          <Link to='/checkout' state={{cartItems}} className="btn btn-primary w-50 mt-3" >Proceed to Checkout</Link>
         </div>
       )}
 
-      {/* Footer Section */}
-      {/* <footer className="bg-dark text-light text-center py-3 mt-5">
-        <p>&copy; 2025 VK Store. All Rights Reserved.</p>
-        <p>Your one-stop destination for quality products at the best prices.</p>
-        <p>
-          Follow us on 
-          <a href="#" className="text-light mx-2">Facebook</a> | 
-          <a href="#" className="text-light mx-2">Instagram</a> | 
-          <a href="#" className="text-light mx-2">Twitter</a>
-        </p>
-      </footer> */}
+    
     </div>
   );
 };

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 
 const Checkout = () => {
+  const location=useLocation();
+  const itemBuy=location.state?.item;
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const [formData, setFormData] = useState({
@@ -19,7 +21,7 @@ const Checkout = () => {
 
   useEffect(() => {
     // const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    fetch("http://localhost:3000/cart/get")
+    fetch("https://backend-server-3-ycun.onrender.com/cart/get")
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -92,7 +94,7 @@ const Checkout = () => {
         <div className="col-md-6">
           <h4>Order Summary</h4>
           <ul className="list-group mb-3">
-            {cart.map((item) => (
+            {[itemBuy].map((item) => (
               <li key={item.id} className="list-group-item d-flex justify-content-between">
                 <span>{item.title} (x{item.quantity})</span>
                 <strong>${(item.offerPrice * item.quantity).toFixed(2)}</strong>

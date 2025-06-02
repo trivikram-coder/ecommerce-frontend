@@ -36,7 +36,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("https://backend-server-538r.onrender.com/user/signup", {
+      const response = await fetch("https://backend-server-3-ycun.onrender.com/user/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
