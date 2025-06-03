@@ -23,7 +23,7 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Processing...");
+    setMessage("Redirecting.....");
 
     try {
       const res = await fetch("https://backend-server-3-ycun.onrender.com/user/signin", {
