@@ -48,6 +48,7 @@ const Cart = () => {
       body: JSON.stringify({ id, quantity })
     })
     setCartItems(updatedCart);
+    localStorage.setItem("cart",JSON.stringify(updateQuantity))
   };
 
   const totalAmount = cartItems.reduce((acc, item) => acc + item.offerPrice * (item.quantity || 1), 0);

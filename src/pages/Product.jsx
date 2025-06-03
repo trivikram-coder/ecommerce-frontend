@@ -3,6 +3,7 @@ import '../styles/products.css';
 import { Cuboid, Heart, Search, ShoppingBag, User, X } from 'lucide-react';
 // import productsDetails from '../data/data';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Products = () => {
    
@@ -50,7 +51,7 @@ useEffect(() => {
       wishlist.push(product);
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
     } else {
-      alert(`${product.title} is already in your wishlist.`);
+      toast.success(`${product.title} is already in your wishlist.`);
     }
   
     // Update wishlist count
@@ -110,12 +111,12 @@ useEffect(() => {
    
        if (response.ok) {
          console.log(data.message);
-         alert(`${product.title} added to cart`);
+         toast.success(`${product.title} added to cart`);
        } else {
-         console.error("Failed to add product to backend cart:", data.message);
+         toast.error("Failed to add product to backend cart:", data.message);
        }
      } catch (error) {
-       console.error("Error while adding to cart:", error);
+       toast.error("Error while adding to cart:", error);
      }
    
      // Update cart count state (assuming you have this state declared)

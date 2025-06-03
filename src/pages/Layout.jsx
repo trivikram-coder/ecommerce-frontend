@@ -23,15 +23,21 @@ setUser(JSON.parse(localStorage.getItem('user')))
     }
   }, []);
   useEffect(() => {
-  const interval = setInterval(() => {
+  const updateCounts = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartCount(cart.length);
+    setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
 
     const wish = JSON.parse(localStorage.getItem("wishlist")) || [];
     setWishCount(wish.length);
-  }, 1000); // check every 1 second
+  };
 
-  return () => clearInterval(interval); // cleanup
+  // Initial load
+  updateCounts();
+
+  // Optional: polling every 2 seconds (if needed)
+  const intervalId = setInterval(updateCounts, 2000);
+
+  return () => clearInterval(intervalId); // Clean up
 }, []);
 
   function addToWishlist(product) {
