@@ -79,7 +79,7 @@ setUser(JSON.parse(localStorage.getItem('user')))
       <header>
         <div className="header bg-dark">
           <div className="left cursor-pointer">
-            <h4 className="vk-store btn">VK Store <ShoppingBag size={24} /></h4>
+            <h4 className="vk-store btn" onClick={()=>navigate("/products")}>VK Store <ShoppingBag size={24} /></h4>
           </div>
           
           <div className="right">

@@ -24,7 +24,7 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Redirecting.....");
+    toast.success("Redirecting")
 
     try {
       const res = await fetch("https://backend-server-3-ycun.onrender.com/user/signin", {

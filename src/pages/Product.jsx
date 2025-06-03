@@ -166,8 +166,8 @@ useEffect(() => {
                                 </div>
       <div className="head bg-primary py-3 text-center text-white">
   <div className="container">
-    <h1 className="display-5 fw-bold mb-2">
-      Welcome to <span className="text-warning">VK Store</span>
+    <h1 className="display-5 fw-bold mb-2" >
+      Welcome to <span className="text-warning" >VK Store</span>
       <span className="ms-2"><ShoppingBag size={30} /></span>
     </h1>
     <p className="lead fw-semibold">
