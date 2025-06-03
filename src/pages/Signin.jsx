@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../styles/forms.css';
+import { toast } from 'react-toastify';
 
 const Signin = () => {
   const [formData, setFormData] = useState({
@@ -36,13 +37,13 @@ const Signin = () => {
 
       if (res.ok) {
         localStorage.setItem("user", JSON.stringify(data));
-        setMessage("Login successful!");
+        toast.success("Login successful!");
         navigate('/product');
       } else {
-        setMessage(data.message || "Invalid credentials");
+        toast.error(data.message || "Invalid credentials");
       }
     } catch (error) {
-      setMessage("Error connecting to server");
+      toast.error("Error connecting to server");
     }
   };
 

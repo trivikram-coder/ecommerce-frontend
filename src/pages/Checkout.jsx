@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate,useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const Checkout = () => {
@@ -41,8 +42,9 @@ const Checkout = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Order Placed Successfully!');
+ 
     localStorage.removeItem('cart');
+    toast.success("Order Placed Successfully")
     navigate('/order-placed');
   };
 

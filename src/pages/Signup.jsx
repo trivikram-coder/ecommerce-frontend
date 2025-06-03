@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/forms.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -43,13 +44,13 @@ const Signup = () => {
       });
 
       if (response.status === 201) {
-        setRes("User created successfully");
+        toast.success("User created successfully");
         navigate("/");
       } else if (response.status === 400) {
-        setRes("User Already Exists");
+        toast.error("User Already Exists");
       }
     } catch (error) {
-      setRes("Server error. Try again later.");
+      toast.error("Server error. Try again later.");
     }
   }
 

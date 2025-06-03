@@ -10,10 +10,11 @@ import Checkout from './pages/Checkout';
 import Cart from './pages/Cart';
 import OrderPlaced from './pages/OrderPlaced';
 import Layout from './pages/Layout';
-
+import {ToastContainer} from 'react-toastify'
 const App = () => {
   return (
     <BrowserRouter>
+    <ToastContainer position="top-right" autoClose={3000}/>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/product" element={<Products />} />
