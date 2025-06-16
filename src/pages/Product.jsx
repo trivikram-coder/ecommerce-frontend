@@ -180,9 +180,9 @@ useEffect(() => {
 
         <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
         <div className='category' >
-          <div className='cuboid' onClick={()=>navigate("/electronics")}><Cuboid size={24} /> <p><strong>Electronics</strong></p></div>
-          <div className='cuboid'><Cuboid size={24} /> <p><strong>Clothing</strong></p></div>
-          <div className='cuboid'><Cuboid size={24} /> <p><strong>Jewellery</strong></p></div>
+          <div className='cuboid' onClick={()=>navigate("/electronics")}><img src='https://images.pexels.com/photos/6214476/pexels-photo-6214476.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' /> <p><strong>Electronics</strong></p></div>
+          <div className='cuboid' onClick={()=>navigate("/clothing")}><img  /> <p><strong>Clothing</strong></p></div>
+          <div className='cuboid' onClick={()=>navigate("/jewellery")}><img /> <p><strong>Jewellery</strong></p></div>
         </div>
        
 

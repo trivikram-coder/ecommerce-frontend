@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 const Cart = () => {
   const navigate=useNavigate()
-  const [item, setItem] = useState([]);
+  const [item, setItems] = useState([]);
 
   useEffect(() => {
     fetch("https://backend-server-3-ycun.onrender.com/cart/get")
       .then((response) => response.json())
       .then((data) => {
-        setItem(data)
+        setItems(data)
       })
       .catch((error) => console.error('Error fetching cart items:', error));
     
   }, []);
 
   const removeItem = (id) => {
-    const updatedCart = cartItems.filter(item => item.id !== id);
+    const updatedCart = item.filter(item => item.id !== id);
 
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     fetch("https://backend-server-3-ycun.onrender.com/cart/remove", {
@@ -28,7 +28,7 @@ const Cart = () => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data.message);
-      setItem(updatedCart); // Update state only after successful API call
+      setItems(updatedCart); // Update state only after successful API call
     })
     .catch((error) => console.error('Error removing item:', error));
   };
@@ -36,7 +36,7 @@ const Cart = () => {
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) return; // Prevent negative or zero quantity
 
-    const updatedCart = cartItems.map(item =>
+    const updatedCart = item.map(item =>
       item.id === id ? { ...item, quantity } : item
     );
 
@@ -47,7 +47,7 @@ const Cart = () => {
       },
       body: JSON.stringify({ id, quantity })
     })
-    setItem(updatedCart);
+    setItems(updatedCart);
     localStorage.setItem("cart",JSON.stringify(updateQuantity))
   };
 

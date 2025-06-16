@@ -1,59 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, X, Heart, User } from 'lucide-react';
-import { useState,useEffect } from 'react';
-const Layout = () => {
-  
-  const[cartCount,setCartCount]=useState(0)
-  const[wishCount,setWishCount]=useState(0)
-  const[user,setUser]=useState(null)
-  useEffect(()=>{
-setUser(JSON.parse(localStorage.getItem('user')))
-  },[])
+import { ShoppingBag, Heart, User, ShoppingCart } from 'lucide-react';
 
+const Layout = () => {
+  const [cartCount, setCartCount] = useState(0);
+  const [wishCount, setWishCount] = useState(0);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-
-
-  
+  // Load user once from localStorage
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem('user') || null);
     if (storedUser) {
       setUser(storedUser);
     }
   }, []);
-  useEffect(() => {
-  const updateCounts = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
 
-    const wish = JSON.parse(localStorage.getItem("wishlist")) || [];
-    setWishCount(wish.length);
-  };
+  // Function to update cart and wishlist counts
+  // const updateCounts = () => {
+  //   const cart = JSON.parse(localStorage.getItem("cart") || []);
+  //   setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
 
-  // Initial load
-  updateCounts();
+  //   const wish = JSON.parse(localStorage.getItem("wishlist") || "[]");
+  //   setWishCount(wish.length);
+  // };
 
-  // Optional: polling every 2 seconds (if needed)
-  const intervalId = setInterval(updateCounts, 2000);
+  // // Call updateCounts on load and every 2 seconds
+  // useEffect(() => {
+  //   updateCounts();
+  //   const intervalId = setInterval(updateCounts, 2000);
+  //   return () => clearInterval(intervalId); // Cleanup on unmount
+  // }, []);
 
-  return () => clearInterval(intervalId); // Clean up
-}, []);
-
-  function addToWishlist(product) {
-    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    
-    if (!wishlist.some((item) => item.id === product.id)) {
-      wishlist.push(product);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    } else {
-      alert(`${product.title} is already in your wishlist.`);
-    }
-  
-    // Update wishlist count
-    setWishCount(wishlist.length);
-  }
-  async function account() {
+  // Navigate to user account
+  const account = async () => {
     try {
       const res = await fetch("https://backend-server-3-ycun.onrender.com/user/details", {
         method: "POST",
@@ -62,26 +42,25 @@ setUser(JSON.parse(localStorage.getItem('user')))
       });
       if (res.ok) {
         const data = await res.json();
-        if (user) {
-          return navigate("/account", { state: { userData: data } });
-        }
-        navigate("/");
+        return navigate("/account", { state: { userData: data } });
       } else {
         alert("Failed to fetch user details");
       }
     } catch (error) {
-    alert("Error fetching user details:", error);
+      alert("Error fetching user details: " + error.message);
     }
-  }
- 
+  };
+
   return (
     <>
       <header>
         <div className="header bg-dark">
           <div className="left cursor-pointer">
-            <h4 className="vk-store btn" onClick={()=>navigate("/products")}>VK Store <ShoppingBag size={24} /></h4>
+            <h4 className="vk-store btn" onClick={() => navigate("/product")}>
+              VK Store <ShoppingBag size={24} />
+            </h4>
           </div>
-          
+
           <div className="right">
             <div className="nav btn cursor-pointer" onClick={account}>
               <User size={23} /> Account
@@ -91,6 +70,9 @@ setUser(JSON.parse(localStorage.getItem('user')))
             </div>
             <div className="nav btn cursor-pointer" onClick={() => navigate('/cart', { state: { cartCount } })}>
               <ShoppingBag size={20} /> Cart({cartCount})
+            </div>
+            <div className="nav btn cursor-pointer" onClick={() => navigate('/checkout')}>
+              <ShoppingCart size={20} /> Checkout
             </div>
           </div>
         </div>
@@ -104,7 +86,8 @@ setUser(JSON.parse(localStorage.getItem('user')))
         <p>&copy; 2025 VK Store. All Rights Reserved.</p>
         <p>Your one-stop destination for quality products at the best prices.</p>
         <p>
-          Follow us on <a href="#" className="text-light mx-2">Facebook</a> | 
+          Follow us on 
+          <a href="#" className="text-light mx-2">Facebook</a> | 
           <a href="#" className="text-light mx-2">Instagram</a> | 
           <a href="#" className="text-light mx-2">Twitter</a>
         </p>

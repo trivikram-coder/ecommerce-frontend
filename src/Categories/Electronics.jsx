@@ -6,7 +6,7 @@ const Electronics = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="text-center mb-4">Electronics</h2>
+      <h2 className="text-center text-primary mb-4">Electronics</h2>
       <div className="row">
         {electronics.map((product) => (
           <div key={product.id} className="col-md-4 mb-4">

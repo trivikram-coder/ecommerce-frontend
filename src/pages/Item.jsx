@@ -90,7 +90,7 @@ const Item = () => {
            Price: <del> ${item.price.toFixed(2)}</del> ${price.toFixed(2)}</h3>
           <p></p>
           <Link to='/checkout' state={{item}} className='btn btn-primary buy-now fw-bold px-4 py-2 shadow-sm rounded-pill ms-2'>Buy now</Link>
-          <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2" onClick={addToCart(item)}>
+          <button className="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill ms-2" onClick={()=>addToCart(item)}>
             Add To Cart
           </button>
         </div>

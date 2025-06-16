@@ -20,21 +20,27 @@ const Checkout = () => {
   });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+ useEffect(() => {
+  if (itemBuy) {
+    // Handle single product "Buy Now"
+    const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
+    setCart([singleItem]);
+    setTotal(singleItem.offerPrice * singleItem.quantity);
+  } else {
+    // Handle full cart checkout
     fetch("https://backend-server-3-ycun.onrender.com/cart/get")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      setCart(data);
-      const totalPrice = data.reduce((acc, item) => acc + (item.offerPrice * item.quantity), 0);
-      setTotal(totalPrice);
-    })
-    .catch((error) => {
-      console.error("Error fetching cart data:", error);
-    });
-   
-  }, []);
+      .then((response) => response.json())
+      .then((data) => {
+        setCart(data);
+        const totalPrice = data.reduce((acc, item) => acc + (item.offerPrice * item.quantity), 0);
+        setTotal(totalPrice);
+      })
+      .catch((error) => {
+        console.error("Error fetching cart data:", error);
+      });
+  }
+}, []);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -96,7 +102,7 @@ const Checkout = () => {
         <div className="col-md-6">
           <h4>Order Summary</h4>
           <ul className="list-group mb-3">
-            {[itemBuy].map((item) => (
+            {cart.map((item) => (
               <li key={item.id} className="list-group-item d-flex justify-content-between">
                 <span>{item.title} (x{item.quantity})</span>
                 <strong>${(item.offerPrice * item.quantity).toFixed(2)}</strong>

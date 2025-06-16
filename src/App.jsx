@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
@@ -12,7 +12,8 @@ import OrderPlaced from './pages/OrderPlaced';
 import Layout from './pages/Layout';
 import {ToastContainer} from 'react-toastify'
 import Electronics from './Categories/Electronics';
-
+import Clothing from './Categories/Clothing';
+import Jewellery from './Categories/Jewellery'
 const App = () => {
   return (
     <BrowserRouter>
@@ -28,6 +29,8 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/order-placed" element={<OrderPlaced />} />
         <Route path='/electronics' element={<Electronics/>}/>
+        <Route path='/clothing' element={<Clothing/>}/>
+        <Route path='/jewellery' element={<Jewellery/>}/>
         </Route>
         <Route path="/" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
