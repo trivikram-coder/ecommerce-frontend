@@ -11,9 +11,12 @@ import Cart from './pages/Cart';
 import OrderPlaced from './pages/OrderPlaced';
 import Layout from './pages/Layout';
 import {ToastContainer} from 'react-toastify'
+import Electronics from './Categories/Electronics';
+
 const App = () => {
   return (
     <BrowserRouter>
+  
     <ToastContainer position="top-right" autoClose={3000}/>
       <Routes>
         <Route element={<Layout />}>
@@ -24,6 +27,7 @@ const App = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/order-placed" element={<OrderPlaced />} />
+        <Route path='/electronics' element={<Electronics/>}/>
         </Route>
         <Route path="/" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />

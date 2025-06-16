@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 const Cart = () => {
   const navigate=useNavigate()
-  const [cartItems, setCartItems] = useState([]);
+  const [item, setItem] = useState([]);
 
   useEffect(() => {
     fetch("https://backend-server-3-ycun.onrender.com/cart/get")
       .then((response) => response.json())
       .then((data) => {
-        setCartItems(data)
+        setItem(data)
       })
       .catch((error) => console.error('Error fetching cart items:', error));
     
@@ -28,7 +28,7 @@ const Cart = () => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data.message);
-      setCartItems(updatedCart); // Update state only after successful API call
+      setItem(updatedCart); // Update state only after successful API call
     })
     .catch((error) => console.error('Error removing item:', error));
   };
@@ -47,32 +47,32 @@ const Cart = () => {
       },
       body: JSON.stringify({ id, quantity })
     })
-    setCartItems(updatedCart);
+    setItem(updatedCart);
     localStorage.setItem("cart",JSON.stringify(updateQuantity))
   };
 
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.offerPrice * (item.quantity || 1), 0);
+  const totalAmount = item.reduce((acc, item1) => acc + item1.offerPrice * (item1.quantity || 1), 0);
 
   return (
     <div className="container py-5">
       <h2 className="text-center mb-4">Your Cart</h2>
-      {cartItems.length === 0 ? (
+      {item.length === 0 ? (
         <p className="text-center">Your cart is empty</p>
       ) : (
         <div className="row">
-          {cartItems.map((item) => (
-            <div key={item.id} className="col-md-4 mb-4">
+          {item.map((item1) => (
+            <div key={item1.id} className="col-md-4 mb-4">
               <div className="card shadow-sm border-light h-100">
-                <img src={item.image} alt={item.title} className="card-img-top" style={{ height: '200px', objectFit: 'contain' }} />
+                <img src={item1.image} alt={item1.title} className="card-img-top" style={{ height: '200px', objectFit: 'contain' }} />
                 <div className="card-body">
-                  <h5 className="card-title">{item.title}</h5>
-                  <p className="card-text"><strong>Price: </strong>${item.offerPrice}</p>
+                  <h5 className="card-title">{item1.title}</h5>
+                  <p className="card-text"><strong>Price: </strong>${item1.offerPrice}</p>
 
                   {/* Quantity Selection */}
                   <div className="d-flex align-items-center justify-content-center">
   <button 
     className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm px-3" 
-    onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
+    onClick={() => updateQuantity(item1.id, (item1.quantity || 1) - 1)}
   >
     −
   </button>
@@ -81,21 +81,21 @@ const Cart = () => {
     type="number"
     className="form-control form-control-sm text-center mx-2"
     style={{ width: '80px' }}
-    value={item.quantity || 1}
-    onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+    value={item1.quantity || 1}
+    onChange={(e) => updateQuantity(item1.id, parseInt(e.target.value))}
     min="1"
   />
 
   <button 
     className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm px-3" 
-    onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+    onClick={() => updateQuantity(item1.id, (item1.quantity || 1) + 1)}
   >
     +
   </button>
 </div>
 
 
-                  <button className="btn btn-outline-danger w-100 mt-2" onClick={() => removeItem(item.id)}>Remove</button>
+                  <button className="btn btn-outline-danger w-100 mt-2" onClick={() => removeItem(item1.id)}>Remove</button>
                 </div>
               </div>
             </div>
@@ -103,10 +103,10 @@ const Cart = () => {
         </div>
       )}
 
-      {cartItems.length > 0 && (
+      {item.length > 0 && (
         <div className="text-center mt-4">
           <h4>Total: ${totalAmount.toFixed(2)}</h4>
-          <Link to='/checkout' state={{cartItems}} className="btn btn-primary w-50 mt-3" >Proceed to Checkout</Link>
+          <Link to='/checkout' state={{item}} className="btn btn-primary w-50 mt-3" >Proceed to Checkout</Link>
         </div>
       )}
 

@@ -9,6 +9,7 @@ const Products = () => {
    
   const [items, setItems] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const[category,setCategory]=useState([]);
   const [search, setSearch] = useState('');
   const [user, setUser] = useState(null);
   const [quantities, setQuantities] = useState({}); 
@@ -178,11 +179,12 @@ useEffect(() => {
 
 
         <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
-        <div className='category' onClick={categoryFilter}>
-          <div className='cuboid'><Cuboid size={24} /> <p><strong>Electronics</strong></p></div>
+        <div className='category' >
+          <div className='cuboid' onClick={()=>navigate("/electronics")}><Cuboid size={24} /> <p><strong>Electronics</strong></p></div>
           <div className='cuboid'><Cuboid size={24} /> <p><strong>Clothing</strong></p></div>
           <div className='cuboid'><Cuboid size={24} /> <p><strong>Jewellery</strong></p></div>
         </div>
+       
 
         <div className="container mt-4 mb-4">
           <div className="row g-3">
