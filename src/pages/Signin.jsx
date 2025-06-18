@@ -24,7 +24,7 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    toast.success("Redirecting")
+    
 
     try {
       const res = await fetch("https://backend-server-3-ycun.onrender.com/user/signin", {
@@ -36,6 +36,7 @@ const Signin = () => {
       const data = await res.json();
 
       if (res.ok) {
+        
         localStorage.setItem("user", JSON.stringify(data));
         toast.success("Login successful!");
         navigate('/product');
