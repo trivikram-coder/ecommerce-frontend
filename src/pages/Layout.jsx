@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, User, ShoppingCart } from 'lucide-react';
-import { toast } from 'react-toastify';
 
 const Layout = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -45,7 +44,7 @@ const Layout = () => {
         const data = await res.json();
         return navigate("/account", { state: { userData: data } });
       } else {
-        toast.error("Failed to fetch user details");
+        alert("Failed to fetch user details");
       }
     } catch (error) {
       alert("Error fetching user details: " + error.message);
