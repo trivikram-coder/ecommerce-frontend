@@ -68,7 +68,7 @@ const products = [
     discountPrice: 369,
     rating: 4.7,
     description: "Advanced smartwatch with health monitoring, GPS, and cellular connectivity.",
-    image: "https://images.unsplash.com/photo-1579586337278-3f436f25d4d6?w=500&h=500&fit=crop",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQohdaiXAqJ00ZHF7fNSr0or8w-zoMpnCFhcg&s",
     category: "electronics"
   },
   {
@@ -78,7 +78,7 @@ const products = [
     discountPrice: 319,
     rating: 4.6,
     description: "Hybrid gaming console with vibrant OLED screen and versatile play modes.",
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500&h=500&fit=crop",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR97lhNnOqUx8OCGFfuJOkXvubSuNbkAkJH6w&s",
     category: "electronics"
   },
   {

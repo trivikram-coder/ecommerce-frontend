@@ -157,16 +157,13 @@ useEffect(() => {
                         
                         }}
                       />
-                              
-                                    
-                                   
-                        
-                                  <div className="search-btn" onClick={() => searchProduct(search)}>
-                                    <Search size={20} />
-                                  </div>
+       <div className="search-btn" onClick={() => searchProduct(search)}>
+           <Search size={20} />
+            </div>
                                 </div>
-      <div className="head bg-primary py-3 text-center text-white">
+      <div className="py-3 text-center text-success">
   <div className="container">
+    
     <h1 className="display-5 fw-bold mb-2" >
       Welcome to <span className="text-warning" >VK Store</span>
       <span className="ms-2"><ShoppingBag size={30} /></span>
@@ -180,9 +177,9 @@ useEffect(() => {
 
         <h3 className='d-flex justify-content-center mt-4 mb-4'><strong>Featured Categories</strong></h3>
         <div className='category' >
-          <div className='cuboid' onClick={()=>navigate("/electronics")}><img src='https://images.pexels.com/photos/6214476/pexels-photo-6214476.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' /> <p><strong>Electronics</strong></p></div>
-          <div className='cuboid' onClick={()=>navigate("/clothing")}><img  /> <p><strong>Clothing</strong></p></div>
-          <div className='cuboid' onClick={()=>navigate("/jewellery")}><img /> <p><strong>Jewellery</strong></p></div>
+          <div className='cuboid' onClick={()=>navigate("/electronics")}><img src='https://canvify.app/_astro/electronics-store-product-page-template-in-canva.NKs74bXI_2dbDGR.webp' style={{width:"100%",height:'300px'}}/> </div>
+          <div className='cuboid' onClick={()=>navigate("/clothing")}><img  src='https://marketplace.canva.com/EAE942zKuBI/1/0/1600w/canva-brown-minimalist-casual-fashion-collection-presentation-lXzzAes9eEE.jpg' style={{width:"90%",height:'300px'}}/> </div>
+          <div className='cuboid' onClick={()=>navigate("/jewellery")}><img src='https://marketplace.canva.com/EAE0ZQHtsMQ/1/0/1600w/canva-gray-and-white-minimalist-beauty-jewelry-instagram-post-rKvLvfuDqSM.jpg' style={{width:"100%",height:'300px'}}/> </div>
         </div>
        
 

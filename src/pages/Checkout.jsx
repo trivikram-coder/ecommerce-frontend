@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-
 const Checkout = () => {
-  const location=useLocation();
-  const itemBuy=location.state?.item;
+  const location = useLocation();
+  const itemBuy = location.state?.item;
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,29 +19,29 @@ const Checkout = () => {
     expiry: '',
     cvv: ''
   });
-  const navigate = useNavigate();
 
- useEffect(() => {
-  if (itemBuy) {
-    // Handle single product "Buy Now"
-    const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
-    setCart([singleItem]);
-    setTotal(singleItem.offerPrice * singleItem.quantity);
-  } else {
-    // Handle full cart checkout
-    fetch("https://backend-server-3-ycun.onrender.com/cart/get")
-      .then((response) => response.json())
-      .then((data) => {
-        setCart(data);
-        const totalPrice = data.reduce((acc, item) => acc + (item.offerPrice * item.quantity), 0);
-        setTotal(totalPrice);
-      })
-      .catch((error) => {
-        console.error("Error fetching cart data:", error);
-      });
-  }
-}, []);
-
+  useEffect(() => {
+    if (itemBuy) {
+      // Single item buy
+      const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
+      const price = singleItem.discountPrice ?? singleItem.offerPrice ?? singleItem.price ?? 0;
+      setCart([singleItem]);
+      setTotal(price * singleItem.quantity);
+    } else {
+      // Cart items
+      fetch("https://backend-server-3-ycun.onrender.com/cart/get")
+        .then((res) => res.json())
+        .then((data) => {
+          setCart(data);
+          const totalPrice = data.reduce((acc, item) => {
+            const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+            return acc + price * item.quantity;
+          }, 0);
+          setTotal(totalPrice);
+        })
+        .catch((err) => console.error("Error fetching cart:", err));
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,9 +49,8 @@ const Checkout = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
- 
+    toast.success("Order Placed Successfully");
     localStorage.removeItem('cart');
-    toast.success("Order Placed Successfully")
     navigate('/order-placed');
   };
 
@@ -58,59 +58,44 @@ const Checkout = () => {
     <div className="container mt-5">
       <h2 className="text-center mb-4">Checkout</h2>
       <div className="row">
+        {/* Billing Details */}
         <div className="col-md-6">
           <h4>Billing Details</h4>
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label">Full Name</label>
-              <input type="text" className="form-control" name="name" value={formData.name} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input type="email" className="form-control" name="email" value={formData.email} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Address</label>
-              <input type="text" className="form-control" name="address" value={formData.address} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">City</label>
-              <input type="text" className="form-control" name="city" value={formData.city} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Zip Code</label>
-              <input type="text" className="form-control" name="zip" value={formData.zip} onChange={handleChange} required />
-            </div>
-            <h4>Payment Details</h4>
-            <div className="mb-3">
-              <label className="form-label">Card Number</label>
-              <input type="text" className="form-control" name="cardNumber" value={formData.cardNumber} onChange={handleChange} required />
-            </div>
-            <div className="mb-3 d-flex">
-              <div className="me-2">
-                <label className="form-label">Expiry</label>
-                <input type="text" className="form-control" name="expiry" value={formData.expiry} onChange={handleChange} required />
+            {['name', 'email', 'address', 'city', 'zip', 'cardNumber', 'expiry', 'cvv'].map(field => (
+              <div className="mb-3" key={field}>
+                <label className="form-label">{field.replace(/([A-Z])/g, ' $1').toUpperCase()}</label>
+                <input
+                  type={field === 'email' ? 'email' : 'text'}
+                  className="form-control"
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-              <div>
-                <label className="form-label">CVV</label>
-                <input type="text" className="form-control" name="cvv" value={formData.cvv} onChange={handleChange} required />
-              </div>
-            </div>
+            ))}
             <button type="submit" className="btn btn-success w-100">Place Order</button>
           </form>
         </div>
+
+        {/* Order Summary */}
         <div className="col-md-6">
           <h4>Order Summary</h4>
           <ul className="list-group mb-3">
-            {cart.map((item) => (
-              <li key={item.id} className="list-group-item d-flex justify-content-between">
-                <span>{item.title} (x{item.quantity})</span>
-                <strong>${(item.offerPrice * item.quantity).toFixed(2)}</strong>
-              </li>
-            ))}
+            {cart.map((item) => {
+              const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+              const name = item.name ?? item.title ?? "Unnamed Item";
+              return (
+                <li key={item.id} className="list-group-item d-flex justify-content-between">
+                  <span>{name} (x{item.quantity})</span>
+                  <strong>₹{(price * item.quantity).toFixed(2)}</strong>
+                </li>
+              );
+            })}
             <li className="list-group-item d-flex justify-content-between bg-light">
               <strong>Total:</strong>
-              <strong>${total.toFixed(2)}</strong>
+              <strong>₹{total.toFixed(2)}</strong>
             </li>
           </ul>
         </div>
