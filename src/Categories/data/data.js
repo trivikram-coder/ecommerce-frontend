@@ -3,7 +3,7 @@ const products = [
   // Electronics Category
   {
     id: 1,
-    name: "iPhone 15 Pro Max",
+    title: "iPhone 15 Pro Max",
     price: 1199,
     discountPrice: 1099,
     rating: 4.8,
@@ -13,7 +13,7 @@ const products = [
   },
   {
     id: 2,
-    name: "Samsung Galaxy S24 Ultra",
+    title: "Samsung Galaxy S24 Ultra",
     price: 1299,
     discountPrice: 1199,
     rating: 4.7,
@@ -23,7 +23,7 @@ const products = [
   },
   {
     id: 3,
-    name: "MacBook Pro 16-inch",
+    title: "MacBook Pro 16-inch",
     price: 2499,
     discountPrice: 2299,
     rating: 4.9,
@@ -33,7 +33,7 @@ const products = [
   },
   {
     id: 4,
-    name: "Sony WH-1000XM5 Headphones",
+    title: "Sony WH-1000XM5 Headphones",
     price: 399,
     discountPrice: 349,
     rating: 4.6,
@@ -43,7 +43,7 @@ const products = [
   },
   {
     id: 5,
-    name: "iPad Pro 12.9-inch",
+    title: "iPad Pro 12.9-inch",
     price: 1099,
     discountPrice: 999,
     rating: 4.8,
@@ -53,7 +53,7 @@ const products = [
   },
   {
     id: 6,
-    name: "Dell XPS 13 Laptop",
+    title: "Dell XPS 13 Laptop",
     price: 1199,
     discountPrice: 1099,
     rating: 4.5,
@@ -63,7 +63,7 @@ const products = [
   },
   {
     id: 7,
-    name: "Apple Watch Series 9",
+    title: "Apple Watch Series 9",
     price: 399,
     discountPrice: 369,
     rating: 4.7,
@@ -73,7 +73,7 @@ const products = [
   },
   {
     id: 8,
-    name: "Nintendo Switch OLED",
+    title: "Nintendo Switch OLED",
     price: 349,
     discountPrice: 319,
     rating: 4.6,
@@ -83,7 +83,7 @@ const products = [
   },
   {
     id: 9,
-    name: "Samsung 65-inch 4K TV",
+    title: "Samsung 65-inch 4K TV",
     price: 899,
     discountPrice: 799,
     rating: 4.4,
@@ -93,7 +93,7 @@ const products = [
   },
   {
     id: 10,
-    name: "Canon EOS R5 Camera",
+    title: "Canon EOS R5 Camera",
     price: 3899,
     discountPrice: 3699,
     rating: 4.8,
@@ -103,7 +103,7 @@ const products = [
   },
   {
     id: 11,
-    name: "AirPods Pro 2nd Gen",
+    title: "AirPods Pro 2nd Gen",
     price: 249,
     discountPrice: 229,
     rating: 4.7,
@@ -113,7 +113,7 @@ const products = [
   },
   {
     id: 12,
-    name: "Google Pixel 8 Pro",
+    title: "Google Pixel 8 Pro",
     price: 999,
     discountPrice: 899,
     rating: 4.5,
@@ -123,7 +123,7 @@ const products = [
   },
   {
     id: 13,
-    name: "PlayStation 5",
+    title: "PlayStation 5",
     price: 499,
     discountPrice: 479,
     rating: 4.8,
@@ -133,7 +133,7 @@ const products = [
   },
   {
     id: 14,
-    name: "Microsoft Surface Pro 9",
+    title: "Microsoft Surface Pro 9",
     price: 999,
     discountPrice: 899,
     rating: 4.4,
@@ -143,7 +143,7 @@ const products = [
   },
   {
     id: 15,
-    name: "JBL Charge 5 Speaker",
+    title: "JBL Charge 5 Speaker",
     price: 179,
     discountPrice: 159,
     rating: 4.6,
@@ -153,7 +153,7 @@ const products = [
   },
   {
     id: 16,
-    name: "Kindle Paperwhite",
+    title: "Kindle Paperwhite",
     price: 139,
     discountPrice: 119,
     rating: 4.5,
@@ -163,7 +163,7 @@ const products = [
   },
   {
     id: 17,
-    name: "GoPro Hero 12",
+    title: "GoPro Hero 12",
     price: 399,
     discountPrice: 369,
     rating: 4.7,
@@ -175,7 +175,7 @@ const products = [
   // Clothing Category
   {
     id: 18,
-    name: "Classic Denim Jacket",
+    title: "Classic Denim Jacket",
     price: 89,
     discountPrice: 69,
     rating: 4.4,
@@ -185,7 +185,7 @@ const products = [
   },
   {
     id: 19,
-    name: "Leather Biker Jacket",
+    title: "Leather Biker Jacket",
     price: 299,
     discountPrice: 249,
     rating: 4.6,
@@ -195,7 +195,7 @@ const products = [
   },
   {
     id: 20,
-    name: "Cotton White T-Shirt",
+    title: "Cotton White T-Shirt",
     price: 25,
     discountPrice: 19,
     rating: 4.3,
@@ -205,7 +205,7 @@ const products = [
   },
   {
     id: 21,
-    name: "Slim Fit Black Jeans",
+    title: "Slim Fit Black Jeans",
     price: 79,
     discountPrice: 59,
     rating: 4.5,
@@ -215,7 +215,7 @@ const products = [
   },
   {
     id: 22,
-    name: "Wool Blend Sweater",
+    title: "Wool Blend Sweater",
     price: 129,
     discountPrice: 99,
     rating: 4.7,
@@ -225,7 +225,7 @@ const products = [
   },
   {
     id: 23,
-    name: "Floral Summer Dress",
+    title: "Floral Summer Dress",
     price: 89,
     discountPrice: 69,
     rating: 4.4,
@@ -235,7 +235,7 @@ const products = [
   },
   {
     id: 24,
-    name: "Business Blazer",
+    title: "Business Blazer",
     price: 199,
     discountPrice: 159,
     rating: 4.6,
@@ -245,7 +245,7 @@ const products = [
   },
   {
     id: 25,
-    name: "Running Sneakers",
+    title: "Running Sneakers",
     price: 149,
     discountPrice: 119,
     rating: 4.5,
@@ -255,7 +255,7 @@ const products = [
   },
   {
     id: 26,
-    name: "Casual Hoodie",
+    title: "Casual Hoodie",
     price: 69,
     discountPrice: 49,
     rating: 4.3,
@@ -265,7 +265,7 @@ const products = [
   },
   {
     id: 27,
-    name: "Formal Dress Shirt",
+    title: "Formal Dress Shirt",
     price: 79,
     discountPrice: 59,
     rating: 4.4,
@@ -275,7 +275,7 @@ const products = [
   },
   {
     id: 28,
-    name: "Yoga Leggings",
+    title: "Yoga Leggings",
     price: 59,
     discountPrice: 45,
     rating: 4.6,
@@ -285,7 +285,7 @@ const products = [
   },
   {
     id: 29,
-    name: "Winter Coat",
+    title: "Winter Coat",
     price: 259,
     discountPrice: 199,
     rating: 4.7,
@@ -295,7 +295,7 @@ const products = [
   },
   {
     id: 30,
-    name: "Silk Scarf",
+    title: "Silk Scarf",
     price: 89,
     discountPrice: 69,
     rating: 4.5,
@@ -305,7 +305,7 @@ const products = [
   },
   {
     id: 31,
-    name: "Chino Pants",
+    title: "Chino Pants",
     price: 89,
     discountPrice: 69,
     rating: 4.4,
@@ -315,7 +315,7 @@ const products = [
   },
   {
     id: 32,
-    name: "Polo Shirt",
+    title: "Polo Shirt",
     price: 49,
     discountPrice: 39,
     rating: 4.3,
@@ -325,7 +325,7 @@ const products = [
   },
   {
     id: 33,
-    name: "Maxi Dress",
+    title: "Maxi Dress",
     price: 119,
     discountPrice: 89,
     rating: 4.6,
@@ -335,7 +335,7 @@ const products = [
   },
   {
     id: 34,
-    name: "Cardigan Sweater",
+    title: "Cardigan Sweater",
     price: 99,
     discountPrice: 79,
     rating: 4.5,
@@ -347,7 +347,7 @@ const products = [
   // Jewelry Category
   {
     id: 35,
-    name: "Diamond Solitaire Ring",
+    title: "Diamond Solitaire Ring",
     price: 2999,
     discountPrice: 2499,
     rating: 4.9,
@@ -357,7 +357,7 @@ const products = [
   },
   {
     id: 36,
-    name: "Pearl Necklace",
+    title: "Pearl Necklace",
     price: 599,
     discountPrice: 499,
     rating: 4.7,
@@ -367,7 +367,7 @@ const products = [
   },
   {
     id: 37,
-    name: "Gold Tennis Bracelet",
+    title: "Gold Tennis Bracelet",
     price: 899,
     discountPrice: 749,
     rating: 4.8,
@@ -377,7 +377,7 @@ const products = [
   },
   {
     id: 38,
-    name: "Silver Hoop Earrings",
+    title: "Silver Hoop Earrings",
     price: 89,
     discountPrice: 69,
     rating: 4.5,
@@ -387,7 +387,7 @@ const products = [
   },
   {
     id: 39,
-    name: "Emerald Pendant",
+    title: "Emerald Pendant",
     price: 1299,
     discountPrice: 1099,
     rating: 4.6,
@@ -397,7 +397,7 @@ const products = [
   },
   {
     id: 40,
-    name: "Rose Gold Watch",
+    title: "Rose Gold Watch",
     price: 799,
     discountPrice: 649,
     rating: 4.7,
@@ -407,7 +407,7 @@ const products = [
   },
   {
     id: 41,
-    name: "Sapphire Ring",
+    title: "Sapphire Ring",
     price: 1899,
     discountPrice: 1599,
     rating: 4.8,
@@ -417,7 +417,7 @@ const products = [
   },
   {
     id: 42,
-    name: "Men's Gold Chain",
+    title: "Men's Gold Chain",
     price: 599,
     discountPrice: 499,
     rating: 4.4,
@@ -427,7 +427,7 @@ const products = [
   },
   {
     id: 43,
-    name: "Crystal Chandelier Earrings",
+    title: "Crystal Chandelier Earrings",
     price: 199,
     discountPrice: 149,
     rating: 4.5,
@@ -437,7 +437,7 @@ const products = [
   },
   {
     id: 44,
-    name: "Vintage Brooch",
+    title: "Vintage Brooch",
     price: 299,
     discountPrice: 249,
     rating: 4.3,
@@ -447,7 +447,7 @@ const products = [
   },
   {
     id: 45,
-    name: "Infinity Bracelet",
+    title: "Infinity Bracelet",
     price: 159,
     discountPrice: 129,
     rating: 4.6,
@@ -457,7 +457,7 @@ const products = [
   },
   {
     id: 46,
-    name: "Ruby Stud Earrings",
+    title: "Ruby Stud Earrings",
     price: 899,
     discountPrice: 749,
     rating: 4.7,
@@ -467,7 +467,7 @@ const products = [
   },
   {
     id: 47,
-    name: "Charm Bracelet",
+    title: "Charm Bracelet",
     price: 229,
     discountPrice: 189,
     rating: 4.4,
@@ -477,7 +477,7 @@ const products = [
   },
   {
     id: 48,
-    name: "Men's Signet Ring",
+    title: "Men's Signet Ring",
     price: 399,
     discountPrice: 329,
     rating: 4.5,
@@ -487,7 +487,7 @@ const products = [
   },
   {
     id: 49,
-    name: "Layered Gold Necklace",
+    title: "Layered Gold Necklace",
     price: 179,
     discountPrice: 149,
     rating: 4.6,
@@ -497,7 +497,7 @@ const products = [
   },
   {
     id: 50,
-    name: "Diamond Tennis Necklace",
+    title: "Diamond Tennis Necklace",
     price: 3999,
     discountPrice: 3499,
     rating: 4.9,
@@ -507,7 +507,7 @@ const products = [
   },
   {
     id: 51,
-    name: "Wireless Gaming Mouse",
+    title: "Wireless Gaming Mouse",
     price: 129,
     discountPrice: 99,
     rating: 4.5,
@@ -517,7 +517,7 @@ const products = [
   },
   {
     id: 52,
-    name: "Cocktail Ring",
+    title: "Cocktail Ring",
     price: 449,
     discountPrice: 379,
     rating: 4.4,
@@ -527,7 +527,7 @@ const products = [
   },
   {
     id: 53,
-    name: "Casual Sneakers",
+    title: "Casual Sneakers",
     price: 99,
     discountPrice: 79,
     rating: 4.3,
