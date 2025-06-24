@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 const Checkout = () => {
   const location = useLocation();
-  const itemBuy = location.state?.item;
+  const itemBuy = location.state?.item; // This is either single product or cart array
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
@@ -21,27 +21,35 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    if (itemBuy) {
-      // Single item buy
+    if (itemBuy && Array.isArray(itemBuy)) {
+      // Full cart from state
+      setCart(itemBuy);
+      const totalPrice = itemBuy.reduce((acc, item) => {
+        const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+        return acc + price * (item.quantity || 1);
+      }, 0);
+      setTotal(totalPrice);
+    } else if (itemBuy) {
+      // Single product
       const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
       const price = singleItem.discountPrice ?? singleItem.offerPrice ?? singleItem.price ?? 0;
       setCart([singleItem]);
       setTotal(price * singleItem.quantity);
     } else {
-      // Cart items
-      fetch("https://backend-server-3-ycun.onrender.com/cart/get")
+      // No data passed, fallback to fetch from backend
+      fetch("http://localhost:9000/cart/get")
         .then((res) => res.json())
         .then((data) => {
           setCart(data);
           const totalPrice = data.reduce((acc, item) => {
             const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
-            return acc + price * item.quantity;
+            return acc + price * (item.quantity || 1);
           }, 0);
           setTotal(totalPrice);
         })
         .catch((err) => console.error("Error fetching cart:", err));
     }
-  }, []);
+  }, [itemBuy]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -50,7 +58,7 @@ const Checkout = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     toast.success("Order Placed Successfully");
-    localStorage.removeItem('cart');
+    localStorage.removeItem('cart'); // clear local cart if used
     navigate('/order-placed');
   };
 
@@ -84,12 +92,12 @@ const Checkout = () => {
           <h4>Order Summary</h4>
           <ul className="list-group mb-3">
             {cart.map((item) => {
+              const name = item.title ?? item.name ?? "Unnamed";
               const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
-              const name = item.name ?? item.title ?? "Unnamed Item";
               return (
                 <li key={item.id} className="list-group-item d-flex justify-content-between">
-                  <span>{name} (x{item.quantity})</span>
-                  <strong>₹{(price * item.quantity).toFixed(2)}</strong>
+                  <span>{name} (x{item.quantity || 1})</span>
+                  <strong>₹{(price * (item.quantity || 1)).toFixed(2)}</strong>
                 </li>
               );
             })}

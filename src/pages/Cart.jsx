@@ -6,7 +6,7 @@ const Cart = () => {
   const [item, setItems] = useState([]);
 
   useEffect(() => {
-    fetch("https://backend-server-3-ycun.onrender.com/cart/get")
+    fetch("http://localhost:9000/cart/get")
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
@@ -14,23 +14,24 @@ const Cart = () => {
       .catch((error) => console.error('Error fetching cart items:', error));
   }, []);
 
-  const removeItem = (id) => {
-    const updatedCart = item.filter(item => item.id !== id);
-    fetch("https://backend-server-3-ycun.onrender.com/cart/remove", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.message);
+ const removeItem = (id) => {
+  const updatedCart =item.filter((item1) => item1.id !== id);
+    localStorage.setItem("cart",JSON.stringify(updatedCart))
+  
+  fetch(`http://localhost:9000/cart/delete/${id}`, {
+    method: "DELETE",
+  })
+    .then((res) => {
+      if (res.ok) {
+        // Update local state only after successful deletion
+        const updatedCart = item.filter(item => item.id !== id);
         setItems(updatedCart);
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-      })
-      .catch((error) => console.error('Error removing item:', error));
-  };
+      } else {
+        console.error("Failed to delete item from cart");
+      }
+    })
+    .catch((error) => console.error("Error removing item:", error));
+};
 
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) return;
@@ -39,7 +40,7 @@ const Cart = () => {
       item.id === id ? { ...item, quantity } : item
     );
 
-    fetch("https://backend-server-3-ycun.onrender.com/cart/update", {
+    fetch("http://localhost:9000/cart/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

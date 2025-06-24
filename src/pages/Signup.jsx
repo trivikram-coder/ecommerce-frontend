@@ -9,26 +9,24 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
-    DOB: "",
-    branch: "",
-    rollNo: "",
-    section: "",
+    dob: "",
     address: "",
+    mobileNumber: "",
     email: "",
-    mobileNo: "",
     password: ""
   });
 
   const [res, setRes] = useState("");
   const navigate = useNavigate();
 
-  function handleChange(e) {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+  };
 
-  async function signup(e) {
+  const signup = async (e) => {
     e.preventDefault();
 
+    // Check for empty fields
     for (let key in formData) {
       if (!formData[key]) {
         setRes("All fields are required.");
@@ -37,7 +35,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("https://backend-server-3-ycun.onrender.com/user/signup", {
+      const response = await fetch("http://localhost:9000/account/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -47,12 +45,14 @@ const Signup = () => {
         toast.success("User created successfully");
         navigate("/");
       } else if (response.status === 400) {
-        toast.error("User Already Exists");
+        toast.error("User already exists");
+      } else {
+        toast.error("Signup failed");
       }
     } catch (error) {
       toast.error("Server error. Try again later.");
     }
-  }
+  };
 
   return (
     <div className="form-container d-flex justify-content-center align-items-center min-vh-100">
@@ -66,12 +66,9 @@ const Signup = () => {
           {[
             { id: "name", label: "Name", type: "text" },
             { id: "fatherName", label: "Father Name", type: "text" },
-            { id: "DOB", label: "Date of Birth", type: "date" },
-            { id: "branch", label: "Branch", type: "text" },
-            { id: "rollNo", label: "Roll Number", type: "text" },
-            { id: "section", label: "Section", type: "text" },
+            { id: "dob", label: "Date of Birth", type: "date" },
             { id: "address", label: "Address", type: "text" },
-            { id: "mobileNo", label: "Mobile Number", type: "number" },
+            { id: "mobileNumber", label: "Mobile Number", type: "number" },
             { id: "email", label: "Email", type: "email" },
           ].map((field) => (
             <div className="form-floating mb-3" key={field.id}>
@@ -89,6 +86,7 @@ const Signup = () => {
             </div>
           ))}
 
+          {/* ✅ Password Field */}
           <div className="form-floating mb-3">
             <input
               type="password"

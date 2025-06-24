@@ -8,21 +8,23 @@ import "../styles/account.css";
 const Account = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const userData = location.state?.userData
+  const item = location.state?.userData
   useEffect(() => {
-    if (!userData && !localStorage.getItem("user")) {
+    if (!item && !localStorage.getItem("user")) {
       navigate("/product", { replace: true });
     }
-  }, [userData, navigate]);
+  }, [item, navigate]);
 
-  const handleSignOut = () => {
-    localStorage.removeItem("user");
-    navigate("/product", { replace: true, state: null }); // clear state explicitly
-    window.location.reload(); // hard reload to clear in-memory state (optional fallback)
+ 
+    const handleSignOut = () => {
+  localStorage.removeItem("user");
+
+  navigate("/", { replace: true }); // go to login screen
+
   };
   
 
-  if (!userData) {
+  if (!item) {
     return (
       <div className="container d-flex justify-content-center align-items-center vh-100">
         <div className="text-center">
@@ -38,8 +40,8 @@ const Account = () => {
   return (
     <div className="container py-5">
       <div className="account-container">
-        {userData.map((item, index) => (
-          <div key={index} className="text-center">
+        
+          <div className="text-center">
             <div className="profile-header">
               {item.profileImage ? (
                 <img
@@ -75,7 +77,7 @@ const Account = () => {
                   
                   <div className="info-item">
                     <span className="info-label">Phone:</span>
-                    <span className="info-value">{item.mobileNo}</span>
+                    <span className="info-value">{item.mobileNumber}</span>
                   </div>
                 </div>
               </div>
@@ -88,7 +90,7 @@ const Account = () => {
               Sign Out
             </button>
           </div>
-        ))}
+      
       </div>
     </div>
   );

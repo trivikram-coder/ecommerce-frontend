@@ -36,13 +36,13 @@ const Item = () => {
   const addToCart = async (product) => {
     try {
       console.log(product)
-      await fetch("http://localhost:9000/products/add", {
+      await fetch("http://localhost:9000/cart/add", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(product),
       })
         .then((res) => res.json())
-        .then((data) => toast.success(data));
+        .then((data) => toast.success(data.message));
     } catch (error) {
       toast.error(error);
     }

@@ -58,7 +58,7 @@ const Products = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
 
     try {
-      const response = await fetch("https://backend-server-3-ycun.onrender.com/product/add", {
+      const response = await fetch("http://localhost:9000/cart/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
