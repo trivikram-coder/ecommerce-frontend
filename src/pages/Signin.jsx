@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const Signin = () => {
   const [formData, setFormData] = useState({
-    rollNo: '',
+    email: '',
     password: ''
   });
 
@@ -25,9 +25,9 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     toast.success("Redirecting")
-
+    console.log(formData)
     try {
-      const res = await fetch("https://backend-server-3-ycun.onrender.com/user/signin", {
+      const res = await fetch("http://localhost:9000/account/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -60,13 +60,13 @@ const Signin = () => {
             <input
               type="text"
               className="form-control"
-              id="rollNo"
-              name="rollNo"
-              placeholder="Roll Number"
+              id="email"
+              name="email"
+              placeholder="email"
               onChange={handleChange}
               required
             />
-            <label htmlFor="rollNo">Roll Number</label>
+            <label htmlFor="email">Email</label>
           </div>
 
           <div className="mb-3 position-relative">

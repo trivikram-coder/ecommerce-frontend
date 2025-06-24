@@ -9,7 +9,6 @@ const Account = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const userData = location.state?.userData
-
   useEffect(() => {
     if (!userData && !localStorage.getItem("user")) {
       navigate("/product", { replace: true });
@@ -72,10 +71,7 @@ const Account = () => {
                     <span className="info-value">{item.email}</span>
                   </div>
                   
-                  <div className="info-item">
-                    <span className="info-label">Roll Number:</span>
-                    <span className="info-value">{item.rollNo}</span>
-                  </div>
+                  
                   
                   <div className="info-item">
                     <span className="info-label">Phone:</span>

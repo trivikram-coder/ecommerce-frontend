@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { ArrowBigLeft, Minus, Plus } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import '../styles/items.css';
+import { toast } from 'react-toastify';
 
 const Item = () => {
   const navigate = useNavigate();
@@ -34,25 +35,22 @@ const Item = () => {
 
   const addToCart = async (product) => {
     try {
-      await fetch("https://backend-server-3-ycun.onrender.com/cart/add", {
+      console.log(product)
+      await fetch("http://localhost:9000/products/add", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...product, quantity: quan }),
+        body: JSON.stringify(product),
       })
         .then((res) => res.json())
-        .then((data) => console.log(data.message));
+        .then((data) => toast.success(data));
     } catch (error) {
-      console.error(error);
+      toast.error(error);
     }
-  };
+  }
 
   return (
     <>
-      <div className="back-btn">
-        <Link to='/product'>
-          <ArrowBigLeft size={36} style={{ color: 'black' }} className='back' />
-        </Link>
-      </div>
+    
 
       <div className="item-container">
         <div className="item-img1">
@@ -60,7 +58,7 @@ const Item = () => {
         </div>
 
         <div className="item-det">
-          <h4>{item.name}</h4>
+          <h4>{item.title}</h4>
           <p>{item.description.toUpperCase()}</p>
           <p>Category: {item.category}</p>
           <p>

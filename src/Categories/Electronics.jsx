@@ -1,14 +1,17 @@
-import React from 'react';
+
 import products from './data/data';
 import { useNavigate } from 'react-router-dom';
-
+import {Phone,Laptop} from 'lucide-react';
 const Electronics = () => {
   const electronics = products.filter((item) => item.category === 'electronics');
   const navigate = useNavigate();
 
   return (
     <div className="container my-4">
-      <h2 className="text-center text-primary mb-4">Electronics</h2>
+      <h2 className="text-center text-primary mb-4">Electronics   
+
+        <Laptop size={25}/>
+      </h2>
       <div className="row">
         {electronics.map((item) => (
           <div
@@ -22,13 +25,13 @@ const Electronics = () => {
                 src={item.image}
                 alt={item.name}
                 className="card-img-top"
-                style={{ height: '250px', objectFit: 'cover' }}
+              style={{ height: '340px',padding:'24px' }}
               />
               <div className="card-body">
-                <h5 className="card-title">{item.name}</h5>
-                <p className="card-text"><strong>Model:</strong> {item.model}</p>
+                <h5 className="card-title">{item.title}</h5>
+               
                 <p className="card-text">{item.description}</p>
-                <p className="card-text text-success fw-bold">₹ {item.price}</p>
+                <p className="card-text text-success fw-bold"> ₹{item.price}</p>
               </div>
             </div>
           </div>

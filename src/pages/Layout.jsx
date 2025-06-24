@@ -35,10 +35,11 @@ const Layout = () => {
   // Navigate to user account
   const account = async () => {
     try {
-      const res = await fetch("https://backend-server-3-ycun.onrender.com/user/details", {
+      console.log(user)
+      const res = await fetch("http://localhost:9000/account/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rollNo: user?.rollNo }),
+        body: JSON.stringify({email:user.email}),
       });
       if (res.ok) {
         const data = await res.json();
