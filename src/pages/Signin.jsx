@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, data } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../styles/forms.css';
@@ -22,30 +22,50 @@ const Signin = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    toast.success("Redirecting")
-    console.log(formData)
-    try {
-      const res = await fetch("http://localhost:9000/account/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log(formData);
+
+  try {
+    toast.success("Redirecting");
+    
+    const res = await fetch("http://localhost:9000/auth/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const loginData = await res.json(); // renamed from `data`
+
+    if (res.ok) {
+      localStorage.setItem("token", loginData.token);
+      toast.success("Login successful!");
+
+      // Fetch user details after login
+      const token = loginData.token;
+      const userDetails = await fetch("http://localhost:9000/auth/details", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json' // optional, but helps avoid 406 errors
+        }
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("user", JSON.stringify(data));
-        toast.success("Login successful!");
-        navigate('/product');
+      const userData = await userDetails.json();
+      if (userDetails.ok) {
+        localStorage.setItem("user", JSON.stringify(userData));
       } else {
-        toast.error(data.message || "Invalid credentials");
+        toast.error("Failed to fetch user info");
       }
-    } catch (error) {
-      toast.error("Error connecting to server");
+
+      navigate('/product');
+    } else {
+      toast.error(loginData.message || "Invalid credentials");
     }
-  };
+  } catch (error) {
+    toast.error("Error connecting to server");
+  }
+};
+
 
   return (
     <div className="form-container d-flex justify-content-center align-items-center min-vh-100">

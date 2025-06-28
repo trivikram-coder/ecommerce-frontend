@@ -36,21 +36,14 @@ const Layout = () => {
 
   // Navigate to Account page
   const account = async () => {
-    try {
-      const res = await fetch("http://localhost:9000/account/details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
-      });
-      if (res.ok) {
-        const data = await res.json();
+    const data=JSON.parse(localStorage.getItem("user"))
+      if (data!=null) {
+       
         navigate("/account", { state: { userData: data } });
       } else {
         navigate("/"); // redirect to login if not found
       }
-    } catch (error) {
-      alert("Error fetching user details: " + error.message);
-    }
+    
   };
 
   return (

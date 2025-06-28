@@ -56,12 +56,13 @@ const Products = () => {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
+    const token=localStorage.getItem("token")
     try {
       const response = await fetch("http://localhost:9000/cart/add", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+                  
         },
         body: JSON.stringify(product)
       });
