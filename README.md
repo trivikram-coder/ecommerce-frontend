@@ -33,25 +33,39 @@ Backend (v2.0)
 
 🌐 REST APIs
 
-🚀 How to Run(Frontend React)
+🚀 How to Run the Project
+🧩 1. Clone the Repositories
 bash
 Copy
 Edit
+# Frontend
 git clone https://github.com/trivikram-coder/ecommerce-frontend.git
-cd vkstore
+
+# Backend
+git clone https://github.com/trivikram-coder/ecommerce-java-server.git
+💻 2. Run the Frontend (React + Vite)
+bash
+Copy
+Edit
+cd ecommerce-frontend   # or cd vkstore if you renamed the folder
 npm install
 npm run dev
-Make sure the Spring Boot backend is running on http://localhost:5173 (or your configured port).
+✅ Frontend will start at: http://localhost:5173 (or your Vite configured port)
 
-🚀 How to Run(Backend SpringBoot)
+☕ 3. Run the Backend (Spring Boot + MySQL)
 bash
 Copy
 Edit
-git clone https://github.com/trivikram-coder/ecommerce-java-server.git
-cd server
-make sure all the dependencies installed and configured
+cd ecommerce-java-server
+# Ensure all dependencies are installed (via Maven)
 mvn spring-boot:run
-Make sure the Spring Boot backend is running on http://localhost:8080 (or your configured port).
+✅ Backend will run at: http://localhost:8080 (or your configured server port)
+
+⚙️ 4. Ensure Both Are Running
+Make sure the frontend is talking to the backend (adjust API URLs if needed).
+
+Your browser should load the React app and interact with Spring Boot APIs correctly.
+
 
 📷 Preview![Screenshot 2025-06-30 191124](https://github.com/user-attachments/assets/4bec6f07-c4bd-4fd2-abd0-c27b081331bc)
 ![Screenshot 2025-06-30 191112](https://github.com/user-attachments/assets/309dfac5-c31d-4780-ac97-25b67f46ac82)
