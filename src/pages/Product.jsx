@@ -35,6 +35,7 @@ const Products = () => {
   const addToWishlist = (product) => {
     let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     if (!wishlist.some((item) => item.id === product.id)) {
+      toast.success(product.title+" added to wishlist")
       wishlist.push(product);
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
     } else {
@@ -58,7 +59,7 @@ const Products = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
     const token=localStorage.getItem("token")
     try {
-      const response = await fetch("http://localhost:9000/cart/add", {
+      const response = await fetch("https://spring-java-server.onrender.com/cart/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

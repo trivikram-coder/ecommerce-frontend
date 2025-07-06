@@ -8,7 +8,7 @@ const Item = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const item = location.state?.item;
-
+  const [quantities, setQuantities] = useState({});
   const [quan, setQuan] = useState(item?.quantity || 1);
   const [price, setPrice] = useState(item?.discountPrice ?? item?.offerPrice ?? item?.price ?? 0);
   const [msg, setMsg] = useState("");
@@ -34,19 +34,41 @@ const Item = () => {
   };
 
   const addToCart = async (product) => {
-    try {
-      console.log(product)
-      await fetch("http://localhost:9000/cart/add", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(product),
-      })
-        .then((res) => res.json())
-        .then((data) => toast.success(data.message));
-    } catch (error) {
-      toast.error(error);
-    }
-  }
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existingItem = cart.find((item) => item.id === product.id);
+      const quantity = quantities[product.id] || 1;
+  
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        product.quantity = quantity;
+        cart.push(product);
+      }
+  
+      localStorage.setItem("cart", JSON.stringify(cart));
+      const token=localStorage.getItem("token")
+      try {
+        const response = await fetch("https://spring-java-server.onrender.com/cart/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+                    
+          },
+          body: JSON.stringify(product)
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          toast.success(`${product.title} added to cart`);
+        } else {
+          toast.error(`Backend Error: ${data.message}`);
+        }
+      } catch (error) {
+        toast.error(`Error while adding to cart: ${error.message}`);
+      }
+  
+    };
 
   return (
     <>

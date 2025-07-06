@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Trash } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Wishlist = () => {
+  const navigate=useNavigate();
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
@@ -37,11 +38,12 @@ const Wishlist = () => {
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{item.title}</h5>
                   <p className="card-text text-success fw-bold">
-                    ${item.offerPrice} <del className="text-danger">{item.price}</del>
+                    <del className="text-danger">{item.price}</del>
+                    <span> ${item.discountPrice}</span>
                   </p>
 
                   <div className="d-flex justify-content-between mt-auto">
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={()=>navigate("/checkout",{state:{item:item}})}>
                       Buy Now
                     </button>
 

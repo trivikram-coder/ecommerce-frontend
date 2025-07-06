@@ -29,7 +29,7 @@ const Signin = () => {
   try {
     toast.success("Redirecting");
     
-    const res = await fetch("http://localhost:9000/auth/signin", {
+    const res = await fetch("https://spring-java-server.onrender.com/auth/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -43,7 +43,7 @@ const Signin = () => {
 
       // Fetch user details after login
       const token = loginData.token;
-      const userDetails = await fetch("http://localhost:9000/auth/details", {
+      const userDetails = await fetch("https://spring-java-server.onrender.com/auth/details", {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json' // optional, but helps avoid 406 errors

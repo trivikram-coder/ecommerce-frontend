@@ -1,6 +1,6 @@
 
 const products=[];
-fetch("http://localhost:9000/products/get")
+fetch("https://spring-java-server.onrender.com/products/get")
 .then(response=>response.json())
 .then(data=>{
   products.push(...data)
