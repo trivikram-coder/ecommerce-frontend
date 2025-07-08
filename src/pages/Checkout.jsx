@@ -37,7 +37,7 @@ const Checkout = () => {
       setTotal(price * singleItem.quantity);
     } else {
       // No data passed, fallback to fetch from backend
-      fetch("https://spring-java-server.onrender.com/cart/get")
+      fetch("https://spring-server-0m1e.onrender.com/cart/get")
         .then((res) => res.json())
         .then((data) => {
           setCart(data);

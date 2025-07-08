@@ -6,7 +6,7 @@ const Cart = () => {
   const [item, setItems] = useState([]);
 
   useEffect(() => {
-    fetch("https://spring-java-server.onrender.com/cart/get")
+    fetch("https://spring-server-0m1e.onrender.com/cart/get")
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
@@ -18,7 +18,7 @@ const Cart = () => {
   const updatedCart =item.filter((item1) => item1.id !== id);
     localStorage.setItem("cart",JSON.stringify(updatedCart))
   
-  fetch(`https://spring-java-server.onrender.com/cart/delete/${id}`, {
+  fetch(`https://spring-server-0m1e.onrender.com/cart/delete/${id}`, {
     method: "DELETE",
   })
     .then((res) => {
@@ -40,7 +40,7 @@ const Cart = () => {
       item.id === id ? { ...item, quantity } : item
     );
 
-    fetch("https://spring-java-server.onrender.com/cart/update", {
+    fetch("https://spring-server-0m1e.onrender.com/cart/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

@@ -59,7 +59,7 @@ const Products = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
     const token=localStorage.getItem("token")
     try {
-      const response = await fetch("https://spring-java-server.onrender.com/cart/add", {
+      const response = await fetch("https://spring-server-0m1e.onrender.com/cart/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
