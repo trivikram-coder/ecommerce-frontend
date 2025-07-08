@@ -29,7 +29,7 @@ const Signin = () => {
   try {
     toast.success("Redirecting");
     
-    const res = await fetch("https://spring-java-server.onrender.com/auth/signin", {
+    const res = await fetch("https://spring-server.onrender.com/auth/signin", {
       method: "POST",
       credentials:"include",
       headers: { "Content-Type": "application/json" },
