@@ -31,6 +31,7 @@ const Signin = () => {
     
     const res = await fetch("https://spring-java-server.onrender.com/auth/signin", {
       method: "POST",
+      credentials:"include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
