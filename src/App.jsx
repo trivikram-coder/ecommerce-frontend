@@ -14,6 +14,7 @@ import {ToastContainer} from 'react-toastify'
 import Electronics from './Categories/Electronics';
 import Clothing from './Categories/Clothing';
 import Jewellery from './Categories/Jewellery'
+import Orders from './pages/Orders';
 const App = () => {
   return (
     <BrowserRouter>
@@ -21,6 +22,7 @@ const App = () => {
       <Routes>
       <Route element={<Layout />}>
         <Route path="/product" element={<Products />} />
+        <Route path='/orders' element={<Orders/>}/>
         <Route path="/item" element={<Item />} />
         <Route path="/account" element={<Account />} />
         <Route path="/wishlist" element={<Wishlist />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, ShoppingCart } from 'lucide-react';
+import { ShoppingBag, Heart, User, ShoppingCart,ListOrdered } from 'lucide-react';
 
 const Layout = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -66,6 +66,9 @@ const Layout = () => {
             </div>
             <div className="nav btn text-white" onClick={() => navigate('/checkout')}>
               <ShoppingCart size={20} /> Checkout
+            </div>
+             <div className="nav btn text-white" onClick={() => navigate('/orders')}>
+              <ListOrdered size={20} /> My orders
             </div>
           </div>
         </div>

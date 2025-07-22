@@ -15,8 +15,8 @@ const OrderPlaced = () => {
           <p className="lead">Thank you for your purchase. We are processing your order.</p>
           <hr />
           <p className="text-muted">Order Date & Time: <strong>{orderDate}</strong></p>
-          <button className="btn btn-primary mt-3" onClick={() => navigate('/product')}>
-            Back to Products
+          <button className="btn btn-primary mt-3" onClick={() => navigate('/orders')}>
+            See your orders
           </button>
         </div>
       </div>

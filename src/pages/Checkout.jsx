@@ -19,7 +19,12 @@ const Checkout = () => {
     expiry: '',
     cvv: ''
   });
-
+const[orderData,setOrderData]=useState({
+  name:'',
+  price:0,
+  date:'',
+  expectedDate:''
+})
   useEffect(() => {
     if (itemBuy && Array.isArray(itemBuy)) {
       // Full cart from state
@@ -56,11 +61,37 @@ const Checkout = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    toast.success("Order Placed Successfully");
-    localStorage.removeItem('cart'); // clear local cart if used
-    navigate('/order-placed');
+  e.preventDefault();
+
+  const orderDate = new Date();
+  const expectedDate = new Date(orderDate);
+  expectedDate.setDate(orderDate.getDate() + 5); // 5-day delivery
+
+  const newOrder = {
+    name: formData.name,
+    email: formData.email,
+    items: cart,
+    totalAmount: total,
+    orderDate: orderDate.toLocaleDateString(),
+    expectedDelivery: expectedDate.toLocaleDateString(),
   };
+
+  // Fetch previous orders or start with an empty array
+  const previousOrders = JSON.parse(localStorage.getItem("orders")) || [];
+
+  // Add new order to orders array
+  previousOrders.push(newOrder);
+
+  // Save back to localStorage
+  localStorage.setItem("orders", JSON.stringify(previousOrders));
+
+  // Optional: Clear cart from localStorage or backend
+  localStorage.removeItem('cart');
+
+  toast.success("Order Placed Successfully");
+  navigate('/order-placed');
+};
+
 
   return (
     <div className="container mt-5">
@@ -74,7 +105,13 @@ const Checkout = () => {
               <div className="mb-3" key={field}>
                 <label className="form-label">{field.replace(/([A-Z])/g, ' $1').toUpperCase()}</label>
                 <input
-                  type={field === 'email' ? 'email' : 'text'}
+                  type={
+                    field === 'email'
+                      ? 'email'
+                      : field === 'cvv'
+                      ? 'password'
+                      : 'text'
+                  }
                   className="form-control"
                   name={field}
                   value={formData[field]}
