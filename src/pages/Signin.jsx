@@ -27,7 +27,7 @@ const Signin = () => {
   console.log(formData);
 
   try {
-    toast.info("Redirecting, please wait...");
+    toast.success("Redirecting");
     
     const res = await fetch("https://spring-server-0m1e.onrender.com/auth/signin", {
       method: "POST",
