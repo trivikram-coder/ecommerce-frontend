@@ -14,26 +14,27 @@ import {ToastContainer} from 'react-toastify'
 import Electronics from './Categories/Electronics';
 import Clothing from './Categories/Clothing';
 import Jewellery from './Categories/Jewellery'
+import Orders from './pages/Orders';
 const App = () => {
   return (
     <BrowserRouter>
-  
-    <ToastContainer position="top-right" autoClose={3000}/>
+      <ToastContainer position='top-center' autoClose={3000}/>
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/product" element={<Products />} />
-          <Route path="/item" element={<Item />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/order-placed" element={<OrderPlaced />} />
+      <Route element={<Layout />}>
+        <Route path="/product" element={<Products />} />
+        <Route path='/orders' element={<Orders/>}/>
+        <Route path="/item" element={<Item />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/order-placed" element={<OrderPlaced />} />
         <Route path='/electronics' element={<Electronics/>}/>
         <Route path='/clothing' element={<Clothing/>}/>
         <Route path='/jewellery' element={<Jewellery/>}/>
-        </Route>
-        <Route path="/" element={<Signin />} />
-        <Route path="/signup" element={<Signup />} />
+      </Route>
+      <Route path="/" element={<Signin />} />
+      <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
