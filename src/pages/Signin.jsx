@@ -24,7 +24,7 @@ const Signin = () => {
 
  const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log(formData);
+  // console.log(formData);
 
   try {
     toast.success("Redirecting");
