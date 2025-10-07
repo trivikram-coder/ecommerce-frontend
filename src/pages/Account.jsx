@@ -11,7 +11,7 @@ const Account = () => {
   const item = location.state?.userData
   useEffect(() => {
     if (!item && !localStorage.getItem("user")) {
-      navigate("/product", { replace: true });
+      navigate("/products", { replace: true });
     }
   }, [item, navigate]);
 

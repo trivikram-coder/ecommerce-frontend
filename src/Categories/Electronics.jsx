@@ -31,7 +31,8 @@ const Electronics = () => {
                 <h5 className="card-title">{item.title}</h5>
                
                 <p className="card-text">{item.description}</p>
-                <p className="card-text text-success fw-bold"> ₹{item.price}</p>
+                <del className="card-text text-danger fw-bold"> ₹{item.price}</del>
+                <p className="card-text text-success fw-bold"> ₹{item.discountPrice}</p>
               </div>
             </div>
           </div>

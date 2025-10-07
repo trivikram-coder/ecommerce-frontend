@@ -62,7 +62,7 @@ const Wishlist = () => {
       ) : (
         <div className="text-center mt-5">
           <h4>Your Wishlist is Empty!</h4>
-          <Link to="/product" className="btn btn-primary mt-3">
+          <Link to="/products" className="btn btn-primary mt-3">
             Browse Products
           </Link>
         </div>

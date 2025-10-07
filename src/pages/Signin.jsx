@@ -58,7 +58,7 @@ const Signin = () => {
         toast.error("Failed to fetch user info");
       }
 
-      navigate('/product');
+      navigate('/products');
     } else {
       toast.error(loginData.message || "Invalid credentials");
     }

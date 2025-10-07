@@ -2,7 +2,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
-import Products from './pages/Product';
+import Products from './pages/Products';
 import Account from './pages/Account';
 import Item from './pages/Item';
 import Wishlist from './pages/Wishlist';
@@ -21,7 +21,7 @@ const App = () => {
       <ToastContainer position='top-center' autoClose={3000}/>
       <Routes>
       <Route element={<Layout />}>
-        <Route path="/product" element={<Products />} />
+        <Route path="/products" element={<Products />} />
         <Route path='/orders' element={<Orders/>}/>
         <Route path="/item" element={<Item />} />
         <Route path="/account" element={<Account />} />

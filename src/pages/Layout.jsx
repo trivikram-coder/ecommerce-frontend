@@ -50,7 +50,7 @@ const Layout = () => {
     <>
       <header>
         <div className="header bg-dark d-flex justify-content-between align-items-center px-4 py-2">
-          <h4 className="vk-store btn text-white mb-0" onClick={() => navigate("/product")}>
+          <h4 className="vk-store btn text-white mb-0" onClick={() => navigate("/products")}>
             VK Store <ShoppingBag size={24} />
           </h4>
 
