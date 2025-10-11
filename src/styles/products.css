@@ -477,7 +477,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4a90e2 0%, #2b6cb0 100%);
+  
   color: white;
   border: none;
   padding: 12px 20px;
@@ -492,7 +492,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #5a9cee 0%, #3579c3 100%);
+ 
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
 }

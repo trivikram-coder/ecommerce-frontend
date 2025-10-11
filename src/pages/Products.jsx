@@ -15,6 +15,7 @@ const Products = () => {
   const [wishlistIds, setWishlistIds] = useState([]);
 
   // ✅ Pagination states
+  
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -24,7 +25,11 @@ const Products = () => {
     setItems(products2);
     setFiltered(products2);
   }, []);
-
+//Wishlist state
+useEffect(()=>{
+  const wishIds=JSON.parse(localStorage.getItem('wishlistIds')) || []
+  setWishlistIds(wishIds)
+},[])
   const handleQuantityChange = (id, value) => {
     const quantity = Math.max(1, parseInt(value) || 1);
     setQuantities((prev) => ({ ...prev, [id]: quantity }));
@@ -47,7 +52,17 @@ const Products = () => {
       toast.success(product.title + ' added to wishlist');
       wishlist.push(product);
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      setWishlistIds((prev) => [...prev, product.id]);
+      setWishlistIds(
+        (prev) => {
+          const updated=[...prev, product.id]
+          localStorage.setItem('wishlistIds',JSON.stringify(updated))
+          return updated;
+    
+    
+    }
+    );
+      console.log(wishlistIds)
+      
     } else {
       toast.success(`${product.title} is already in your wishlist.`);
     }
@@ -60,7 +75,16 @@ const Products = () => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
     toast.success(`${product.title} removed from wishlist.`);
     setWishCount(wishlist.length);
-    setWishlistIds((prev) => prev.filter((id) => id !== product.id));
+    setWishlistIds((prev) => 
+    {
+      
+      const updated=prev.filter((id) => id !== product.id)
+      localStorage.setItem('wishlistIds',JSON.stringify(updated))
+      return updated;
+
+    }
+    );
+    
   };
 
   const addToCart = async (product) => {
@@ -215,15 +239,15 @@ const Products = () => {
                           className="btn btn-outline-warning"
                         >
                         <ShoppingBag size={18}/>
-                          {/* Buy Now */}
+                          Buy Now
                         </Link>
                         <br />
                         <button
                           className="btn btn-outline-primary"
                           onClick={() => addToCart(item)}
                         >
-                          <ShoppingCart size={18} style={{marginRight:'2px'}}/>
-                          {/* Add to Cart */}
+                          <ShoppingCart size={18} style={{margin:'3px'}}/>
+                          Add to Cart
                         </button>
 
                         {wishlistIds.includes(item.id) ? (
@@ -232,7 +256,7 @@ const Products = () => {
                             onClick={() => removeFromWishlist(item)}
                           >
                             <Delete size={18} /> 
-                            {/* Remove from Wishlist */}
+                            Remove from Wishlist
                           </button>
                         ) : (
                           <button
@@ -240,7 +264,7 @@ const Products = () => {
                             onClick={() => addToWishlist(item)}
                           >
                             <Heart size={18} /> 
-                            {/* Add to Wishlist */}
+                            Add to Wishlist
                           </button>
                         )}
                       </div>
