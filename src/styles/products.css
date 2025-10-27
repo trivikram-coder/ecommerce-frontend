@@ -525,8 +525,28 @@ hr {
   color: #2b6cb0;
   text-decoration: underline;
 }
+.search-ctn{
+  display: flex;
+  justify-content: center;
+}
+.suggestion {
+  padding: 10px;
 
-/* Dark Mode */
+  margin: 6px 0;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.highlight {
+  color: #fff;
+  background-color: #3f51b5;
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+
+.no-result {
+  color: gray;
+}
 
 
 

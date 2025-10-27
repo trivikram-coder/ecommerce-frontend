@@ -35,14 +35,17 @@ useEffect(()=>{
     setQuantities((prev) => ({ ...prev, [id]: quantity }));
   };
 
-  const searchProduct = (name) => {
+  const searchProduct = (e) => {
+    const value=e.target.value;
+    setSearch(value)
     const results =
-      name === ''
+      value === ''
         ? filtered
         : filtered.filter((item) =>
-            item.title.toLowerCase().includes(name.toLowerCase())
+            item.title.toLowerCase().includes(value.toLowerCase())
           );
-    setItems(results);
+          setItems(results);
+          console.log(items)
     setCurrentPage(1); // reset to first page after search
   };
 
@@ -121,7 +124,23 @@ useEffect(()=>{
 
     setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
   };
+function highlightText(text) {
+    if (!search) return text;
+    const index = text.toLowerCase().indexOf(search);
+    if (index === -1) return text;
 
+    const before = text.substring(0, index);
+    const match = text.substring(index, index + search.length);
+    const after = text.substring(index + search.length);
+
+    return (
+      <span>
+        {before}
+        <span className="highlight">{match}</span>
+        {after}
+      </span>
+    );
+  }
   // ✅ Pagination logic
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -142,13 +161,28 @@ useEffect(()=>{
             value={search}
             placeholder="Search products"
             className="search-box"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={searchProduct}
           />
-          <div className="search-btn" onClick={() => searchProduct(search)}>
+          <div className="search-btn" >
             <Search size={20} />
           </div>
         </div>
-
+        {
+          search.length>0?(
+             items.map((item,index)=>(
+                <div className='search-ctn'>
+                <img src={item.image} style={{width:'50px',height:'50px'}}/>
+                <p key={index} className="suggestion" style={{cursor:'pointer'}}>
+              <button style={{border:'none',cursor:'pointer'}} onClick={()=>navigate("/item",{state:{item}})}>
+                {highlightText(item.title)}
+                </button>
+            </p>
+                </div>
+              ))
+          ):(
+            <p></p>
+          )
+        }
         <div className="py-3 text-center text-success">
           <div className="container">
             <h1 className="display-5 fw-bold mb-2">

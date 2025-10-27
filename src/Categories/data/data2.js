@@ -94,7 +94,7 @@ const products = [
     discountPrice: 1499,
     rating: 4.5,
     description: "Adjustable laptop stand for better posture and cooling.",
-    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46",
+    image: "https://symplify.in/cdn/shop/products/Wooden-Laptop-Stand-Opt3-3_1024x1024.jpg?v=1658253933",
     category: "Office",
     quantity: 1
   },
@@ -171,7 +171,7 @@ const products = [
     discountPrice: 1199,
     rating: 4.3,
     description: "Adjustable tripod stand for smartphones and cameras.",
-    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a",
+    image: "https://m.media-amazon.com/images/I/71aHt8-6o2L.jpg",
     category: "Photography",
     quantity: 1
   },
