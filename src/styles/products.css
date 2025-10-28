@@ -114,11 +114,11 @@ body {
 }
 
 /* Search Box */
-/* .search-box-wrapper {
+.search-box-wrapper {
   position: relative;
   width: 50%;
   max-width: 450px;
-} */
+}
 
 .search-box {
   width: 40%;
@@ -375,13 +375,20 @@ body {
   
   .search-box {
     font-size: 14px;
+    width: 250px;
     height: 38px;
   }
   
+  .middle{
+    display: flex;
+    height: 100vh;
+  }
   .btn-del,
   .search-btn {
-    width: 24px;
-    height: 24px;
+    
+    width: 32px;
+    padding-right: 5px;
+    height: 33px;
     font-size: 12px;
   }
   

@@ -64,7 +64,7 @@ useEffect(()=>{
     
     }
     );
-      console.log(wishlistIds)
+      
       
     } else {
       toast.success(`${product.title} is already in your wishlist.`);
@@ -149,7 +149,7 @@ function highlightText(text) {
 
   const goToPage = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+   
   };
 
   return (

@@ -12,8 +12,9 @@ const Account = () => {
   const [show, setShow] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [updatedUser, setUpdatedUser] = useState(user);
-
+  const token=localStorage.getItem('token')
   useEffect(() => {
+
     if (!user && !localStorage.getItem("user")) {
       navigate("/products", { replace: true });
     }
@@ -37,9 +38,10 @@ const Account = () => {
     const res=await fetch("https://spring-server-0m1e.onrender.com/auth/update",{
       method:"PUT",
       headers:{
-        "content-type":"application/json"
+        "content-type":"application/json",
+        "Authorization":`Bearer ${token}`
       },
-      body:JSON.stringify(updateUser)
+      body:JSON.stringify({name:updateUser.name,mobileNumber:updateUser.mobileNumber})
     })
     const newdata=await res.json()
     console.log(newdata)

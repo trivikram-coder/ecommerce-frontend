@@ -38,8 +38,8 @@ const Wishlist = () => {
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{item.title}</h5>
                   <p className="card-text text-success fw-bold">
-                    <del className="text-danger">{item.price}</del>
-                    <span> ${item.discountPrice}</span>
+                    <del className="text-danger">₹{item.price}</del>
+                    <span> ₹{item.discountPrice}</span>
                   </p>
 
                   <div className="d-flex justify-content-between mt-auto">
