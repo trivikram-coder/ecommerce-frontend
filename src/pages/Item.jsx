@@ -5,6 +5,8 @@ import '../styles/items.css';
 import { toast } from 'react-toastify';
 
 const Item = () => {
+  const storedUser=JSON.parse(localStorage.getItem("user")||[])
+  const user=storedUser;
   const navigate = useNavigate();
   const location = useLocation();
   const item = location.state?.item;
@@ -34,7 +36,7 @@ const Item = () => {
   };
 
   const addToCart = async (product) => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const cart = JSON.parse(localStorage.getItem(`cart${user.id}`)) || [];
       const existingItem = cart.find((item) => item.id === product.id);
       const quantity = quantities[product.id] || 1;
   
@@ -45,7 +47,9 @@ const Item = () => {
         cart.push(product);
       }
   
-      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem(`cart${user.id}`, JSON.stringify(cart));
+      const cartData={...product,email:user.email}
+      console.log(cartData)
       const token=localStorage.getItem("token")
       try {
         const response = await fetch("https://spring-server-0m1e.onrender.com/cart/add", {
@@ -54,7 +58,7 @@ const Item = () => {
             "Content-Type": "application/json",
                     
           },
-          body: JSON.stringify(product)
+          body: JSON.stringify(cartData)
         });
   
         const data = await response.json();

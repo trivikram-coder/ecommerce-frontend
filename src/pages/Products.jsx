@@ -6,6 +6,11 @@ import { toast } from 'react-toastify';
 import products2 from '../Categories/data/data2';
 
 const Products = () => {
+  
+  const storedUser=JSON.parse(localStorage.getItem("user") || "[]");
+  const user=storedUser
+  const userId=user.id
+
   const [items, setItems] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
@@ -45,16 +50,16 @@ useEffect(()=>{
             item.title.toLowerCase().includes(value.toLowerCase())
           );
           setItems(results);
-          console.log(items)
+        
     setCurrentPage(1); // reset to first page after search
   };
 
   const addToWishlist = (product) => {
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    let wishlist = JSON.parse(localStorage.getItem(`wishlist${user.id}`) || "[]") || [];
     if (!wishlist.some((item) => item.id === product.id)) {
       toast.success(product.title + ' added to wishlist');
       wishlist.push(product);
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
       setWishlistIds(
         (prev) => {
           const updated=[...prev, product.id]
@@ -73,9 +78,9 @@ useEffect(()=>{
   };
 
   const removeFromWishlist = (product) => {
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    let wishlist = JSON.parse(localStorage.getItem(`wishlist${userId}`)) || [];
     wishlist = wishlist.filter((item) => item.id !== product.id);
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
     toast.success(`${product.title} removed from wishlist.`);
     setWishCount(wishlist.length);
     setWishlistIds((prev) => 
@@ -91,7 +96,7 @@ useEffect(()=>{
   };
 
   const addToCart = async (product) => {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = JSON.parse(localStorage.getItem(`cart${userId}`)||"[]") 
     const existingItem = cart.find((item) => item.id === product.id);
     const quantity = quantities[product.id] || 1;
 
@@ -102,13 +107,14 @@ useEffect(()=>{
       cart.push(product);
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-
+    localStorage.setItem(`cart${userId}`, JSON.stringify(cart));
+const cartData={ ...product, email: user.email };
+console.log(cartData)
     try {
       const response = await fetch('https://spring-server-0m1e.onrender.com/cart/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product),
+        body: JSON.stringify(cartData),
       });
 
       const data = await response.json();

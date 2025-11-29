@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Trash } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Wishlist = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ get userId from layout navigation
+  const user=JSON.parse(localStorage.getItem(`user`)||[]);
+  const userId = user.id;
+
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    // ⭐ LOAD wishlist using dynamic key
+    const storedWishlist = JSON.parse(localStorage.getItem(`wishlist${userId}`) || "[]");
     setWishlist(storedWishlist);
-  }, []);
+  }, [userId]);
 
+  // Remove item
   const removeFromWishlist = (id) => {
     const updatedWishlist = wishlist.filter((item) => item.id !== id);
     setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+
+    // ⭐ UPDATE the correct userId wishlist key
+    localStorage.setItem(`wishlist${userId}`, JSON.stringify(updatedWishlist));
   };
 
   return (
@@ -43,7 +53,10 @@ const Wishlist = () => {
                   </p>
 
                   <div className="d-flex justify-content-between mt-auto">
-                    <button className="btn btn-primary" onClick={()=>navigate("/checkout",{state:{item:item}})}>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => navigate("/checkout", { state: { item } })}
+                    >
                       Buy Now
                     </button>
 

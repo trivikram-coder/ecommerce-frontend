@@ -8,47 +8,58 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Account = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = location.state?.userData;
-  const [show, setShow] = useState(false);
+
+ const storedUser = JSON.parse(localStorage.getItem("user"));
+const user = storedUser; // NEVER use location.state for account data
+
+
+  const [showSignout, setShowSignout] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [updatedUser, setUpdatedUser] = useState(user);
-  const token=localStorage.getItem('token')
-  useEffect(() => {
 
-    if (!user && !localStorage.getItem("user")) {
-      navigate("/products", { replace: true });
-    }
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!user) navigate("/products", { replace: true });
   }, [user, navigate]);
 
+  // -------- SIGN OUT --------
   const handleSignOut = () => {
     localStorage.removeItem("user");
-    navigate("/", { replace: true }); // Go to login screen
+    localStorage.removeItem("token");
+
+    // Notify layout
+    window.dispatchEvent(new Event("storage"));
+    navigate("/", { replace: true });
   };
 
-  const handleShow = () => {
-    setShow(!show);
-  };
+  // -------- UPDATE USER --------
+  const updateUser = async () => {
+    const res = await fetch(
+      `https://spring-server-0m1e.onrender.com/auth/update?email=${user.email}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: updatedUser.name,
+          mobileNumber: updatedUser.mobileNumber,
+        }),
+      }
+    );
 
-  const handleShowEdit = () => {
-    setShowEdit(!showEdit);
-  };
+    const newdata = await res.json();
 
-  const updateUser = async() => {
-    console.log("Updated User:", updatedUser);
-    const res=await fetch(`https://spring-server-0m1e.onrender.com/auth/update?email=${user.email}`,{
-      method:"PUT",
-      headers:{
-        "content-type":"application/json",
-        "Authorization":`Bearer ${token}`
-      },
-      body:JSON.stringify({name:updateUser.name,mobileNumber:updateUser.mobileNumber})
-    })
-    const newdata=await res.json()
-    console.log(newdata)
-    if(res.status===200 || res.status===201){
+    if (res.ok && newdata.account) {
+      localStorage.setItem("user", JSON.stringify(newdata.account));
+      setUpdatedUser(newdata.account);
 
-      localStorage.setItem("user", newdata);
+      // Notify layout to refresh instantly
+      window.dispatchEvent(new Event("storage"));
     }
+
     setShowEdit(false);
   };
 
@@ -59,7 +70,7 @@ const Account = () => {
           <div className="spinner-border text-primary mb-3" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="text-muted">Redirecting to login...</p>
+          <p className="text-muted">Redirecting...</p>
         </div>
       </div>
     );
@@ -70,10 +81,10 @@ const Account = () => {
       <div className="account-container">
         <div className="text-center">
           <div className="profile-header">
-            {user.profileImage ? (
+            {updatedUser.profileImage ? (
               <img
-                src={user.profileImage}
-                alt={`${user.name}'s profile`}
+                src={updatedUser.profileImage}
+                alt=""
                 className="profile-image mx-auto d-block"
               />
             ) : (
@@ -81,21 +92,22 @@ const Account = () => {
                 <UserCircle size={120} className="text-secondary" />
               </div>
             )}
-            <h2 className="profile-name">{user.name}</h2>
-            <p className="profile-email">{user.email}</p>
+
+            <h2 className="profile-name">{updatedUser.name}</h2>
+            <p className="profile-email">{updatedUser.email}</p>
           </div>
 
           <div className="row">
             <div className="col-md-12">
               <div className="info-card">
                 <h4 className="mb-4 text-primary">Personal Information</h4>
+
                 <div className="d-flex justify-content-end">
-                  <Pencil size={40}
+                  <Pencil
+                    size={40}
                     className="btn btn-success rounded"
-                    onClick={handleShowEdit}
-                  >
-                   
-                  </Pencil>
+                    onClick={() => setShowEdit(true)}
+                  />
                 </div>
 
                 <div className="info-item">
@@ -117,19 +129,17 @@ const Account = () => {
           </div>
 
           <button
-            className="btn btn-danger signout-btn mt-3"
-            onClick={handleShow}
+            className="btn btn-danger mt-3"
+            onClick={() => setShowSignout(true)}
           >
             Sign Out
           </button>
         </div>
       </div>
 
-      {/* Edit Modal */}
-      <Modal show={showEdit} centered onHide={handleShowEdit}>
-        <Modal.Header closeButton>
-          <p>Edit details</p>
-        </Modal.Header>
+      {/* EDIT MODAL */}
+      <Modal show={showEdit} centered onHide={() => setShowEdit(false)}>
+        <Modal.Header closeButton>Edit details</Modal.Header>
         <Modal.Body>
           <form>
             <input
@@ -156,7 +166,7 @@ const Account = () => {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleShowEdit}>
+          <Button variant="secondary" onClick={() => setShowEdit(false)}>
             Cancel
           </Button>
           <Button variant="warning" onClick={updateUser}>
@@ -165,18 +175,12 @@ const Account = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Signout Modal */}
-      <Modal show={show} centered onHide={handleShow}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <p>Sign Out</p>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to sign out?</p>
-        </Modal.Body>
+      {/* SIGN OUT MODAL */}
+      <Modal show={showSignout} centered onHide={() => setShowSignout(false)}>
+        <Modal.Header closeButton>Sign Out</Modal.Header>
+        <Modal.Body>Are you sure you want to sign out?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleShow}>
+          <Button variant="secondary" onClick={() => setShowSignout(false)}>
             Cancel
           </Button>
           <Button variant="danger" onClick={handleSignOut}>

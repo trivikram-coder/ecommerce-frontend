@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 const Checkout = () => {
   const location = useLocation();
+  const token=localStorage.getItem("token")
   const itemBuy = location.state?.item; // This is either single product or cart array
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
@@ -42,7 +43,11 @@ const[orderData,setOrderData]=useState({
       setTotal(price * singleItem.quantity);
     } else {
       // No data passed, fallback to fetch from backend
-      fetch("https://spring-server-0m1e.onrender.com/cart/get")
+      fetch("https://spring-server-0m1e.onrender.com/cart/get",{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      })
         .then((res) => res.json())
         .then((data) => {
           setCart(data);
