@@ -35,7 +35,7 @@ const Account = () => {
 
   const updateUser = async() => {
     console.log("Updated User:", updatedUser);
-    const res=await fetch("https://spring-server-0m1e.onrender.com/auth/update",{
+    const res=await fetch(`https://spring-server-0m1e.onrender.com/auth/update?email=${user.email}`,{
       method:"PUT",
       headers:{
         "content-type":"application/json",
