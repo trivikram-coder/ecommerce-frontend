@@ -55,7 +55,8 @@ const email=formData.email;
         const otpApi = await axios.post(
           "https://email-service-72rh.onrender.com/otp/send-otp",
           { email: email,
-            appName:"Vk store"
+            appName:"Vk store",
+            type:"signup"
            }
         );
         
