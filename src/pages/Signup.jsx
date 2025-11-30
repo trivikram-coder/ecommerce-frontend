@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/forms.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -15,17 +16,19 @@ const Signup = () => {
     email: "",
     password: ""
   });
-
+const email=formData.email;
   const [res, setRes] = useState("");
+  const [showOtp, setShowOtp] = useState(false);   // 🔥 Added for UI only
+  const [otp, setOtp] = useState("");              // 🔥 For OTP input UI
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const signup = async (e) => {
+  const sendOtp = async (e) => {
     e.preventDefault();
-
+    setShowOtp(true);
     // Check for empty fields
     for (let key in formData) {
       if (!formData[key]) {
@@ -34,85 +37,132 @@ const Signup = () => {
       }
     }
 
+    // 🔥 Don't navigate, don't call backend here (you said UI only)
+    // Just switch UI to OTP screen
+     const otpApi=await axios.post("https://email-service-72rh.onrender.com/otp/send-otp",{email:email})
+    if(otpApi.status===200){
+      alert("Otp sent")
+    }
+    
+  };
+  const verifyOtp = async () => {
     try {
-      const response = await fetch("https://spring-server-0m1e.onrender.com/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.status === 201) {
-        toast.success("User created successfully");
-        navigate("/");
-      } else if (response.status === 400) {
-        toast.error("User already exists");
-      } else {
-        toast.error("Signup failed");
+      const verifyOtpRes = await axios.post(
+        `https://email-service-72rh.onrender.com/otp/verify-otp/${email}`,
+        { otp: otp }
+      );
+      
+      if (verifyOtpRes.status === 200) {
+        toast.success("OTP verified successfully!");
+        
+        // Call backend to register user
+        const signupRes = await axios.post(
+          "https://spring-server-0m1e.onrender.com/auth/signup",
+          formData
+        );
+        
+        if (signupRes.status === 201) {
+          toast.success("Signup successful!");
+          navigate("/");
+        }
       }
     } catch (error) {
-      toast.error("Server error. Try again later.");
+      toast.error(error.response?.data?.message || "Invalid OTP");
+      setOtp("");
     }
   };
-
   return (
     <div className="form-container d-flex justify-content-center align-items-center min-vh-100">
       <div className="card form-card p-4">
+
         <div className="text-center mb-4">
-          <h2 className="mb-1 brand-title">Vk Store <ShoppingBag size={26} /></h2>
-          <h5 className="text-muted">Sign Up</h5>
+          <h2 className="mb-1 brand-title">
+            Vk Store <ShoppingBag size={26} />
+          </h2>
+          <h5 className="text-muted">
+            {!showOtp ? "Sign Up" : "Verify OTP"}
+          </h5>
         </div>
 
-        <form onSubmit={signup}>
-          {[
-            { id: "name", label: "Name", type: "text" },
-            { id: "fatherName", label: "Father Name", type: "text" },
-            { id: "dob", label: "Date of Birth", type: "date" },
-            { id: "address", label: "Address", type: "text" },
-            { id: "mobileNumber", label: "Mobile Number", type: "number" },
-            { id: "email", label: "Email", type: "email" },
-          ].map((field) => (
-            <div className="form-floating mb-3" key={field.id}>
+        {/* 🔥 If showOtp = false → show signup form */}
+        {!showOtp ? (
+          <form onSubmit={sendOtp}>
+            {[
+              { id: "name", label: "Name", type: "text" },
+              { id: "fatherName", label: "Father Name", type: "text" },
+              { id: "dob", label: "Date of Birth", type: "date" },
+              { id: "address", label: "Address", type: "text" },
+              { id: "mobileNumber", label: "Mobile Number", type: "number" },
+              { id: "email", label: "Email", type: "email" },
+            ].map((field) => (
+              <div className="form-floating mb-3" key={field.id}>
+                <input
+                  type={field.type}
+                  className="form-control"
+                  id={field.id}
+                  placeholder={field.label}
+                  name={field.id}
+                  value={formData[field.id]}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor={field.id}>{field.label}</label>
+              </div>
+            ))}
+
+            {/* Password */}
+            <div className="form-floating mb-3">
               <input
-                type={field.type}
+                type="password"
                 className="form-control"
-                id={field.id}
-                placeholder={field.label}
-                name={field.id}
-                value={formData[field.id]}
+                id="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
                 required
               />
-              <label htmlFor={field.id}>{field.label}</label>
+              <label htmlFor="password">Password</label>
             </div>
-          ))}
 
-          {/* ✅ Password Field */}
-          <div className="form-floating mb-3">
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
-              title="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
-              required
-            />
-            <label htmlFor="password">Password</label>
+            {res && <p className="text-danger text-center">{res}</p>}
+
+            <div className="d-grid mb-2">
+              <button type="submit" className="btn btn-primary">Sign Up</button>
+            </div>
+
+            <div className="d-grid mb-3">
+              <Link to="/" className="btn btn-dark">Sign In</Link>
+            </div>
+          </form>
+        ) : (
+          // 🔥 OTP Verification UI only
+          <div>
+            <p className="text-center text-muted mb-3">
+              Enter the 6-digit OTP sent to your email
+            </p>
+
+            <div className="form-floating mb-3">
+              <input
+                type="number"
+                className="form-control text-center"
+                id="otp"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+              <label htmlFor="otp">OTP</label>
+            </div>
+
+            <div className="d-grid mb-2">
+              <button className="btn btn-success" onClick={verifyOtp}>Verify OTP</button>
+            </div>
+
+            <div className="d-grid">
+              <button className="btn btn-outline-secondary" onClick={sendOtp}>Resend OTP</button>
+            </div>
           </div>
-
-          {res && <p className="text-danger text-center">{res}</p>}
-
-          <div className="d-grid mb-2">
-            <button type="submit" className="btn btn-primary">Sign Up</button>
-          </div>
-
-          <div className="d-grid mb-3">
-            <Link to="/" className="btn btn-dark">Sign In</Link>
-          </div>
-        </form>
+        )}
 
         <footer className="text-center mt-2 small text-muted">
           &copy; 2025 Vk Store. All Rights Reserved.
