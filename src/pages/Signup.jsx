@@ -25,25 +25,52 @@ const email=formData.email;
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  const checkUser=async()=>{
+    try {
+      const checkEmail=await axios.post(`https://spring-server-0m1e.onrender.com/auth/check-email?email=${email}`)
+      if(checkEmail.status===200){
+        return true;
+      }
+      return false;
+    } catch (error) {
+      toast.error(error.response?.data?.message )
+      return false;
+    }
+  }
   const sendOtp = async (e) => {
     e.preventDefault();
-    setShowOtp(true);
+    
     // Check for empty fields
     for (let key in formData) {
       if (!formData[key]) {
-        setRes("All fields are required.");
+        toast.error("All fields are required.");
         return;
       }
     }
 
-    // 🔥 Don't navigate, don't call backend here (you said UI only)
-    // Just switch UI to OTP screen
-     const otpApi=await axios.post("https://email-service-72rh.onrender.com/otp/send-otp",{email:email})
-    if(otpApi.status===200){
-      alert("Otp sent")
+    try {
+
+      
+      if(await checkUser()){
+        const otpApi = await axios.post(
+          "https://email-service-72rh.onrender.com/otp/send-otp",
+          { email: email,
+            appName:"Vk store"
+           }
+        );
+        
+        if (otpApi.status === 200) {
+          toast.success("OTP sent to your email!");
+          setShowOtp(true);
+          setRes("");
+        }
+      } else {
+        toast.error("User already exists");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send OTP");
+      setRes("Failed to send OTP. Please try again.");
     }
-    
   };
   const verifyOtp = async () => {
     try {
