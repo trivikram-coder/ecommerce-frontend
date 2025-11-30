@@ -27,7 +27,7 @@ const email=formData.email;
   };
   const checkUser=async()=>{
     try {
-      const checkEmail=await axios.post(`https://spring-server-0m1e.onrender.com/auth/check-email?email=${email}`)
+      const checkEmail=await axios.get(`https://spring-server-0m1e.onrender.com/auth/check-email?email=${email}`)
       if(checkEmail.status===200){
         return true;
       }
@@ -56,7 +56,7 @@ const email=formData.email;
           "https://email-service-72rh.onrender.com/otp/send-otp",
           { email: email,
             appName:"Vk store",
-            type:"signup"
+            type:"forget"
            }
         );
         
@@ -65,9 +65,7 @@ const email=formData.email;
           setShowOtp(true);
           setRes("");
         }
-      } else {
-        toast.error("User already exists");
-      }
+      } 
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send OTP");
       setRes("Failed to send OTP. Please try again.");
