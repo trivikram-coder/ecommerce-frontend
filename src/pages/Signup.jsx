@@ -56,7 +56,7 @@ const email=formData.email;
           "https://email-service-72rh.onrender.com/otp/send-otp",
           { email: email,
             appName:"Vk store",
-            type:"forget"
+            type:"signup"
            }
         );
         
