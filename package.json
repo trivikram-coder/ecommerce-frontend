@@ -17,9 +17,9 @@
     "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "lucide-react": "^0.483.0",
-    "react": "^19.0.0",
+    "react": "^19.2.1",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.2.1",
     "react-router-dom": "^7.4.1",
     "react-toastify": "^11.0.5"
   },
