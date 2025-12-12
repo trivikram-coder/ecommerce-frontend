@@ -34,7 +34,7 @@ const Cart = () => {
         if (!res.ok) return;
 
         setItems((prev) => prev.filter((i) => i.id !== id));
-        localStorage.setItem(`cart${userId}`,items)
+        localStorage.setItem(`cart${userId}`,JSON.stringify(items))
       })
       .catch((err) => console.error("Remove Error:", err));
   };
