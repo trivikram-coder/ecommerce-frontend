@@ -3,9 +3,10 @@ import "../styles/orders.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-
+  const user=JSON.parse(localStorage.getItem("user")|| "[]")
+  const userId=user.id
   useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem("orders_1")) || [];
+    const storedOrders = JSON.parse(localStorage.getItem(`orders_${userId}`)) || [];
     setOrders(storedOrders);
   }, []);
 
