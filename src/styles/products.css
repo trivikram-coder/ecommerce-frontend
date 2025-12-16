@@ -1,559 +1,330 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto+Mono:wght@100..700&family=Roboto+Slab:wght@100..900&display=swap');
 
-/* Base Styles */
+/* --- 0. Design Variables & Base Styles --- */
+
+/* Custom properties for easy theme changes */
+:root {
+    --primary-color: #4a90e2; /* Blue */
+    --primary-dark: #2b6cb0;
+    --secondary-color: #ffc107; /* Warning/Yellow */
+    --light-bg: #f5f7fa;
+    --dark-text: #333;
+    --light-text: #fff;
+    --transition-speed: 0.3s;
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f5f7fa;
-  line-height: 1.6;
-  color: #333;
-  padding-top: 80px;
-}
-.head {
-  background: linear-gradient(135deg, #007bff, #6610f2); /* Adds a vibrant gradient */
-  color: white;
-  padding-top: 60px; /* Adjusted for better vertical centering */
-  padding-bottom: 60px;
-  text-align: center;
-  position: relative;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-bg);
+    line-height: 1.6;
+    color: var(--dark-text);
+    padding-top: 80px; /* Space for fixed header */
 }
 
-.head .text-warning {
-  font-weight: bold;
-}
+/* --- 1. Header & Navigation (Fixed) --- */
 
-.head .display-5 {
-  font-size: 2.5rem; /* Ensures the heading is larger and more impactful */
-  line-height: 1.4;
-}
-
-.head .lead {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-}
-
-.head span {
-  display: inline-flex;
-  align-items: center;
-}
-
-.head .ShoppingBag {
-  margin-left: 0.5rem;
-}
-
-/* Header */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
-  height: 70px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(135deg, #4a90e2 0%, #2b6cb0 100%);
-  z-index: 1000;
-  padding: 0 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--light-text);
+    height: 70px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Matching the head gradient tone for consistency */
+    background: linear-gradient(135deg, #007bff 0%, #4a90e2 100%);
+    z-index: 1000;
+    padding: 0 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all var(--transition-speed) ease;
 }
 
-/* Middle Section */
-.middle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  padding: 0 20px;
-}
-
-/* Right Section */
-.right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.nav {
-  padding: 8px 15px;
-  text-decoration: none;
-  color: white;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.nav:before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background-color: white;
-  transition: width 0.3s ease;
-}
-
-.nav:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.nav:hover:before {
-  width: 80%;
-}
-
-/* Search Box */
-.search-box-wrapper {
-  position: relative;
-  width: 50%;
-  max-width: 450px;
-}
-
-.search-box {
-  width: 40%;
-  height: 42px;
-  border-radius: 10px;
-  border: 1px solid #4a90e2;
-  padding: 8px 45px 8px 20px;
-  font-size: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  margin-bottom: 6px;
-  background-color: #ffff;
-}
-
-.search-box:hover,
-.search-box:focus {
-  border-color: #4a90e2;
-  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.1);
-  transform: scale(1.01);
-  outline: none;
-}
-
-/* Delete Button */
-.btn-del {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #ff5b5b;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  box-shadow: 0 2px 4px rgba(255, 91, 91, 0.3);
-}
-
-.btn-del:hover {
-  background-color: #ff3b3b;
-  transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 3px 6px rgba(255, 91, 91, 0.4);
-}
-
-/* Search Button */
-.search-btn {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  margin-left: 6px;
-  box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
-}
-
-.search-btn:hover {
-  background-color: #2b6cb0;
-  transform: scale(1.08);
-  box-shadow: 0 3px 6px rgba(74, 144, 226, 0.4);
-}
-
-/* Category Section */
-.category {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  padding: 25px 15px;
-  flex-wrap: wrap;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Cuboid */
-.cuboid {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.cuboid:hover {
-  cursor: pointer;
-  transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Image Container */
-.image-container {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-}
-
-.image-container img {
-  width: 100%;
-  height: auto;
-  transition: transform 0.5s ease;
-}
-
-.image-container:hover img {
-  transform: scale(1.05);
-}
-
-/* Card Hover Effect */
-.card {
-  transition: all 0.3s ease;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-.card:hover {
-  cursor: pointer;
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-}
-
-/* Footer */
-.footer-box {
-  margin-top: 40px;
-  width: 100%;
-}
-
-.foot {
-  padding: 20px;
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
-  color: white;
-  text-align: center;
-  font-size: 15px;
-}
-
-/* VK Store */
 .vk-store {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 22px;
-  font-weight: 600;
-  color: white;
-  margin-left: 15px;
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--light-text);
+    margin-left: 15px;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-speed) ease;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .vk-store:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: scale(1.03);
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.03);
 }
 
-/* Quantity Selector */
-.select-quantity {
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #e1e5e9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease;
+/* --- 2. Search Component (Updated for Bootstrap Structure) --- */
+
+.input-group > .form-control {
+    border-radius: 8px 0 0 8px; /* Standard Bootstrap control */
+    transition: all var(--transition-speed) ease;
 }
 
-.select-quantity:focus {
-  border-color: #4a90e2;
-  outline: none;
-  box-shadow: 0 3px 6px rgba(74, 144, 226, 0.1);
+.input-group > .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(74, 144, 226, 0.25);
 }
 
-/* Reviews Section */
-.review {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin: 15px 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.input-group > .btn {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border: 1px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    transition: all var(--transition-speed) ease;
 }
 
-.review:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+.input-group > .btn:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: scale(1.01); /* Subtle hover effect */
 }
 
-/* Responsive Styles */
-@media (max-width: 1024px) {
-  .search-box-wrapper {
-    max-width: 350px;
-  }
-  
-  .category {
-    gap: 20px;
-  }
-  
-  .right {
-    gap: 15px;
-  }
-  
-  .nav {
-    padding: 6px 12px;
-    font-size: 14px;
-  }
+/* Suggestions Container */
+/* The JSX uses position-absolute, we enhance the look here */
+.card.position-absolute {
+    /* Adjusted top and transform for better centering over products */
+    top: 80px; 
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 15px;
-  }
-  
-  .search-box-wrapper {
-    margin: 15px 0;
-    max-width: 90%;
-  }
-  
-  .right {
-    margin-top: 15px;
-    gap: 10px;
-  }
-  
-  .category {
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-  }
-  
-  .cuboid {
-    width: 90%;
-    max-width: 350px;
-  }
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
 }
 
-@media (max-width: 480px) {
-  .vk-store {
-    font-size: 18px;
-  }
-  
-  .search-box {
-    font-size: 14px;
-    width: 250px;
-    height: 38px;
-  }
-  
-  .middle{
-    display: flex;
-    height: 100vh;
-  }
-  .btn-del,
-  .search-btn {
-    
-    width: 32px;
-    padding-right: 5px;
-    height: 33px;
-    font-size: 12px;
-  }
-  
-  .nav {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
-  
-  .cuboid {
-    padding: 15px;
-  }
+.list-group-item:last-child {
+    border-bottom: none;
 }
 
-/* Auth Form Styling */
-.auth-form-container {
-  max-width: 450px;
-  width: 100%;
-  padding: 30px;
-  margin: 20px auto;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+/* Highlighted Text in Search Suggestions (Matching JSX) */
+.text-warning.fw-bold {
+    color: var(--secondary-color) !important;
 }
 
-.nav-tabs {
-  display: flex;
-  margin-bottom: 25px;
-  border-bottom: 1px solid #e1e5e9;
+/* --- 3. Hero Section (Head) --- */
+
+.head {
+    /* Merged with your existing head styles */
+    background: linear-gradient(135deg, #007bff, #6610f2); 
+    color: var(--light-text);
+    padding-top: 60px;
+    padding-bottom: 60px;
+    text-align: center;
+    position: relative;
+}
+/* This section in the JSX was replaced by the 'py-5 text-center bg-light mt-5' div.
+   If you want to use the gradient hero, remove that div from JSX.
+   I'll style the Bootstrap hero based on the new JSX structure:
+*/
+.py-5.text-center.bg-light {
+    background-color: #fff !important; /* Lighter than f5f7fa */
+    border-bottom: 3px solid var(--secondary-color);
 }
 
-.nav-tabs .nav-link {
-  color: #6c757d;
-  border: none;
-  padding: 12px 20px;
-  font-weight: 500;
-  position: relative;
-  transition: all 0.3s ease;
+/* --- 4. Category Section (Matching JSX structure) --- */
+
+/* The JSX replaces your custom '.cuboid' with Bootstrap cards.
+   We style the card for the same visual effect.
+*/
+.category-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-.nav-tabs .nav-link.active {
-  color: #4a90e2;
-  background: none;
+.category-card:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-.nav-tabs .nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #4a90e2;
+.card-img-top {
+    object-fit: cover;
 }
 
-.form-control {
-  display: block;
-  width: 100%;
-  padding: 12px 15px;
-  font-size: 15px;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-  background-color: #f7f9fc;
+/* --- 5. Product Cards (Matching JSX structure) --- */
+
+.card {
+    transition: all var(--transition-speed) ease;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    border: 1px solid #eee;
 }
 
-.form-control:focus {
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
-  outline: none;
-  background-color: #fff;
+.card:hover {
+    cursor: pointer;
+    transform: translateY(-5px); /* Slightly less dramatic hover than categories */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.form-label {
-  margin-bottom: 6px;
-  display: block;
-  color: #495057;
-  font-weight: 500;
+.product-image {
+    transition: transform 0.5s ease;
+    height: 200px; /* Enforcing a fixed height as per JSX inline style */
+    object-fit: contain;
 }
 
-.password-toggle {
-  cursor: pointer;
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6c757d;
-  transition: color 0.3s ease;
+.card:hover .product-image {
+    transform: scale(1.05);
 }
 
-.password-toggle:hover {
-  color: #4a90e2;
+.card-body {
+    padding: 1rem;
+}
+
+/* Button Styling (Harmonizing Bootstrap with theme) */
+.btn-warning {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: var(--dark-text) !important;
+    font-weight: 600;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800 !important;
+    border-color: #e0a800 !important;
 }
 
 .btn-primary {
-  
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(74, 144, 226, 0.25);
-  margin-top: 10px;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
 }
 
 .btn-primary:hover {
- 
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
 }
 
-.form-check-input {
-  width: 16px;
-  height: 16px;
-  margin-top: 0.3em;
-  margin-right: 10px;
-  border: 1px solid #ced4da;
+/* Pagination Buttons */
+.pagination > .btn-outline-secondary {
+    border-color: #ccc;
+    color: #6c757d;
 }
 
-.form-check-label {
-  font-size: 14px;
-  color: #6c757d;
+.pagination > .btn-warning.text-dark {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: var(--dark-text) !important;
 }
 
-hr {
-  margin: 25px 0;
-  opacity: 0.2;
+
+/* --- 6. Auth Form Styling (Kept mostly as is) --- */
+.auth-form-container {
+    max-width: 450px;
+    padding: 30px;
+    margin: 40px auto;
+    background-color: var(--light-text);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.nav-tabs .nav-link.active::after {
+    background-color: var(--primary-color);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.btn-primary:hover {
+    /* Kept the same custom hover effect for forms */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
 }
 
 .text-decoration-none {
-  color: #4a90e2;
-  font-weight: 500;
-  transition: color 0.3s ease;
+    color: var(--primary-color);
 }
 
 .text-decoration-none:hover {
-  color: #2b6cb0;
-  text-decoration: underline;
-}
-.search-ctn{
-  display: flex;
-  justify-content: center;
-}
-.suggestion {
-  padding: 10px;
-
-  margin: 6px 0;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+    color: var(--primary-dark);
 }
 
-.highlight {
-  color: #fff;
-  background-color: #3f51b5;
-  padding: 2px 3px;
-  border-radius: 3px;
+/* --- 7. Search Suggestion Box (Removed redundant old elements) --- */
+/* Your old custom search styles were replaced by Bootstrap components:
+.middle, .search-box-wrapper, .search-box, .search-btn, .btn-del are no longer needed
+in their old form, as they are now styled using .input-group and .form-control/.btn classes.
+*/
+.search-ctn { display: none; }
+.suggestion { display: none; }
+.highlight { display: none; }
+
+
+/* --- 8. Responsive Styles (Refined) --- */
+
+@media (max-width: 992px) {
+    /* Targets large tablets and laptops, ensures better stacking */
+    .header {
+        padding: 0 15px;
+    }
 }
 
-.no-result {
-  color: gray;
+@media (max-width: 768px) {
+    /* Tablets: Stack header, adjust main padding */
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        position: static; /* Let the header scroll on smaller screens */
+    }
+    body {
+        padding-top: 0;
+    }
+    
+    .input-group {
+        margin: 15px auto;
+        max-width: 90%;
+    }
+    
+    /* Center the categories which are now set to col-md-4 */
+    .category-card {
+        margin: 0 auto;
+        max-width: 400px;
+    }
+
+    .right {
+        margin-top: 15px;
+        gap: 10px;
+    }
 }
 
+@media (max-width: 576px) {
+    /* Small mobiles */
+    .vk-store {
+        font-size: 18px;
+        margin-left: 0;
+    }
 
+    .nav {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
 
+    .head .display-4 {
+        font-size: 2rem;
+    }
+    .head .lead {
+        font-size: 1rem;
+    }
+}

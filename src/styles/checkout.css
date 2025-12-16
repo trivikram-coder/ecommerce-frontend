@@ -1,0 +1,116 @@
+/* --- Base Variables (Inherited from global/products.css) --- */
+:root {
+    --primary-color: #4a90e2; 
+    --primary-dark: #2b6cb0;
+    --secondary-color: #ffc107;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --light-bg: #f5f7fa;
+    --dark-text: #333;
+    --light-text: #fff;
+    --border-color: #e9ecef;
+    --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+/* --- Checkout Header --- */
+.checkout-title {
+    color: var(--primary-dark);
+    font-size: 2.5rem;
+}
+
+/* --- Main Content Cards --- */
+.checkout-card {
+    border: none;
+    border-radius: 12px;
+    background-color: var(--light-text);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.checkout-card h4.text-primary {
+    color: var(--primary-dark) !important;
+    font-weight: 600;
+}
+
+/* --- Form Controls --- */
+.form-label {
+    font-weight: 500;
+    color: var(--dark-text);
+    margin-bottom: 0.25rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+
+/* --- Order Summary Card --- */
+.summary-card-sticky {
+    background-color: var(--light-bg);
+    border-radius: 12px;
+    /* Custom style for summary card */
+    top: 100px; /* Sticky below the fixed header */
+    position: sticky;
+    border: 1px solid var(--border-color);
+}
+
+.summary-card-sticky h4.card-title {
+    color: var(--primary-color) !important;
+    border-bottom: 3px solid var(--primary-color);
+    font-weight: 700;
+}
+
+/* List Items in Summary */
+.order-items-list .list-group-item {
+    border: none;
+    border-bottom: 1px dashed var(--border-color);
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+}
+.order-items-list .list-group-item:last-of-type {
+    border-bottom: none;
+}
+
+.total-row {
+    margin-top: 15px;
+    padding-top: 15px !important;
+    border-top: 2px solid var(--border-color);
+    background-color: transparent !important;
+}
+
+.total-row h5.text-primary {
+    color: var(--primary-dark) !important;
+}
+
+/* --- Buttons --- */
+.place-order-btn {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+    transition: background-color var(--transition-speed);
+}
+
+.place-order-btn:hover {
+    background-color: #1e7e34 !important;
+    border-color: #1c7430 !important;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+    .summary-card-sticky {
+        position: static;
+        margin-top: 30px;
+    }
+}

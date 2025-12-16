@@ -1,130 +1,179 @@
-.item-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    padding: 40px;
-    flex-wrap: wrap;
+/* --- Base Variables (Inherited from global/products.css) --- */
+:root {
+    --primary-color: #4a90e2; 
+    --primary-dark: #2b6cb0;
+    --secondary-color: #ffc107; /* Warning/Add to cart color */
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --light-bg: #f5f7fa;
+    --dark-text: #333;
+    --light-text: #fff;
+    --border-color: #e9ecef;
+    --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
 }
 
-.item-img1 {
-    flex: 1;
-    width: 90%;
-    max-width: 450px;
-    text-align: center;
-    border-radius: 12px;
-    background: white;
+.item-page-container {
+    padding-bottom: 5rem !important;
+}
+
+.item-detail-card {
+    background-color: var(--light-text);
+    border-radius: 15px;
+    /* Elevated shadow effect */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Image Section --- */
+.item-image-column {
+    background-color: var(--light-bg);
+    border-radius: 10px;
+    padding: 30px;
+    min-height: 450px; 
+}
+
+.item-img {
+    max-height: 400px;
+    object-fit: contain;
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.5s;
 }
 
 .item-img:hover {
     transform: scale(1.05);
-    transition: all 0.3s ease;
 }
 
-.item-det {
-    flex: 1;
-    max-width: 500px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* --- Details Section --- */
+.item-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
 }
 
-.item-det h4 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+.item-category {
+    font-size: 1rem;
+    color: var(--primary-color) !important;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
-.item-det p {
-    font-size: 16px;
+.item-description {
+    font-size: 1rem;
+    line-height: 1.6;
     color: #555;
-    line-height: 1.5;
-    width: 100%;
-    margin-top: 10px;
+    /* Highlight description with a primary color line */
+    border-left: 3px solid var(--primary-color);
+    padding-left: 15px;
+    margin-bottom: 25px;
 }
 
-.item-det h3 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #ff4d4d;
-    margin-top: 15px;
+/* --- Price Section --- */
+.current-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--danger-color); /* Highlight total price */
 }
 
-.btn-outline-dark,.buy-now {
-    display: block;
-    width: 100%;
-    max-width: 250px;
-    padding: 10px;
-    font-size: 18px;
-    border-radius: 25px;
-    border: 2px solid #333;
-    color: #333;
-    background: white;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    margin-top: 20px;
+.original-price {
+    font-size: 1.5rem;
 }
 
-.btn-outline-dark:hover {
-    background: #333;
-    color: white;
-    transform: scale(1.05);
+.discount-badge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.8em;
+    border-radius: 50px;
+    font-weight: 700;
+    background-color: var(--success-color) !important;
 }
 
-.footer-box {
-    margin-top: auto;
-    width: 100%;
+/* --- Quantity Controls --- */
+.item-quantity-input {
+    max-width: 150px;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures buttons and input align perfectly */
 }
 
-.foot {
-    padding: 10px;
-    background-color: #343a40;
-    color: white;
-    text-align: center;
+.item-quantity-input .form-control {
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    height: 45px;
+    padding: 0;
 }
 
-.footercl {
-    padding: 5px;
-    margin-top: 12%;
-}
-
-.back {
-    text-decoration: none;
-    color: white;
-    background-color: red;
-    border-radius: 50%;
-    padding: 6px;
-    margin-left: 10px;
-    margin-top: 5px;
-}
-
-.back:hover {
-    background-color: rgb(173, 62, 72);
-    transform: scale(1.1);
-    transition: all 0.3s ease;
-}
-.quantity-container {
+.quantity-btn {
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 500;
-}
-.minus,.plus{
-    margin: 5px;
-}
-.plus, .minus {
-    cursor: pointer;
-    background-color: blue;
-    border-radius: 50%;
-    color: #c8d1da;
-    transition: transform 0.2s ease-in-out;
+    justify-content: center;
+    color: var(--dark-text);
+    border-color: var(--border-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-.plus:hover, .minus:hover {
-    transform: scale(1.2);
-    color: #346eab;
+.quantity-btn:hover:not(:disabled) {
+    background-color: var(--light-bg);
+    color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+/* Force round corners on ends */
+.item-quantity-input .btn:first-child {
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+}
+
+.item-quantity-input .btn:last-child {
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
 }
 
 
+/* --- Action Buttons --- */
+.add-to-cart-btn {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: var(--dark-text);
+    font-weight: 700;
+    padding: 12px 25px;
+    border-radius: 50px;
+    transition: all var(--transition-speed);
+}
+
+.add-to-cart-btn:hover {
+    background-color: #e6a800 !important;
+    border-color: #e6a800 !important;
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+}
+
+.buy-now-btn {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    font-weight: 700;
+    padding: 12px 25px;
+    border-radius: 50px;
+    transition: all var(--transition-speed);
+}
+
+.buy-now-btn:hover {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .item-image-column {
+        min-height: 350px;
+    }
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px !important;
+    }
+    .action-buttons button, 
+    .action-buttons a {
+        width: 100% !important;
+    }
+}

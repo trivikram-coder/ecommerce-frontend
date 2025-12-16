@@ -1,31 +1,34 @@
-import React from 'react';
-import products from './data/data'; // Make sure this contains flat product list
-import {Shirt} from 'lucide-react'
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import products from "./data/data";
+import { Shirt } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import "../styles/category.css";
 
 const Clothing = () => {
-  const clothing = products.filter((product) => product.category === 'clothing');
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const clothing = products.filter(
+    (product) => product.category === "clothing"
+  );
+
   return (
-    <div className="container my-4">
-      <h2 className="text-primary text-center mb-4">Fashion
-        <Shirt size={24}/>
+    <div className="container py-5">
+      <h2 className="category-title text-center mb-5">
+        Fashion <Shirt size={26} />
       </h2>
-      <div className="row">
+
+      <div className="row g-4">
         {clothing.map((item) => (
-          <div key={item.id} className="col-md-4 mb-4" >
-            <div className="card h-100 shadow-sm" onClick={() => navigate('/item', { state: { item } })}>
-              <img
-                src={item.image}
-                alt={item.name}
-                className="card-img-top"
-                style={{ height: '340px',padding:'24px' }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{item.title}</h5>
-    
-                <p className="card-text">{item.description}</p>
-                <p className="card-text text-success fw-bold">₹ {item.price}</p>
+          <div className="col-md-4" key={item.id}>
+            <div
+              className="product-card"
+              onClick={() => navigate("/item", { state: { item } })}
+            >
+              <img src={item.image} alt={item.title} />
+
+              <div className="product-body">
+                <h5>{item.title}</h5>
+                <p className="desc">{item.description}</p>
+                <span className="price">₹{item.price}</span>
               </div>
             </div>
           </div>

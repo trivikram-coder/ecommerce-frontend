@@ -1,0 +1,121 @@
+/* ===== ORDERS PAGE ===== */
+
+.orders-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Empty */
+.empty-orders {
+  padding: 30px;
+  text-align: center;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  color: #555;
+}
+
+/* Order Card */
+.amazon-order-card {
+  border: 1px solid #ddd;
+  background: #ffffff;
+  margin-bottom: 24px;
+}
+
+/* Header */
+.amazon-order-header {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 14px 16px;
+  background: #f3f3f3;
+  font-size: 13px;
+  border-bottom: 1px solid #ddd;
+}
+
+.amazon-order-header .label {
+  font-size: 11px;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.order-id {
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Body */
+.amazon-order-body {
+  padding: 16px;
+}
+
+/* Order Item */
+.amazon-order-item {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.amazon-order-item:last-child {
+  border-bottom: none;
+}
+
+/* Image */
+.order-item-img img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  padding: 6px;
+  background: #fff;
+}
+
+/* Details */
+.order-item-details {
+  font-size: 14px;
+}
+
+.item-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #111;
+}
+
+.item-qty,
+.delivery-text {
+  font-size: 12px;
+  color: #555;
+}
+
+/* Price */
+.item-price {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Footer */
+.amazon-order-footer {
+  padding: 14px 16px;
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .amazon-order-header {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .amazon-order-item {
+    grid-template-columns: 70px 1fr;
+  }
+
+  .item-price {
+    grid-column: span 2;
+    margin-top: 8px;
+  }
+}

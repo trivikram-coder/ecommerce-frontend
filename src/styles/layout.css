@@ -1,0 +1,217 @@
+/* ================= HEADER ================= */
+.app-header-container {
+  position: fixed;              /* ✅ FIXED HEADER */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  z-index: 1050;
+}
+
+/* Header inner content */
+.header-content {
+  padding: 14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ================= LOGO ================= */
+.vk-store-logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0d6efd;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s ease;
+}
+
+.vk-store-logo:hover {
+  transform: scale(1.05);
+}
+
+/* ================= NAVIGATION ================= */
+.header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-item-link {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #212529;
+  font-weight: 500;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.nav-item-link:hover {
+  background: #f1f3f5;
+  transform: translateY(-1px);
+}
+
+.nav-label {
+  font-size: 14px;
+}
+
+/* ================= BADGES ================= */
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 50%;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* ================= USER MENU ================= */
+.user-menu-toggle {
+  background: #f8f9fa;
+}
+
+.user-menu-toggle.logged-in {
+  background: #eef4ff;
+}
+
+/* Chevron */
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.user-dropdown-menu {
+  position: absolute;
+  top: 115%;
+  right: 0;
+  width: 240px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: dropdownFade 0.25s ease;
+  z-index: 2000;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-user-info {
+  padding: 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #f1f3f5;
+}
+
+.signout-item {
+  color: #dc3545;
+}
+
+.signin-item {
+  color: #0d6efd;
+}
+
+.signup-item {
+  color: #198754;
+}
+
+/* ================= MAIN CONTENT ================= */
+.app-main-content {
+  padding-top: 90px;   /* ✅ PUSH CONTENT BELOW FIXED HEADER */
+  min-height: 75vh;
+  background: #f8f9fb;
+}
+
+/* ================= FOOTER ================= */
+.app-footer {
+  background: #ffffff;
+  border-top: 1px solid #e9ecef;
+  padding: 28px 0;
+  margin-top: 40px;
+}
+
+.footer-logo {
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.footer-link {
+  font-size: 14px;
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: #0d6efd;
+}
+
+.copyright-text {
+  font-size: 13px;
+  color: #adb5bd;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .header-nav-links {
+    gap: 12px;
+  }
+
+  .vk-store-logo {
+    font-size: 20px;
+  }
+
+  .nav-label {
+    display: none;
+  }
+}
+
+/* ================= THEME TOGGLE (OPTIONAL) ================= */
+.theme-toggle-btn {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  pointer-events: auto !important;
+  z-index: 10000;
+}

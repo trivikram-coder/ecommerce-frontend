@@ -1,0 +1,30 @@
+/* ========= THEME VARIABLES ========= */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --card: #ffffff;
+  --border: #dddddd;
+}
+
+body.dark {
+  --bg: #121212;
+  --text: #e6e6e6;
+  --card: #1e1e1e;
+  --border: #2a2a2a;
+}
+
+/* ========= FORCE APPLY ========= */
+body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.card,
+header,
+footer,
+nav,
+.list-group-item {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}

@@ -1,38 +1,37 @@
+import products from "./data/data";
+import { useNavigate } from "react-router-dom";
+import { Laptop } from "lucide-react";
+import "../styles/category.css";
 
-import products from './data/data';
-import { useNavigate } from 'react-router-dom';
-import {Phone,Laptop} from 'lucide-react';
 const Electronics = () => {
-  const electronics = products.filter((item) => item.category === 'electronics');
   const navigate = useNavigate();
+  const electronics = products.filter(
+    (item) => item.category === "electronics"
+  );
 
   return (
-    <div className="container my-4">
-      <h2 className="text-center text-primary mb-4">Electronics   
-
-        <Laptop size={25}/>
+    <div className="container py-5">
+      <h2 className="category-title text-center mb-5">
+        Electronics <Laptop size={26} />
       </h2>
-      <div className="row">
+
+      <div className="row g-4">
         {electronics.map((item) => (
-          <div
-            key={item.id}
-            className="col-md-4 mb-4"
-            onClick={() => navigate('/item', { state: { item } })}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className="card h-100 shadow-sm">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="card-img-top"
-              style={{ height: '340px',padding:'24px' }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{item.title}</h5>
-               
-                <p className="card-text">{item.description}</p>
-                <del className="card-text text-danger fw-bold"> ₹{item.price}</del>
-                <p className="card-text text-success fw-bold"> ₹{item.discountPrice}</p>
+          <div className="col-md-4" key={item.id}>
+            <div
+              className="product-card"
+              onClick={() => navigate("/item", { state: { item } })}
+            >
+              <img src={item.image} alt={item.title} />
+
+              <div className="product-body">
+                <h5>{item.title}</h5>
+                <p className="desc">{item.description}</p>
+
+                <div className="price-row">
+                  <del>₹{item.price}</del>
+                  <span>₹{item.discountPrice}</span>
+                </div>
               </div>
             </div>
           </div>

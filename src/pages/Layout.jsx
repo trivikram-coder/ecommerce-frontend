@@ -1,112 +1,266 @@
-import React, { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import {
   ShoppingBag,
   Heart,
   User,
   ShoppingCart,
   ListOrdered,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
+import "../styles/layout.css";
 
 const Layout = () => {
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+
+  const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [wishCount, setWishCount] = useState(0);
-  const [user, setUser] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const navigate = useNavigate();
-
-  // 🔥 SAFE PARSE function
-  const safeJSON = (value, fallback = []) => {
+  // ---------- Helpers ----------
+  const safeJSON = (value, fallback = null) => {
     try {
-      return JSON.parse(value) || fallback;
-    } catch (err) {
-      console.warn("Corrupted LS value → resetting:", value);
+      return value ? JSON.parse(value) : fallback;
+    } catch {
       return fallback;
     }
   };
 
-  // 🔥 Load user safely
-  useEffect(() => {
-    const rawUser = localStorage.getItem("user");
-    const storedUser = safeJSON(rawUser, null);
-
-    if (storedUser && storedUser.id) {
-      setUser(storedUser);
-      setUserId(storedUser.id);
+  // ---------- FETCH CART USING JWT ----------
+  const fetchCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setCartCount(0);
+      return;
     }
+
+    try {
+      const res = await fetch(
+        "https://spring-server-0m1e.onrender.com/cart/get",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        setCartCount(0);
+        return;
+      }
+
+      const cart = await res.json();
+
+      // total quantity
+      const total = cart.reduce(
+        (sum, item) => sum + (item.quantity || 1),
+        0
+      );
+
+      setCartCount(total);
+    } catch (err) {
+      console.error("Cart fetch failed", err);
+      setCartCount(0);
+    }
+  };
+
+  // ---------- UPDATE USER + COUNTS ----------
+  const syncUserState = () => {
+    const storedUser = safeJSON(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (storedUser && token) {
+      setUser(storedUser);
+      fetchCart();
+
+      const wish = safeJSON(
+        localStorage.getItem(`wishlist${storedUser.id}`),
+        []
+      );
+      setWishCount(wish.length);
+    } else {
+      setUser(null);
+      setCartCount(0);
+      setWishCount(0);
+    }
+  };
+
+  // ---------- EFFECTS ----------
+  useEffect(() => {
+    syncUserState();
+    window.addEventListener("storage", syncUserState);
+
+    return () => {
+      window.removeEventListener("storage", syncUserState);
+    };
   }, []);
 
-  // 🔥 Update cart and wishlist safely
-  const updateCounts = () => {
-    if (!userId) return;
-
-    const rawCart = localStorage.getItem(`cart${userId}`);
-    const cart = safeJSON(rawCart, []);
-
-    setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
-
-    const rawWish = localStorage.getItem(`wishlist${userId}`);
-    const wish = safeJSON(rawWish, []);
-
-    setWishCount(wish.length);
-  };
-
+  // Close dropdown on outside click
   useEffect(() => {
-    updateCounts();
-    const intervalId = setInterval(updateCounts, 1200);
-    return () => clearInterval(intervalId);
-  }, [userId]);
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const account = () => {
-    if (user) {
-      navigate("/account", { state: { userData: user } });
-    } else {
-      navigate("/");
-    }
+  // ---------- HANDLERS ----------
+  const handleSignOut = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    setUser(null);
+    setCartCount(0);
+    setWishCount(0);
+
+    window.dispatchEvent(new Event("storage"));
+    navigate("/", { replace: true });
+    setShowDropdown(false);
   };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setShowDropdown(false);
+  };
+
+  const userName = user?.name ? user.name.split(" ")[0] : "Guest";
 
   return (
     <>
-      <header>
-        <div className="header bg-dark d-flex justify-content-between align-items-center px-4 py-2">
-          <h4
-            className="vk-store btn text-white mb-0"
-            onClick={() => navigate("/products")}
-          >
-            VK Store <ShoppingBag size={24} />
-          </h4>
+      {/* ================= HEADER ================= */}
+      <header className="app-header-container">
+        <div className="container-fluid px-4">
+          <div className="d-flex justify-content-between align-items-center header-content">
+            {/* Logo */}
+            <Link to="/products" className="logo-link text-decoration-none">
+              <div className="d-flex align-items-center vk-store-logo">
+                <ShoppingBag size={24} className="me-2" />
+                <span>VK Store</span>
+              </div>
+            </Link>
 
-          <div className="right d-flex gap-4 text-white">
-            <div className="nav btn" onClick={account}>
-              <User size={20} /> Account
-            </div>
+            {/* Navigation */}
+            <nav className="header-nav-links d-flex align-items-center">
+              {/* Wishlist */}
+              <div
+                className="nav-item-link"
+                role="button"
+                onClick={() => handleNavigation("/wishlist")}
+              >
+                <Heart size={20} />
+                {wishCount > 0 && (
+                  <span className="badge-count bg-danger">{wishCount}</span>
+                )}
+                <span className="nav-label d-none d-lg-inline ms-1">
+                  Wishlist
+                </span>
+              </div>
 
-            <div className="nav btn" onClick={() => navigate("/wishlist")}>
-              <Heart size={20} /> Wishlist ({wishCount})
-            </div>
+              {/* Cart */}
+              <div
+                className="nav-item-link"
+                role="button"
+                onClick={() => handleNavigation("/cart")}
+              >
+                <ShoppingCart size={20} />
+                {cartCount > 0 && (
+                  <span className="badge-count bg-warning">{cartCount}</span>
+                )}
+                <span className="nav-label d-none d-lg-inline ms-1">
+                  Cart
+                </span>
+              </div>
 
-            <div className="nav btn" onClick={() => navigate("/cart")}>
-              <ShoppingBag size={20} /> Cart ({cartCount})
-            </div>
+              {/* User Menu */}
+              <div
+                className="nav-item-link user-menu-toggle"
+                role="button"
+                ref={dropdownRef}
+                onClick={() => setShowDropdown((prev) => !prev)}
+              >
+                <User size={20} />
+                <span className="nav-label ms-1 me-1">{userName}</span>
+                <ChevronDown
+                  size={14}
+                  className={`chevron-icon ${showDropdown ? "rotate" : ""}`}
+                />
 
-            <div className="nav btn" onClick={() => navigate("/checkout")}>
-              <ShoppingCart size={20} /> Checkout
-            </div>
+                {showDropdown && (
+                  <div className="user-dropdown-menu">
+                    {user ? (
+                      <>
+                        <div className="dropdown-user-info">
+                          <p className="fw-bold mb-0">{user.name}</p>
+                          <p className="small text-muted mb-0">{user.email}</p>
+                        </div>
 
-            <div className="nav btn" onClick={() => navigate("/orders")}>
-              <ListOrdered size={20} /> My Orders
-            </div>
+                        <div
+                          className="dropdown-item"
+                          onClick={() => handleNavigation("/account")}
+                        >
+                          <User size={16} className="me-2" /> My Profile
+                        </div>
+
+                        <div
+                          className="dropdown-item"
+                          onClick={() => handleNavigation("/orders")}
+                        >
+                          <ListOrdered size={16} className="me-2" /> My Orders
+                        </div>
+
+                        <div
+                          className="dropdown-item signout-item"
+                          onClick={handleSignOut}
+                        >
+                          <LogOut size={16} className="me-2" /> Sign Out
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className="dropdown-item"
+                          onClick={() => handleNavigation("/")}
+                        >
+                          Sign In
+                        </div>
+                        <div
+                          className="dropdown-item"
+                          onClick={() =>
+                            navigate("/", { state: { mode: "signup" } })
+                          }
+                        >
+                          Create Account
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </nav>
           </div>
         </div>
       </header>
 
-      <main className="container py-3">
-        <Outlet />
+      {/* ================= MAIN ================= */}
+      <main className="app-main-content">
+        <div className="container py-4">
+          <Outlet />
+        </div>
       </main>
 
-      <footer className="bg-dark text-light text-center py-3 mt-4">
-        <p>&copy; 2025 VK Store — All Rights Reserved.</p>
+      {/* ================= FOOTER ================= */}
+      <footer className="app-footer">
+        <div className="container text-center">
+          <h6 className="footer-logo mb-3">VK Store</h6>
+          <p className="mb-0">
+            © {new Date().getFullYear()} VK Store. All Rights Reserved.
+          </p>
+        </div>
       </footer>
     </>
   );

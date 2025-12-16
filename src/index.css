@@ -1,3 +1,9 @@
-body{
-    background-color: lightgray;
+/* index.css - BASE ONLY */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }

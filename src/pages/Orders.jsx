@@ -1,50 +1,100 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import "../styles/orders.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    const storedOrders = JSON.parse(localStorage.getItem("orders_1")) || [];
     setOrders(storedOrders);
   }, []);
-const handleCancel=(index)=>{
-    const updatedOrders=[...orders]
-    updatedOrders.splice(index,1)
-    setOrders(updatedOrders)
+
+  const handleCancel = (index) => {
+    const updatedOrders = [...orders];
+    updatedOrders.splice(index, 1);
+    setOrders(updatedOrders);
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
-}
-console.log(orders)
+  };
+
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4 text-center">Your Orders</h2>
+    <div className="container py-4">
+      <h2 className="orders-title">Your Orders</h2>
 
       {orders.length === 0 ? (
-        <div className="alert alert-info text-center">No orders found.</div>
+        <div className="empty-orders">No orders found.</div>
       ) : (
         orders.map((order, index) => (
-          <div className="card mb-4 shadow-sm" key={index}>
-            <div className="card-body">
-              <h5 className="card-title">Order #{index + 1}</h5>
-              <p><strong>Name:</strong> {order.name}</p>
-              <p><strong>Email:</strong> {order.email}</p>
-              <p><strong>Order Date:</strong> {order.orderDate}</p>
-              <p><strong>Expected Delivery:</strong> {order.expectedDelivery}</p>
+          <div className="amazon-order-card" key={index}>
 
-              <h6>Items:</h6>
-              <ul className="list-group mb-3">
-                {order.items.map((item, idx) => (
-                  <li key={idx} className="list-group-item d-flex justify-content-between">
-                    <span>{item.title ?? item.name ?? 'Unnamed'} (x{item.quantity || 1})</span>
-                    <strong>₹{((item.discountPrice ?? item.offerPrice ?? item.price) * (item.quantity || 1)).toFixed(2)}</strong>
-                  </li>
-                ))}
-                <li className="list-group-item d-flex justify-content-between bg-light">
-                  <strong>Total:</strong>
-                  <strong>₹{order.totalAmount.toFixed(2)}</strong>
-                </li>
-              </ul>
-              <button className='btn btn-danger' onClick={()=>handleCancel(index)}>Cancel order</button>
+            {/* HEADER */}
+            <div className="amazon-order-header">
+              <div>
+                <span className="label">ORDER PLACED</span>
+                <span>{order.orderDate}</span>
+              </div>
+
+              <div>
+                <span className="label">TOTAL</span>
+                <span>₹{order.totalAmount.toFixed(2)}</span>
+              </div>
+
+              <div>
+                <span className="label">DELIVER TO</span>
+                <span>{order.name}</span>
+              </div>
+
+              <div className="order-id">
+                Order #{index + 1}
+              </div>
             </div>
+
+            {/* BODY */}
+            <div className="amazon-order-body">
+              {order.items.map((item, idx) => (
+                <div className="amazon-order-item" key={idx}>
+
+                  {/* IMAGE */}
+                  <div className="order-item-img">
+                    <img
+                      src={item.image}
+                      alt={item.title ?? item.name}
+                    />
+                  </div>
+
+                  {/* DETAILS */}
+                  <div className="order-item-details">
+                    <p className="item-title">
+                      {item.title ?? item.name ?? "Unnamed"}
+                    </p>
+                    <p className="item-qty">
+                      Qty: {item.quantity || 1}
+                    </p>
+                    <p className="delivery-text">
+                      Expected delivery: {order.expectedDelivery}
+                    </p>
+                  </div>
+
+                  {/* PRICE */}
+                  <div className="item-price">
+                    ₹{(
+                      (item.discountPrice ?? item.offerPrice ?? item.price) *
+                      (item.quantity || 1)
+                    ).toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* FOOTER */}
+            <div className="amazon-order-footer">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => handleCancel(index)}
+              >
+                Cancel order
+              </button>
+            </div>
+
           </div>
         ))
       )}

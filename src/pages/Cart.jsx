@@ -1,47 +1,138 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { X, Minus, Plus, ShoppingBag } from "lucide-react";
+import "../styles/cart.css";
 
+/* ================= CART ITEM ================= */
+const CartItem = ({ item, updateQuantity, removeItem }) => {
+  const name = item.title ?? item.name ?? "Unnamed Item";
+  const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+  const quantity = item.quantity || 1;
+  const subTotal = price * quantity;
+
+  return (
+    <li className="cart-item-card">
+      <div className="cart-item-left">
+        <img src={item.image} alt={name} className="cart-item-image" />
+      </div>
+
+      <div className="cart-item-center">
+        <h5 className="fw-semibold mb-1">{name}</h5>
+        <p className="text-muted small mb-2">{item.category}</p>
+
+        <div className="price-row">
+          <span className="price">₹{price.toFixed(2)}</span>
+          <span className="subtotal">Subtotal: ₹{subTotal.toFixed(2)}</span>
+        </div>
+
+        <div className="quantity-controls">
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={quantity <= 1}
+            onClick={() => updateQuantity(item.id, quantity - 1)}
+          >
+            <Minus size={16} />
+          </button>
+
+          <input
+            type="number"
+            className="form-control form-control-sm quantity-input"
+            min="1"
+            value={quantity}
+            onChange={(e) =>
+              updateQuantity(item.id, parseInt(e.target.value) || 1)
+            }
+          />
+
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            onClick={() => updateQuantity(item.id, quantity + 1)}
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+      </div>
+
+      <button
+        className="btn remove-btn"
+        onClick={() => removeItem(item.id)}
+        aria-label="Remove item"
+      >
+        <X size={18} />
+      </button>
+    </li>
+  );
+};
+
+/* ================= MAIN CART ================= */
 const Cart = () => {
   const navigate = useNavigate();
-  const userId=JSON.parse(localStorage.getItem("user")).id
+
+  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const userId = storedUser?.id;
   const token = localStorage.getItem("token") || "";
 
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch cart items from backend on page load
+  /* Redirect if not logged in */
   useEffect(() => {
+    if (!userId) navigate("/", { replace: true });
+  }, [userId, navigate]);
+
+  /* Load cart */
+  const fetchCartItems = () => {
+    if (!userId) return;
+
+    setLoading(true);
     fetch("https://spring-server-0m1e.onrender.com/cart/get", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        setItems(data)
+        const list = Array.isArray(data) ? data : [];
+        setItems(list);
+        localStorage.setItem(`cart${userId}`, JSON.stringify(list));
+        window.dispatchEvent(new Event("storage"));
       })
-      .catch((err) => console.error("Error loading cart:", err));
-  }, []);
+      .catch((err) => console.error("Cart load error:", err))
+      .finally(() => setLoading(false));
+  };
 
-  // ✅ Remove item
+  useEffect(() => {
+    fetchCartItems();
+  }, [userId, token]);
+
+  /* Remove item */
   const removeItem = (id) => {
     fetch(`https://spring-server-0m1e.onrender.com/cart/delete/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        if (!res.ok) return;
+        if (!res.ok) throw new Error("Delete failed");
 
-        setItems((prev) => prev.filter((i) => i.id !== id));
-        localStorage.setItem(`cart${userId}`,JSON.stringify(items))
+        setItems((prev) => {
+          const updated = prev.filter((item) => item.id !== id);
+          localStorage.setItem(`cart${userId}`, JSON.stringify(updated));
+          window.dispatchEvent(new Event("storage"));
+          return updated;
+        });
       })
-      .catch((err) => console.error("Remove Error:", err));
+      .catch((err) => console.error("Remove error:", err));
   };
 
-  // ✅ Update quantity
+  /* Update quantity */
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) return;
+
+    setItems((prev) => {
+      const updated = prev.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      );
+      localStorage.setItem(`cart${userId}`, JSON.stringify(updated));
+      return updated;
+    });
 
     fetch("https://spring-server-0m1e.onrender.com/cart/update", {
       method: "PUT",
@@ -51,116 +142,106 @@ const Cart = () => {
       },
       body: JSON.stringify({ id, quantity }),
     })
-      .then(() => {
-        setItems((prev) =>
-          prev.map((i) => (i.id === id ? { ...i, quantity } : i))
-        );
+      .then((res) => {
+        if (!res.ok) {
+          fetchCartItems();
+          throw new Error("Update failed");
+        }
+        window.dispatchEvent(new Event("storage"));
       })
       .catch((err) => console.error("Update error:", err));
   };
 
-  // 🧮 Calculate total
+  /* Total */
   const totalAmount = items.reduce((acc, item) => {
-    const price =
-      item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+    const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
     return acc + price * (item.quantity || 1);
   }, 0);
-console.log(items)
+
+  /* Loading */
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary" />
+      </div>
+    );
+  }
+
+  /* Empty */
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-5">
+        <h2 className="fw-bold mb-4">Your Cart</h2>
+        <ShoppingBag size={64} className="text-muted mb-3" />
+        <h5 className="text-muted">Your cart is empty</h5>
+        <Link to="/products" className="btn btn-primary mt-4 px-5">
+          Start Shopping
+        </Link>
+      </div>
+    );
+  }
+
+  /* UI */
   return (
     <div className="container py-5">
-      <h2 className="text-center mb-4 fw-bold">Your Cart</h2>
+      <h2 className="text-center fw-bold mb-5">
+        Your Cart ({items.length})
+      </h2>
 
-      {items.length === 0 ? (
-        <div className="text-center mt-4">
-          <h4>Your cart is empty</h4>
-          <Link to="/products" className="btn btn-primary mt-3">
-            Browse Products
-          </Link>
+      <div className="row">
+        <div className="col-lg-8">
+          <ul className="cart-list">
+            {items.map((item) => (
+              <CartItem
+                key={item.id}
+                item={item}
+                updateQuantity={updateQuantity}
+                removeItem={removeItem}
+              />
+            ))}
+          </ul>
         </div>
-      ) : (
-        <div className="row">
-          {items.map((item) => {
-            const name = item.title ?? item.name ?? "Unnamed Item";
-            const price =
-              item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
 
-            return (
-              <div key={item.id} className="col-md-4 mb-4">
-                <div className="card shadow-sm border-light h-100">
-                  <img
-                    src={item.image}
-                    alt={name}
-                    className="card-img-top"
-                    style={{ height: "200px", objectFit: "contain" }}
-                  />
+        <div className="col-lg-4">
+          <div className="summary-card sticky-top">
+            <h4 className="fw-semibold mb-4 text-primary">
+              Order Summary
+            </h4>
 
-                  <div className="card-body">
-                    <h5 className="card-title">{name}</h5>
-                    <p className="card-text">
-                      <strong>Price: </strong>₹{price}
-                    </p>
+            <div className="summary-row">
+              <span>Total Items</span>
+              <span className="fw-bold">
+                {items.reduce(
+                  (acc, i) => acc + (i.quantity || 1),
+                  0
+                )}
+              </span>
+            </div>
 
-                    {/* Quantity Controls */}
-                    <div className="d-flex align-items-center justify-content-center">
-                      <button
-                        className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm px-3"
-                        onClick={() =>
-                          updateQuantity(item.id, (item.quantity || 1) - 1)
-                        }
-                      >
-                        −
-                      </button>
+            <div className="summary-row total">
+              <span>Total Amount</span>
+              <span className="fw-bold text-danger">
+                ₹{totalAmount.toFixed(2)}
+              </span>
+            </div>
 
-                      <input
-                        type="number"
-                        className="form-control form-control-sm text-center mx-2"
-                        style={{ width: "80px" }}
-                        value={item.quantity || 1}
-                        min="1"
-                        onChange={(e) =>
-                          updateQuantity(item.id, parseInt(e.target.value))
-                        }
-                      />
+            <Link
+              to="/checkout"
+              state={{ items }}
+              className="btn btn-primary w-100 py-2 fw-semibold"
+            >
+              Proceed to Checkout
+            </Link>
 
-                      <button
-                        className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm px-3"
-                        onClick={() =>
-                          updateQuantity(item.id, (item.quantity || 1) + 1)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {/* Remove */}
-                    <button
-                      className="btn btn-outline-danger w-100 mt-2"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+            <Link
+              to="/products"
+              className="btn btn-outline-secondary w-100 mt-2"
+            >
+              Continue Shopping
+            </Link>
+          </div>
         </div>
-      )}
-
-      {/* Total */}
-      {items.length > 0 && (
-        <div className="text-center mt-4">
-          <h4>Total: ₹{totalAmount.toFixed(2)}</h4>
-
-          <Link
-            to="/checkout"
-            state={{ items }}
-            className="btn btn-primary w-50 mt-3"
-          >
-            Proceed to Checkout
-          </Link>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

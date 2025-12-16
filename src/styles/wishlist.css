@@ -1,0 +1,36 @@
+.wishlist-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 100%;
+}
+
+.wishlist-img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  padding: 16px;
+  background: #f8f9fa;
+}
+
+.wishlist-body {
+  padding: 14px;
+}
+
+.price del {
+  color: #dc3545;
+  font-size: 13px;
+}
+
+.price span {
+  color: #198754;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.wishlist-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
