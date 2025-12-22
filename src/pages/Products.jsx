@@ -4,7 +4,7 @@ import { Delete, Heart, Search, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import products2 from '../Categories/data/data2';
-
+import apiKey from '../service/api';
 const Products = () => {
   // ... (Your state and function definitions are kept as they are)
   const storedUser = JSON.parse(localStorage.getItem("user") || "[]");
@@ -55,12 +55,23 @@ const Products = () => {
     setCurrentPage(1); // reset to first page after search
   };
 
-  const addToWishlist = (product) => {
+  const addToWishlist = async(product) => {
     let wishlist = JSON.parse(localStorage.getItem(`wishlist${user.id}`) || "[]") || [];
     if (!wishlist.some((item) => item.id === product.id)) {
-      toast.success(product.title + ' added to wishlist');
-      wishlist.push(product);
-      localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
+      const wishlistData={...product,email:user.email}
+      const res=await fetch(`${apiKey}/wishlist/add`,{
+        method:"POST",
+        headers:{
+          "content-type":"application/json"
+        },
+        body:JSON.stringify(wishlistData)
+      })
+      if(res.status===200){
+
+        toast.success(product.title + ' added to wishlist');
+        wishlist.push(product);
+        localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
+      }
       setWishlistIds(
         (prev) => {
           const updated = [...prev, product.id]
@@ -68,6 +79,7 @@ const Products = () => {
           return updated;
         }
       );
+      
     } else {
       toast.success(`${product.title} is already in your wishlist.`);
     }
@@ -75,22 +87,39 @@ const Products = () => {
     setWishCount(wishlist.length);
   };
 
-  const removeFromWishlist = (product) => {
-    let wishlist = JSON.parse(localStorage.getItem(`wishlist${userId}`)) || [];
-    wishlist = wishlist.filter((item) => item.id !== product.id);
-    localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
-      window.dispatchEvent(new Event("storage"))
-    toast.success(`${product.title} removed from wishlist.`);
-    setWishCount(wishlist.length);
-    setWishlistIds((prev) => {
-      const updated = prev.filter((id) => id !== product.id)
-      localStorage.setItem('wishlistIds', JSON.stringify(updated))
-
-      return updated;
-    }
+  const removeFromWishlist = async (product) => {
+  try {
+    // 1️⃣ Call backend
+    const res = await fetch(
+      `${apiKey}/wishlist/delete/${product.id}`,
+      {
+        method: "DELETE",
+       
+      }
     );
 
-  };
+    if (!res.ok) {
+      toast.error("Failed to remove from wishlist");
+      return;
+    }
+
+    // 2️⃣ Update wishlistIds (ONLY IDS)
+    setWishlistIds((prev) => {
+      const updated = prev.filter((id) => id !== product.id);
+      localStorage.setItem("wishlistIds", JSON.stringify(updated));
+      setWishCount(updated.length);
+      return updated;
+    });
+
+    // 3️⃣ Notify UI
+    window.dispatchEvent(new Event("storage"));
+    toast.success(`${product.title} removed from wishlist.`);
+  } catch (err) {
+    console.error("Remove wishlist error:", err);
+    toast.error("Wishlist service error");
+  }
+};
+
 
   const addToCart = async (product) => {
     const cart = JSON.parse(localStorage.getItem(`cart${userId}`) || "[]")
@@ -108,7 +137,7 @@ const Products = () => {
     const cartData = { ...product, email: user.email };
     console.log(cartData)
     try {
-      const response = await fetch('https://spring-server-0m1e.onrender.com/cart/add', {
+      const response = await fetch(`${apiKey}/cart/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cartData),

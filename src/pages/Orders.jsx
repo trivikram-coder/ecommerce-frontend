@@ -1,20 +1,59 @@
 import React, { useEffect, useState } from "react";
 import "../styles/orders.css";
+import { toast } from "react-toastify";
+import apiKey from "../service/api";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const user=JSON.parse(localStorage.getItem("user")|| "[]")
-  const userId=user.id
-  useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem(`orders_${userId}`)) || [];
-    setOrders(storedOrders);
-  }, []);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const token = localStorage.getItem("token");
 
-  const handleCancel = (index) => {
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1);
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  // ---------------- FETCH ORDERS ----------------
+  const [loaded, setLoaded] = useState(false);
+
+useEffect(() => {
+  if (!user || !token || loaded) return;
+
+  const fetchOrders = async () => {
+    try {
+      const res = await fetch(
+        `${apiKey}/orders/get`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+      setOrders(data || []);
+      setLoaded(true); // ✅ IMPORTANT
+    } catch (err) {
+      console.error("Fetch orders error:", err);
+    }
+  };
+
+  fetchOrders();
+}, [user, token, loaded]);
+
+
+  // ---------------- CANCEL ORDER ----------------
+  const handleCancel = async (orderId) => {
+    try {
+      await fetch(
+        `${apiKey}/orders/delete/${orderId}`,
+        {
+          method: "DELETE",
+          
+        }
+      );
+
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      toast.success("Order cancelled successfully");
+    } catch (err) {
+      console.error("Cancel order error:", err);
+      toast.error("Failed to cancel order");
+    }
   };
 
   return (
@@ -24,8 +63,8 @@ const Orders = () => {
       {orders.length === 0 ? (
         <div className="empty-orders">No orders found.</div>
       ) : (
-        orders.map((order, index) => (
-          <div className="amazon-order-card" key={index}>
+        orders.map((order) => (
+          <div className="amazon-order-card" key={order.id}>
 
             {/* HEADER */}
             <div className="amazon-order-header">
@@ -45,14 +84,14 @@ const Orders = () => {
               </div>
 
               <div className="order-id">
-                Order #{index + 1}
+                Order #{order.id}
               </div>
             </div>
 
             {/* BODY */}
             <div className="amazon-order-body">
-              {order.items.map((item, idx) => (
-                <div className="amazon-order-item" key={idx}>
+              {order.items.map((item) => (
+                <div className="amazon-order-item" key={item.id}>
 
                   {/* IMAGE */}
                   <div className="order-item-img">
@@ -90,7 +129,7 @@ const Orders = () => {
             <div className="amazon-order-footer">
               <button
                 className="btn btn-outline-secondary btn-sm"
-                onClick={() => handleCancel(index)}
+                onClick={() => handleCancel(order.id)}
               >
                 Cancel order
               </button>

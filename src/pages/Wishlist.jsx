@@ -2,35 +2,52 @@ import React, { useState, useEffect } from "react";
 import { Heart, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/wishlist.css";
-
+import { toast } from "react-toastify";
+import apiKey from "../service/api";
 const Wishlist = () => {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  const token=localStorage.getItem("token")
   const userId = user?.id;
 
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    const storedWishlist = JSON.parse(
-      localStorage.getItem(`wishlist${userId}`) || "[]"
-    );
-    setWishlist(storedWishlist);
+    fetch(`${apiKey}/wishlist/get`,{
+      headers:{
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then(res=>res.json())
+    .then(data=>setWishlist(data))
+ 
   }, [userId]);
 
-  const removeFromWishlist = (id) => {
+  const removeFromWishlist = async(id) => {
+    const res=await fetch(`${apiKey}/wishlist/delete/${id}`,{
+      method:"DELETE"
+    })
+    let response;
+   try{
+    response=await res.json();
+   }catch(e){
+    toast.error("Server error")
+    return;
+   }
+   if(res.status===200){
+    toast.success(response)
+   }
     const updatedWishlist = wishlist.filter((item) => item.id !== id);
+    localStorage.setItem(`wishlist${userId}`,JSON.stringify(updatedWishlist))
     setWishlist(updatedWishlist);
-    localStorage.setItem(
-      `wishlist${userId}`,
-      JSON.stringify(updatedWishlist)
-    );
+    window.dispatchEvent(new Event("storage"))
     const updatedWishlistIds=updatedWishlist.map(item=>item.id)
     localStorage.setItem(
       "wishlistIds",
       JSON.stringify(updatedWishlistIds)
     )
-      window.dispatchEvent(new Event("storage"))
+      
   };
 
   return (

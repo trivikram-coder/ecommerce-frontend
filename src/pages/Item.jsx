@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, ShoppingCart, ArrowRight, Heart } from 'lucide-react';
-import '../styles/items.css';
-import { toast } from 'react-toastify';
-
+import React, { useState, useEffect } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { Minus, Plus, ShoppingCart, ArrowRight, Heart } from "lucide-react";
+import "../styles/items.css";
+import { toast } from "react-toastify";
+import apiKey from "../service/api";
 const Item = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const user = storedUser;
@@ -11,7 +11,11 @@ const Item = () => {
   const location = useLocation();
   const item = location.state?.item;
   const token = localStorage.getItem("token") || "";
-
+  const[wishlist,setWishlist]=useState([])
+  useEffect(()=>{
+    const data=JSON.parse(localStorage.getItem(`wishlist${user.id}`)||"[]")
+    setWishlist(data);
+  },[item])
   const basePrice =
     item?.discountPrice ?? item?.offerPrice ?? item?.price ?? 0;
 
@@ -20,28 +24,55 @@ const Item = () => {
   const [msg, setMsg] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
-  // ❤️ Wishlist state
+  // ❤️ Wishlist
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  const WISHLIST_IDS_KEY = "wishlistIds";
+
+  const getWishlistIds = () =>
+    JSON.parse(localStorage.getItem(WISHLIST_IDS_KEY)) || [];
+
+  const setWishlistIds = (ids) =>
+    localStorage.setItem(WISHLIST_IDS_KEY, JSON.stringify(ids));
+
+  // ---------------- PRICE CALC ----------------
   useEffect(() => {
     setTotalPrice(quantity * basePrice);
     setMsg(quantity <= 0 ? "Quantity must be at least 1." : "");
   }, [quantity, basePrice]);
 
-  // ❤️ Sync wishlist on load
+  // ---------------- SYNC WISHLIST FROM BACKEND ----------------
   useEffect(() => {
     if (!user || !item) return;
 
-    const wishlistKey = `wishlist${user.id}`;
-    const wishlist =
-      JSON.parse(localStorage.getItem(wishlistKey)) || [];
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch(
+          `${apiKey}/wishlist/get`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    const exists = wishlist.some((p) => p.id === item.id);
-    setIsWishlisted(exists);
-  }, [user, item]);
+        const data = await res.json();
+        const ids = data.map((p) => p.id);
 
-  if (!item) return <h2 className="text-center mt-5">Item not found!</h2>;
+        setWishlistIds(ids);
+        setIsWishlisted(ids.includes(item.id));
+      } catch (err) {
+        console.error("Wishlist fetch error:", err);
+      }
+    };
 
+    fetchWishlist();
+  }, [user, item, token]);
+
+  if (!item)
+    return <h2 className="text-center mt-5">Item not found!</h2>;
+
+  // ---------------- QUANTITY ----------------
   const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
 
   const handleDecreaseQuantity = () => {
@@ -49,35 +80,70 @@ const Item = () => {
     else setMsg("Quantity cannot be less than 1");
   };
 
-  // ❤️ TOGGLE WISHLIST
-  const toggleWishlist = () => {
-    if (!user) {
-      toast.error("Please sign in to use wishlist");
-      navigate("/");
-      return;
-    }
+  // ---------------- WISHLIST TOGGLE (BACKEND) ----------------
+const toggleWishlist = async () => {
+  if (!user) {
+    toast.error("Please sign in to use wishlist");
+    navigate("/");
+    return;
+  }
 
-    const wishlistKey = `wishlist${user.id}`;
-    const wishlist =
-      JSON.parse(localStorage.getItem(wishlistKey)) || [];
+  try {
+    let wishlistIds = getWishlistIds();
+    let updatedWishlist = [...wishlist];
 
-    const index = wishlist.findIndex((p) => p.id === item.id);
+    if (isWishlisted) {
+      // ❌ REMOVE
+      await fetch(`${apiKey}/wishlist/delete/${item.id}`, {
+        method: "DELETE",
+      });
 
-    if (index !== -1) {
-      wishlist.splice(index, 1);
+      wishlistIds = wishlistIds.filter((id) => id !== item.id);
+      updatedWishlist = updatedWishlist.filter(
+        (p) => p.id !== item.id
+      );
+
       setIsWishlisted(false);
       toast.info("Removed from wishlist");
     } else {
-      wishlist.push({ ...item });
+      // ❤️ ADD
+      const itemData = { ...item, email: user.email };
+
+      await fetch(`${apiKey}/wishlist/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(itemData),
+      });
+
+      wishlistIds.push(item.id);
+      updatedWishlist.push(item);
+
       setIsWishlisted(true);
       toast.success("Added to wishlist ❤️");
     }
 
-    localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-    window.dispatchEvent(new Event("storage"));
-  };
+    // ✅ UPDATE STATE + LOCALSTORAGE TOGETHER
+    setWishlist(updatedWishlist);
+    localStorage.setItem(
+      `wishlist${user.id}`,
+      JSON.stringify(updatedWishlist)
+    );
 
-  // -------- ADD TO CART (BACKEND + LOCALSTORAGE) --------
+    localStorage.setItem("wishlistIds", JSON.stringify(wishlistIds));
+    setWishlistIds(wishlistIds);
+
+    window.dispatchEvent(new Event("storage"));
+  } catch (err) {
+    console.error("Wishlist error:", err);
+    toast.error("Wishlist service error");
+  }
+};
+
+
+
+  // ---------------- ADD TO CART ----------------
   const addToCart = async (product) => {
     if (!user) {
       toast.error("Please sign in to add items to the cart.");
@@ -85,26 +151,25 @@ const Item = () => {
       return;
     }
 
-    const cartKey = `cart_${user.id}`;
-    const existingCart =
-      JSON.parse(localStorage.getItem(cartKey)) || [];
+    const cartKey = `cart${user.id}`;
+    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
     const cartData = {
       ...product,
       email: user.email,
-      quantity: quantity,
+      quantity,
     };
 
     try {
       setIsAdding(true);
 
       const response = await fetch(
-        "https://spring-server-0m1e.onrender.com/cart/add",
+        `${apiKey}/cart/add`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            
           },
           body: JSON.stringify(cartData),
         }
@@ -117,15 +182,10 @@ const Item = () => {
         return;
       }
 
-      const itemIndex = existingCart.findIndex(
-        (p) => p.id === product.id
-      );
+      const index = existingCart.findIndex((p) => p.id === product.id);
 
-      if (itemIndex !== -1) {
-        existingCart[itemIndex].quantity += quantity;
-      } else {
-        existingCart.push(cartData);
-      }
+      if (index !== -1) existingCart[index].quantity += quantity;
+      else existingCart.push(cartData);
 
       localStorage.setItem(cartKey, JSON.stringify(existingCart));
       window.dispatchEvent(new Event("storage"));
@@ -149,23 +209,15 @@ const Item = () => {
     <div className="container item-page-container py-5">
       <div className="row item-detail-card shadow-lg p-lg-5 p-4">
         {/* IMAGE */}
-        <div className="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
-          <img
-            src={item.image}
-            className="img-fluid item-img"
-            alt={item.title}
-          />
+        <div className="col-lg-6 d-flex justify-content-center">
+          <img src={item.image} className="img-fluid item-img" alt={item.title} />
         </div>
 
         {/* DETAILS */}
-        <div className="col-lg-6 col-md-12 mt-4 mt-lg-0">
-          {/* TITLE + HEART */}
-          <div className="d-flex justify-content-between align-items-start">
+        <div className="col-lg-6 mt-4 mt-lg-0">
+          <div className="d-flex justify-content-between">
             <h1 className="item-title">{item.title}</h1>
-            <button
-              className="btn p-0 border-0 bg-transparent"
-              onClick={toggleWishlist}
-            >
+            <button className="btn p-0" onClick={toggleWishlist}>
               <Heart
                 size={28}
                 fill={isWishlisted ? "red" : "none"}
@@ -174,90 +226,61 @@ const Item = () => {
             </button>
           </div>
 
-          <p className="item-category text-muted mb-3">{item.category}</p>
+          <p className="text-muted">{item.category}</p>
+          <p>{item.description}</p>
 
-          <div className="mb-4">
-            <p>{item.description}</p>
+          <h3>₹{totalPrice.toFixed(2)}</h3>
+
+          {discountPercentage && (
+            <p className="text-success fw-bold">{discountPercentage}% OFF</p>
+          )}
+
+          <div className="d-flex align-items-center mb-3">
+            <button
+              className="btn btn-outline-secondary"
+              onClick={handleDecreaseQuantity}
+              disabled={quantity <= 1}
+            >
+              <Minus size={18} />
+            </button>
+
+            <input
+              type="number"
+              className="form-control text-center mx-2"
+              value={quantity}
+              min="1"
+              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+              style={{ width: "70px" }}
+            />
+
+            <button
+              className="btn btn-outline-secondary"
+              onClick={handleIncreaseQuantity}
+            >
+              <Plus size={18} />
+            </button>
           </div>
 
-          {/* PRICE */}
-          <div className="mb-4 border-top pt-3">
-            <div className="d-flex align-items-center mb-2">
-              <h3 className="mb-0 me-3">₹{totalPrice.toFixed(2)}</h3>
+          {msg && <p className="text-danger">{msg}</p>}
 
-              {basePrice < originalPrice && (
-                <>
-                  <del className="text-muted me-3">
-                    ₹{originalPrice.toFixed(2)}
-                  </del>
-                  <span className="badge bg-success">
-                    {discountPercentage}% OFF
-                  </span>
-                </>
-              )}
-            </div>
-
-            <p className="small text-danger fw-bold">
-              Total price for {quantity} item{quantity > 1 ? "s" : ""}
-            </p>
-          </div>
-
-          {/* QUANTITY */}
-          <div className="d-flex align-items-center mb-4">
-            <label className="me-3 fw-bold">Quantity:</label>
-            <div className="input-group item-quantity-input">
-              <button
-                className="btn btn-outline-secondary"
-                onClick={handleDecreaseQuantity}
-                disabled={quantity <= 1}
-              >
-                <Minus size={20} />
-              </button>
-
-              <input
-                type="number"
-                className="form-control text-center"
-                value={quantity}
-                min="1"
-                onChange={(e) =>
-                  setQuantity(parseInt(e.target.value) || 1)
-                }
-              />
-
-              <button
-                className="btn btn-outline-secondary"
-                onClick={handleIncreaseQuantity}
-              >
-                <Plus size={20} />
-              </button>
-            </div>
-          </div>
-
-          {msg && <p className="text-danger fw-bold small">{msg}</p>}
-
-          {/* ACTION BUTTONS */}
-          <div className="d-flex gap-3 mt-4">
+          <div className="d-flex gap-3">
             <button
               className="btn btn-warning w-50"
               onClick={() => addToCart(item)}
               disabled={isAdding}
             >
-              <ShoppingCart size={20} className="me-2" />
+              <ShoppingCart size={18} className="me-2" />
               {isAdding ? "Adding..." : "Add To Cart"}
             </button>
 
             <Link
               to="/checkout"
               state={{
-                item: {
-                  ...item,
-                  quantity,
-                  discountPrice: basePrice,
-                },
+                item: { ...item, quantity, discountPrice: basePrice },
               }}
               className="btn btn-primary w-50"
             >
-              Buy now <ArrowRight size={20} className="ms-2" />
+              Buy Now <ArrowRight size={18} />
             </Link>
           </div>
         </div>

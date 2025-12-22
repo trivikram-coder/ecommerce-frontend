@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/forms.css";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import apiKey  from "../service/api";
 const Auth = () => {
   const location=useLocation();
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ useEffect(() => {
   /* ================= SIGN IN ================= */
   const handleSignin = async (e) => {
     e.preventDefault();
-
+    toast.info("Redirecting....")
     if (!signinData.email || !signinData.password) {
       toast.error("Please enter all fields");
       return;
@@ -60,7 +60,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        "https://spring-server-0m1e.onrender.com/auth/signin",
+        `${apiKey}/auth/signin`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ useEffect(() => {
       localStorage.setItem("token", data.token);
 
       const userRes = await fetch(
-        "https://spring-server-0m1e.onrender.com/auth/details",
+        `${apiKey}/auth/details`,
         {
           headers: {
             Authorization: `Bearer ${data.token}`,
@@ -94,7 +94,7 @@ useEffect(() => {
       const userData = await userRes.json();
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData)
-      toast.success("Login successful!");
+      toast.success("Signin successful!");
     window.dispatchEvent(new Event("storage"));
       navigate("/products");
     } catch {
@@ -106,7 +106,7 @@ useEffect(() => {
   const checkUser = async () => {
     try {
       await axios.get(
-        `https://spring-server-0m1e.onrender.com/auth/check-email?email=${signupData.email}`
+        `${apiKey}/auth/check-email?email=${signupData.email}`
       );
       return true;
     } catch (error) {
@@ -154,7 +154,7 @@ useEffect(() => {
       );
 
       await axios.post(
-        "https://spring-server-0m1e.onrender.com/auth/signup",
+        `${apiKey}/auth/signup`,
         signupData
       );
 

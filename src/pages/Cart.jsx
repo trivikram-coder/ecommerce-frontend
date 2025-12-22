@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import "../styles/cart.css";
-
+import apiKey from "../service/api";
 /* ================= CART ITEM ================= */
 const CartItem = ({ item, updateQuantity, removeItem }) => {
   const name = item.title ?? item.name ?? "Unnamed Item";
@@ -85,7 +85,7 @@ const Cart = () => {
     if (!userId) return;
 
     setLoading(true);
-    fetch("https://spring-server-0m1e.onrender.com/cart/get", {
+    fetch(`${apiKey}/cart/get`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -105,7 +105,7 @@ const Cart = () => {
 
   /* Remove item */
   const removeItem = (id) => {
-    fetch(`https://spring-server-0m1e.onrender.com/cart/delete/${id}`, {
+    fetch(`${apiKey}/cart/delete/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -134,7 +134,7 @@ const Cart = () => {
       return updated;
     });
 
-    fetch("https://spring-server-0m1e.onrender.com/cart/update", {
+    fetch(`${apiKey}/cart/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

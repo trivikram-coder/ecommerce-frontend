@@ -10,7 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import "../styles/layout.css";
-
+import apiKey from "../service/api";
 const Layout = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -39,7 +39,7 @@ const Layout = () => {
 
     try {
       const res = await fetch(
-        "https://spring-server-0m1e.onrender.com/cart/get",
+        `${apiKey}/cart/get`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
