@@ -208,12 +208,7 @@ const Products = () => {
                   </div>
                 </li>
               ))}
-              {/* Optional: Add a link to view all results */}
-              {items.length > 5 && (
-                <li className="list-group-item text-center text-primary fw-bold" style={{ cursor: 'pointer' }}>
-                  View All {items.length} Results
-                </li>
-              )}
+            
             </ul>
           </div>
         )}
