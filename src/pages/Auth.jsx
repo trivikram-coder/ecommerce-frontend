@@ -9,7 +9,7 @@ import axios from "axios";
 const Auth = () => {
   const location=useLocation();
   const navigate = useNavigate();
-
+  const [user,setUser]=useState(null)
   /* ================= MODE STATE ================= */
   // signin | signup | otp
   const [mode, setMode] = useState("signin");
@@ -93,8 +93,9 @@ useEffect(() => {
 
       const userData = await userRes.json();
       localStorage.setItem("user", JSON.stringify(userData));
-
+      setUser(userData)
       toast.success("Login successful!");
+    window.dispatchEvent(new Event("storage"));
       navigate("/products");
     } catch {
       toast.error("Network error. Try again.");
