@@ -1,3 +1,3 @@
 
-const apiKey = "https://spring-server-0m1e.onrender.com";
+const apiKey = "https://www.vkstore.site";
 export default apiKey;
