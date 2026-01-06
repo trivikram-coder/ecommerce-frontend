@@ -1,6 +1,7 @@
+import apiKey from "../../service/api";
 
 const products=[];
-fetch("https://spring-server-0m1e.onrender.com/products/get")
+fetch(`${apiKey}/products/get`)
 .then(response=>response.json())
 .then(data=>{
   products.push(...data)
