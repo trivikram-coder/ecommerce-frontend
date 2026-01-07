@@ -1,3 +1,3 @@
 
-const apiKey = "https://www.vkstore.site";
+const apiKey = "https://api.vkstore.site";
 export default apiKey;

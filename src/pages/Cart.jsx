@@ -3,10 +3,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import "../styles/cart.css";
 import apiKey from "../service/api";
+
 /* ================= CART ITEM ================= */
 const CartItem = ({ item, updateQuantity, removeItem }) => {
-  const name = item.title ?? item.name ?? "Unnamed Item";
-  const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+  const name = item.title || "Unnamed Item";
+  const price = item.discountPrice ?? item.price ?? 0;
   const quantity = item.quantity || 1;
   const subTotal = price * quantity;
 
@@ -22,14 +23,16 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 
         <div className="price-row">
           <span className="price">₹{price.toFixed(2)}</span>
-          <span className="subtotal">Subtotal: ₹{subTotal.toFixed(2)}</span>
+          <span className="subtotal">
+            Subtotal: ₹{subTotal.toFixed(2)}
+          </span>
         </div>
 
         <div className="quantity-controls">
           <button
             className="btn btn-outline-secondary btn-sm"
             disabled={quantity <= 1}
-            onClick={() => updateQuantity(item.id, quantity - 1)}
+            onClick={() => updateQuantity(item.cartId, quantity - 1)}
           >
             <Minus size={16} />
           </button>
@@ -40,13 +43,16 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
             min="1"
             value={quantity}
             onChange={(e) =>
-              updateQuantity(item.id, parseInt(e.target.value) || 1)
+              updateQuantity(
+                item.cartId,
+                parseInt(e.target.value) || 1
+              )
             }
           />
 
           <button
             className="btn btn-outline-secondary btn-sm"
-            onClick={() => updateQuantity(item.id, quantity + 1)}
+            onClick={() => updateQuantity(item.cartId, quantity + 1)}
           >
             <Plus size={16} />
           </button>
@@ -55,7 +61,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 
       <button
         className="btn remove-btn"
-        onClick={() => removeItem(item.id)}
+        onClick={() => removeItem(item.cartId)}
         aria-label="Remove item"
       >
         <X size={18} />
@@ -67,94 +73,88 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 /* ================= MAIN CART ================= */
 const Cart = () => {
   const navigate = useNavigate();
-
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const userId = storedUser?.id;
-  const token = localStorage.getItem("token") || "";
+  const token = localStorage.getItem("token");
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   /* Redirect if not logged in */
   useEffect(() => {
-    if (!userId) navigate("/", { replace: true });
-  }, [userId, navigate]);
+    if (!token) navigate("/", { replace: true });
+  }, [token, navigate]);
 
-  /* Load cart */
+  /* 🔁 Sync helper (IMPORTANT) */
+  const syncCart = (updatedItems) => {
+    setItems(updatedItems);
+    localStorage.setItem("cart", JSON.stringify(updatedItems));
+    window.dispatchEvent(new Event("storage"));
+  };
+
+  /* Fetch cart */
   const fetchCartItems = () => {
-    if (!userId) return;
-
     setLoading(true);
+
     fetch(`${apiKey}/cart/get`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        const list = Array.isArray(data) ? data : [];
-        setItems(list);
-        localStorage.setItem(`cart${userId}`, JSON.stringify(list));
-        window.dispatchEvent(new Event("storage"));
+        const list = data?.data || [];
+        syncCart(list);
       })
-      .catch((err) => console.error("Cart load error:", err))
+      .catch((err) => console.error("Cart fetch error:", err))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
     fetchCartItems();
-  }, [userId, token]);
+  }, []);
 
   /* Remove item */
-  const removeItem = (id) => {
-    fetch(`${apiKey}/cart/delete/${id}`, {
+  const removeItem = (cartId) => {
+    fetch(`${apiKey}/cart/delete/${cartId}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Delete failed");
-
-        setItems((prev) => {
-          const updated = prev.filter((item) => item.id !== id);
-          localStorage.setItem(`cart${userId}`, JSON.stringify(updated));
-          window.dispatchEvent(new Event("storage"));
-          return updated;
-        });
+      .then(() => {
+        const updated = items.filter(
+          (item) => item.cartId !== cartId
+        );
+        syncCart(updated);
       })
-      .catch((err) => console.error("Remove error:", err));
+      .catch((err) => console.error("Delete error:", err));
   };
 
   /* Update quantity */
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (cartId, quantity) => {
     if (quantity < 1) return;
 
-    setItems((prev) => {
-      const updated = prev.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      );
-      localStorage.setItem(`cart${userId}`, JSON.stringify(updated));
-      return updated;
-    });
+    const updated = items.map((item) =>
+      item.cartId === cartId
+        ? { ...item, quantity }
+        : item
+    );
 
-    fetch(`${apiKey}/cart/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id, quantity }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          fetchCartItems();
-          throw new Error("Update failed");
-        }
-        window.dispatchEvent(new Event("storage"));
-      })
-      .catch((err) => console.error("Update error:", err));
+    syncCart(updated);
+
+    fetch(
+      `${apiKey}/cart/update/${cartId}?quantity=${quantity}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ).catch((err) => console.error("Update error:", err));
   };
 
   /* Total */
   const totalAmount = items.reduce((acc, item) => {
-    const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+    const price = item.discountPrice ?? item.price ?? 0;
     return acc + price * (item.quantity || 1);
   }, 0);
 
@@ -167,7 +167,7 @@ const Cart = () => {
     );
   }
 
-  /* Empty */
+  /* Empty cart */
   if (items.length === 0) {
     return (
       <div className="text-center py-5">
@@ -193,7 +193,7 @@ const Cart = () => {
           <ul className="cart-list">
             {items.map((item) => (
               <CartItem
-                key={item.id}
+                key={item.cartId}
                 item={item}
                 updateQuantity={updateQuantity}
                 removeItem={removeItem}

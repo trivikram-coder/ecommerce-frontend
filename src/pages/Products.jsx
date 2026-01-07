@@ -3,10 +3,11 @@ import '../styles/products.css';
 import { Delete, Heart, Search, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import products2 from '../Categories/data/data2';
+import products from '../Categories/data/data2';
 import apiKey from '../service/api';
 const Products = () => {
   // ... (Your state and function definitions are kept as they are)
+  const token=localStorage.getItem("token")
   const storedUser = JSON.parse(localStorage.getItem("user") || "[]");
   const user = storedUser
   const userId = user.id
@@ -26,13 +27,13 @@ const Products = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setItems(products2);
-    setFiltered(products2);
+    setItems(products);
+    setFiltered(products);
   }, []);
 
   //Wishlist state
   useEffect(() => {
-    const wishIds = JSON.parse(localStorage.getItem('wishlistIds')) || []
+    const wishIds = JSON.parse(localStorage.getItem(`wishlistIds${userId}`)) || []
     setWishlistIds(wishIds)
   }, [])
 
@@ -55,37 +56,67 @@ const Products = () => {
     setCurrentPage(1); // reset to first page after search
   };
 
-  const addToWishlist = async(product) => {
-    let wishlist = JSON.parse(localStorage.getItem(`wishlist${user.id}`) || "[]") || [];
-    if (!wishlist.some((item) => item.id === product.id)) {
-      const wishlistData={...product,email:user.email}
-      const res=await fetch(`${apiKey}/wishlist/add`,{
-        method:"POST",
-        headers:{
-          "content-type":"application/json"
-        },
-        body:JSON.stringify(wishlistData)
-      })
-      if(res.status===200){
+ const addToWishlist = async (product) => {
+  if (!user || !token) {
+    toast.error("You must be logged in to add to wishlist");
+    return;
+  }
 
-        toast.success(product.title + ' added to wishlist');
-        wishlist.push(product);
-        localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
-      }
-      setWishlistIds(
-        (prev) => {
-          const updated = [...prev, product.id]
-          localStorage.setItem('wishlistIds', JSON.stringify(updated))
-          return updated;
-        }
-      );
+  // Get existing wishlist from localStorage
+  let wishlist = JSON.parse(localStorage.getItem(`wishlist${user.id}`) || "[]");
+
+  // Check if the product is already in wishlist
+  if (!wishlist.some((item) => item.productId === product.id)) {
+    // Prepare data to send to backend
+    const wishlistData = {
+      ...product,
+       // make sure backend receives productId
       
-    } else {
-      toast.success(`${product.title} is already in your wishlist.`);
+    };
+
+    try {
+      const res = await fetch(`${apiKey}/wishlist/add`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(wishlistData),
+      });
+
+      const response = await res.json();
+
+      if (res.ok) {
+        toast.success(`${product.title} added to wishlist`);
+
+        // Update localStorage and state
+        wishlist.push(wishlistData);
+        localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
+
+        // Update wishlistIds in state and localStorage
+        setWishlistIds((prev) => {
+          const updated = [...prev, product.productId];
+          localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updated));
+          return updated;
+        });
+
+        // Update wishlist count
+        setWishCount(wishlist.length);
+
+        // Trigger storage event for other tabs
+        window.dispatchEvent(new Event("storage"));
+      } else {
+        toast.error(response.message || "Failed to add to wishlist");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error");
     }
-    window.dispatchEvent(new Event("storage"))
-    setWishCount(wishlist.length);
-  };
+  } else {
+    toast.info(`${product.title} is already in your wishlist`);
+  }
+};
+
 
   const removeFromWishlist = async (product) => {
   try {
@@ -93,8 +124,11 @@ const Products = () => {
     const res = await fetch(
       `${apiKey}/wishlist/delete/${product.id}`,
       {
+
         method: "DELETE",
-       
+       headers:{
+        "Authorization":`Bearer ${token}`
+       }
       }
     );
 
@@ -105,8 +139,8 @@ const Products = () => {
 
     // 2️⃣ Update wishlistIds (ONLY IDS)
     setWishlistIds((prev) => {
-      const updated = prev.filter((id) => id !== product.id);
-      localStorage.setItem("wishlistIds", JSON.stringify(updated));
+      const updated = prev.filter((id) => id !== product.productId);
+      localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updated));
       setWishCount(updated.length);
       return updated;
     });
@@ -122,6 +156,7 @@ const Products = () => {
 
 
   const addToCart = async (product) => {
+    console.log(product)
     const cart = JSON.parse(localStorage.getItem(`cart${userId}`) || "[]")
     const existingItem = cart.find((item) => item.id === product.id);
     const quantity = quantities[product.id] || 1;
@@ -139,7 +174,9 @@ const Products = () => {
     try {
       const response = await fetch(`${apiKey}/cart/add`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          "Authorization":`Bearer ${token}`
+         },
         body: JSON.stringify(cartData),
       });
 
@@ -367,7 +404,7 @@ const Products = () => {
                           Add to Cart
                         </button>
 
-                        {wishlistIds.includes(item.id) ? (
+                        {wishlistIds.includes(item.productId) ? (
                           <button
                             className="btn btn-outline-danger btn-sm"
                             onClick={() => removeFromWishlist(item)}

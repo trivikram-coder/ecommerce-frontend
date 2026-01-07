@@ -4,50 +4,75 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/wishlist.css";
 import { toast } from "react-toastify";
 import apiKey from "../service/api";
+
 const Wishlist = () => {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
-  const token=localStorage.getItem("token")
+  const token = localStorage.getItem("token");
   const userId = user?.id;
 
   const [wishlist, setWishlist] = useState([]);
 
+  // Fetch wishlist items
   useEffect(() => {
-    fetch(`${apiKey}/wishlist/get`,{
-      headers:{
-        "Authorization": `Bearer ${token}`
-      }
-    })
-    .then(res=>res.json())
-    .then(data=>setWishlist(data))
- 
-  }, [userId]);
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch(`${apiKey}/wishlist/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  const removeFromWishlist = async(id) => {
-    const res=await fetch(`${apiKey}/wishlist/delete/${id}`,{
-      method:"DELETE"
-    })
-    let response;
-   try{
-    response=await res.json();
-   }catch(e){
-    toast.error("Server error")
-    return;
-   }
-   if(res.status===200){
-    toast.success(response)
-   }
-    const updatedWishlist = wishlist.filter((item) => item.id !== id);
-    localStorage.setItem(`wishlist${userId}`,JSON.stringify(updatedWishlist))
-    setWishlist(updatedWishlist);
-    window.dispatchEvent(new Event("storage"))
-    const updatedWishlistIds=updatedWishlist.map(item=>item.id)
-    localStorage.setItem(
-      "wishlistIds",
-      JSON.stringify(updatedWishlistIds)
-    )
-      
+        const data = await res.json();
+
+        if (res.ok) {
+          setWishlist(data.data || []);
+          // Save wishlist IDs locally
+          const wishlistIds = (data.data || []).map((item) => item.productId);
+          localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(wishlistIds));
+        } else {
+          toast.error(data.message || "Failed to fetch wishlist");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Server error");
+      }
+    };
+
+    if (token) fetchWishlist();
+  }, [userId, token]);
+
+  // Remove item from wishlist
+  const removeFromWishlist = async (id) => {
+    try {
+      const res = await fetch(`${apiKey}/wishlist/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const response = await res.json();
+
+      if (res.ok) {
+        toast.success(response.message || "Item removed");
+
+        const updatedWishlist = wishlist.filter((item) => item.id !== id);
+        setWishlist(updatedWishlist);
+
+        // Update local storage
+        localStorage.setItem(`wishlist${userId}`, JSON.stringify(updatedWishlist));
+        const updatedWishlistIds = updatedWishlist.map((item) => item.productId);
+        localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updatedWishlistIds));
+        window.dispatchEvent(new Event("storage"))
+      } else {
+        toast.error(response.message || "Failed to remove item");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error");
+    }
   };
 
   return (
@@ -68,11 +93,7 @@ const Wishlist = () => {
           {wishlist.map((item) => (
             <div className="col-md-3" key={item.id}>
               <div className="wishlist-card">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="wishlist-img"
-                />
+                <img src={item.image} alt={item.title} className="wishlist-img" />
 
                 <div className="wishlist-body">
                   <h6>{item.title}</h6>
@@ -85,9 +106,7 @@ const Wishlist = () => {
                   <div className="wishlist-actions">
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() =>
-                        navigate("/checkout", { state: { item } })
-                      }
+                      onClick={() => navigate("/checkout", { state: { item } })}
                     >
                       Buy Now
                     </button>

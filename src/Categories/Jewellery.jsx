@@ -1,10 +1,14 @@
-import React from "react";
-import products from "./data/data";
+import React, { useEffect, useState } from "react";
+import {getProducts} from "./data/data";
 import { useNavigate } from "react-router-dom";
 import "../styles/category.css";
 
 const Jewellery = () => {
+  const[products,setProducts]=useState([])
   const navigate = useNavigate();
+  useEffect(()=>{
+    getProducts().then(setProducts);
+  },[])
   const jewellery = products.filter(
     (product) => product.category === "jewellery"
   );

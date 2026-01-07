@@ -1,10 +1,15 @@
-import products from "./data/data";
+import {getProducts} from "./data/data";
 import { useNavigate } from "react-router-dom";
 import { Laptop } from "lucide-react";
 import "../styles/category.css";
+import { useEffect, useState } from "react";
 
 const Electronics = () => {
+  const[products,setProducts]=useState([]);
   const navigate = useNavigate();
+  useEffect(()=>{
+    getProducts().then(setProducts)
+  },[])
   const electronics = products.filter(
     (item) => item.category === "electronics"
   );

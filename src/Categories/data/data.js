@@ -1,10 +1,13 @@
 import apiKey from "../../service/api";
 
-const products=[];
-fetch(`${apiKey}/products/get`)
-.then(response=>response.json())
-.then(data=>{
-  products.push(...data)
-  // console.log(data)
-})
-export default products;
+export const getProducts = async () => {
+  const response = await fetch(`${apiKey}/products/get`);
+  const data = await response.json();
+
+  return data.map(({ id, ...rest }) => ({
+    productId: id,
+    ...rest
+  }));
+};
+
+

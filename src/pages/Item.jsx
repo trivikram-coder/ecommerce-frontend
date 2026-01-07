@@ -57,10 +57,10 @@ const Item = () => {
         );
 
         const data = await res.json();
-        const ids = data.map((p) => p.id);
+        const ids = data.map((p) => p.productId);
 
         setWishlistIds(ids);
-        setIsWishlisted(ids.includes(item.id));
+        setIsWishlisted(ids.includes(item.productId));
       } catch (err) {
         console.error("Wishlist fetch error:", err);
       }
@@ -94,13 +94,13 @@ const toggleWishlist = async () => {
 
     if (isWishlisted) {
       // ❌ REMOVE
-      await fetch(`${apiKey}/wishlist/delete/${item.id}`, {
+      await fetch(`${apiKey}/wishlist/delete/${item.productId}`, {
         method: "DELETE",
       });
 
-      wishlistIds = wishlistIds.filter((id) => id !== item.id);
+      wishlistIds = wishlistIds.filter((id) => id !== item.productId);
       updatedWishlist = updatedWishlist.filter(
-        (p) => p.id !== item.id
+        (p) => p.productId !== item.productId
       );
 
       setIsWishlisted(false);
@@ -112,12 +112,13 @@ const toggleWishlist = async () => {
       await fetch(`${apiKey}/wishlist/add`, {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(itemData),
       });
 
-      wishlistIds.push(item.id);
+      wishlistIds.push(item.productId);
       updatedWishlist.push(item);
 
       setIsWishlisted(true);
@@ -156,8 +157,7 @@ const toggleWishlist = async () => {
 
     const cartData = {
       ...product,
-      email: user.email,
-      quantity,
+     
     };
 
     try {
@@ -168,6 +168,7 @@ const toggleWishlist = async () => {
         {
           method: "POST",
           headers: {
+            "Authorization":`Bearer ${token}`,
             "Content-Type": "application/json",
             
           },
@@ -182,7 +183,7 @@ const toggleWishlist = async () => {
         return;
       }
 
-      const index = existingCart.findIndex((p) => p.id === product.id);
+      const index = existingCart.findIndex((p) => p.productId === product.productId);
 
       if (index !== -1) existingCart[index].quantity += quantity;
       else existingCart.push(cartData);

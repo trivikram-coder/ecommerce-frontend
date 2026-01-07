@@ -55,7 +55,7 @@ const Layout = () => {
       const cart = await res.json();
 
       // total quantity
-      const total = cart.reduce(
+      const total = cart.data.reduce(
         (sum, item) => sum + (item.quantity || 1),
         0
       );

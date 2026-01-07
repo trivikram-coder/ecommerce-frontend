@@ -1,6 +1,6 @@
 const products = [
   {
-    id: 1,
+    productId: 1,
     title: "Wireless Headphones",
     price: 3299,
     discountPrice: 2799,
@@ -11,7 +11,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 2,
+    productId: 2,
     title: "Smart Watch",
     price: 4999,
     discountPrice: 4399,
@@ -22,7 +22,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 3,
+    productId: 3,
     title: "Gaming Mouse",
     price: 1799,
     discountPrice: 1399,
@@ -33,7 +33,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 4,
+    productId: 4,
     title: "Leather Wallet",
     price: 999,
     discountPrice: 749,
@@ -44,7 +44,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 5,
+    productId: 5,
     title: "Bluetooth Speaker",
     price: 2599,
     discountPrice: 1999,
@@ -55,7 +55,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 6,
+    productId: 6,
     title: "Running Shoes",
     price: 3299,
     discountPrice: 2899,
@@ -66,7 +66,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 7,
+    productId: 7,
     title: "Backpack",
     price: 1799,
     discountPrice: 1499,
@@ -77,7 +77,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 8,
+    productId: 8,
     title: "Sunglasses",
     price: 1199,
     discountPrice: 899,
@@ -88,7 +88,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 9,
+    productId: 9,
     title: "Laptop Stand",
     price: 1899,
     discountPrice: 1499,
@@ -99,7 +99,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 10,
+    productId: 10,
     title: "Desk Lamp",
     price: 1399,
     discountPrice: 1099,
@@ -110,7 +110,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 11,
+    productId: 11,
     title: "Yoga Mat",
     price: 1299,
     discountPrice: 999,
@@ -121,7 +121,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 12,
+    productId: 12,
     title: "Water Bottle",
     price: 699,
     discountPrice: 499,
@@ -132,7 +132,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 13,
+    productId: 13,
     title: "T-shirt",
     price: 799,
     discountPrice: 599,
@@ -143,7 +143,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 14,
+    productId: 14,
     title: "Mechanical Keyboard",
     price: 4599,
     discountPrice: 4099,
@@ -154,7 +154,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 15,
+    productId: 15,
     title: "Cooking Pan Set",
     price: 3199,
     discountPrice: 2599,
@@ -165,7 +165,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 16,
+    productId: 16,
     title: "Smartphone Tripod",
     price: 1499,
     discountPrice: 1199,
@@ -176,7 +176,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 17,
+    productId: 17,
     title: "Bolt Power Bank",
     price: 1899,
     discountPrice: 1599,
@@ -187,7 +187,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 18,
+    productId: 18,
     title: "E-book Reader",
     price: 8299,
     discountPrice: 7499,
@@ -198,7 +198,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 19,
+    productId: 19,
     title: "Fitness Tracker",
     price: 2999,
     discountPrice: 2499,
@@ -209,7 +209,7 @@ const products = [
     quantity: 1
   },
   {
-    id: 20,
+    productId: 20,
     title: "Portable Charger",
     price: 1499,
     discountPrice: 1199,
