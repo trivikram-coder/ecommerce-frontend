@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import "../styles/cart.css";
 import apiKey from "../service/api";
+import { toast } from "react-toastify";
 
 /* ================= CART ITEM ================= */
 const CartItem = ({ item, updateQuantity, removeItem }) => {
@@ -10,6 +11,8 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
   const price = item.discountPrice ?? item.price ?? 0;
   const quantity = item.quantity || 1;
   const subTotal = price * quantity;
+  
+
 
   return (
     <li className="cart-item-card">
@@ -62,6 +65,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
       <button
         className="btn remove-btn"
         onClick={() => removeItem(item.cartId)}
+
         aria-label="Remove item"
       >
         <X size={18} />
@@ -74,7 +78,9 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 const Cart = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+const userId = user?.id;
+const CART_IDS_KEY = `cartIds${userId}`;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,20 +120,41 @@ const Cart = () => {
 
   /* Remove item */
   const removeItem = (cartId) => {
-    fetch(`${apiKey}/cart/delete/${cartId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const cartIds =
+    JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
+
+  const removedItem = items.find(
+    (item) => item.cartId === cartId
+  );
+
+  const productId = removedItem?.productId;
+
+  fetch(`${apiKey}/cart/delete/${cartId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(() => {
+      const updated = items.filter(
+        (item) => item.cartId !== cartId
+      );
+
+      // ✅ update cartIds
+      const updatedIds = cartIds.filter(
+        (id) => id !== productId
+      );
+
+      localStorage.setItem(
+        CART_IDS_KEY,
+        JSON.stringify(updatedIds)
+      );
+      toast.info(`Item removed from cart`)
+      syncCart(updated);
     })
-      .then(() => {
-        const updated = items.filter(
-          (item) => item.cartId !== cartId
-        );
-        syncCart(updated);
-      })
-      .catch((err) => console.error("Delete error:", err));
-  };
+    .catch((err) => console.error("Delete error:", err));
+};
+
 
   /* Update quantity */
   const updateQuantity = (cartId, quantity) => {

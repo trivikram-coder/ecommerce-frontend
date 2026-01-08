@@ -11,6 +11,7 @@ const Products = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "[]");
   const user = storedUser
   const userId = user.id
+  const CART_IDS_KEY = `cartIds${userId}`;
 
   const [items, setItems] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -18,6 +19,8 @@ const Products = () => {
   const [quantities, setQuantities] = useState({});
   const[wishlistProductIds,setWishlistProductIds]=useState([])
   const [wishlistIds, setWishlistIds] = useState([]);
+  const [cartProductIds, setCartProductIds] = useState([]); // FIX
+
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +32,16 @@ const Products = () => {
     setItems(products);
     setFiltered(products);
   }, []);
+  //Cart state
+  useEffect(()=>{
+if (!userId) return;
 
+  const ids =
+    JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
+
+  
+  setCartProductIds(ids);
+  },[userId])
   //Wishlist state
   useEffect(() => {
     if(!user) return;
@@ -124,11 +136,12 @@ const Products = () => {
 
   const removeFromWishlist = async (product) => {
   const rowMap=JSON.parse(localStorage.getItem(`wishlistRowMap${userId}`))||{};
-  if(!rowMap){
+  const rowId=rowMap[product.productId];
+  if(!rowId){
     toast.info("Row id not found")
     return;
   }
-  const rowId=rowMap[product.productId];
+
   try {
     // 1️⃣ Call backend
     const res = await fetch(
@@ -174,21 +187,22 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
 
 
   const addToCart = async (product) => {
-    console.log(product)
+    
     const cart = JSON.parse(localStorage.getItem(`cart${userId}`) || "[]")
-    const existingItem = cart.find((item) => item.id === product.id);
+    const existingItem = cart.find((item) => item.productId === product.id);
     const quantity = quantities[product.id] || 1;
 
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
       product.quantity = quantity;
-      cart.push(product);
+      cart.push({ ...product, productId: product.productId, quantity });
+
     }
 
     localStorage.setItem(`cart${userId}`, JSON.stringify(cart));
     const cartData = { ...product, email: user.email };
-    console.log(cartData)
+    
     try {
       const response = await fetch(`${apiKey}/cart/add`, {
         method: 'POST',
@@ -202,6 +216,13 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
 
       if (response.ok) {
         toast.success(`${product.title} added to cart`);
+        const updatedIds =JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
+        if (!updatedIds.includes(product.productId)) {
+            updatedIds.push(product.productId);
+          }
+
+          localStorage.setItem(CART_IDS_KEY, JSON.stringify(updatedIds));
+          setCartProductIds(updatedIds);
         window.dispatchEvent(new Event("storage"));
       } else {
         toast.error(`Backend Error: ${data.message}`);
@@ -416,13 +437,24 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
                           <ShoppingBag size={16} className="me-1" />
                           Buy Now
                         </Link>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => addToCart(item)}
-                        >
-                          <ShoppingCart size={16} className="me-1" />
-                          Add to Cart
-                        </button>
+                       {cartProductIds.includes(item.productId) ? (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => navigate("/cart")}
+                          >
+                            Go to Cart
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => addToCart(item)}
+                          >
+                            <ShoppingCart size={16} className="me-1" />
+                            Add to Cart
+                          </button>
+                        )}
+
+
 
                         {wishlistIds.includes(item.productId) ? (
                           <button

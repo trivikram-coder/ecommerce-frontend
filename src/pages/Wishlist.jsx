@@ -14,7 +14,7 @@ const Wishlist = () => {
 
   const [wishlist, setWishlist] = useState([]);
 
-  // Fetch wishlist items
+  /* ---------------- FETCH WISHLIST ---------------- */
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -24,51 +24,112 @@ const Wishlist = () => {
           },
         });
 
-        const data = await res.json();
+        const result = await res.json();
 
-        if (res.ok) {
-          setWishlist(data.data || []);
-          // Save wishlist IDs locally
-          const wishlistIds = (data.data || []).map((item) => item.productId);
-          localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(wishlistIds));
-        } else {
-          toast.error(data.message || "Failed to fetch wishlist");
+        if (!res.ok) {
+          toast.error(result.message || "Failed to fetch wishlist");
+          return;
         }
+
+        const data = result.data || [];
+
+        // 1️⃣ set state
+        setWishlist(data);
+
+        // 2️⃣ save wishlist objects
+        localStorage.setItem(
+          `wishlist${userId}`,
+          JSON.stringify(data)
+        );
+
+        // 3️⃣ save wishlistIds (productIds)
+        const wishlistIds = data.map((item) => item.productId);
+        localStorage.setItem(
+          `wishlistIds${userId}`,
+          JSON.stringify(wishlistIds)
+        );
+
+        // 4️⃣ save rowMap (productId → wishlistRowId)
+        const rowMap = {};
+        data.forEach((item) => {
+          rowMap[item.productId] = item.id;
+        });
+        localStorage.setItem(
+          `wishlistRowMap${userId}`,
+          JSON.stringify(rowMap)
+        );
       } catch (error) {
         console.error(error);
         toast.error("Server error");
       }
     };
 
-    if (token) fetchWishlist();
-  }, [userId, token]);
+    if (token && userId) fetchWishlist();
+  }, [token, userId]);
 
-  // Remove item from wishlist
-  const removeFromWishlist = async (id) => {
+  /* ---------------- REMOVE FROM WISHLIST ---------------- */
+  const removeFromWishlist = async (productId) => {
     try {
-      const res = await fetch(`${apiKey}/wishlist/delete/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // 1️⃣ get rowMap
+      const rowMap =
+        JSON.parse(localStorage.getItem(`wishlistRowMap${userId}`)) || {};
+
+      const wishlistRowId = rowMap[productId];
+
+      if (!wishlistRowId) {
+        toast.error("Wishlist row id not found");
+        return;
+      }
+
+      // 2️⃣ delete from backend
+      const res = await fetch(
+        `${apiKey}/wishlist/delete/${wishlistRowId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const response = await res.json();
 
-      if (res.ok) {
-        toast.success(response.message || "Item removed");
-
-        const updatedWishlist = wishlist.filter((item) => item.id !== id);
-        setWishlist(updatedWishlist);
-
-        // Update local storage
-        localStorage.setItem(`wishlist${userId}`, JSON.stringify(updatedWishlist));
-        const updatedWishlistIds = updatedWishlist.map((item) => item.productId);
-        localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updatedWishlistIds));
-        window.dispatchEvent(new Event("storage"))
-      } else {
+      if (!res.ok) {
         toast.error(response.message || "Failed to remove item");
+        return;
       }
+
+      toast.success(response.message || "Item removed");
+
+      // 3️⃣ update wishlist state
+      const updatedWishlist = wishlist.filter(
+        (item) => item.productId !== productId
+      );
+      setWishlist(updatedWishlist);
+
+      // 4️⃣ update wishlist storage
+      localStorage.setItem(
+        `wishlist${userId}`,
+        JSON.stringify(updatedWishlist)
+      );
+
+      // 5️⃣ update wishlistIds
+      const updatedWishlistIds = updatedWishlist.map(
+        (item) => item.productId
+      );
+      localStorage.setItem(
+        `wishlistIds${userId}`,
+        JSON.stringify(updatedWishlistIds)
+      );
+
+      // 6️⃣ update rowMap
+      delete rowMap[productId];
+      localStorage.setItem(
+        `wishlistRowMap${userId}`,
+        JSON.stringify(rowMap)
+      );
+
+      window.dispatchEvent(new Event("storage"));
     } catch (error) {
       console.error(error);
       toast.error("Server error");
@@ -93,7 +154,11 @@ const Wishlist = () => {
           {wishlist.map((item) => (
             <div className="col-md-3" key={item.id}>
               <div className="wishlist-card">
-                <img src={item.image} alt={item.title} className="wishlist-img" />
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="wishlist-img"
+                />
 
                 <div className="wishlist-body">
                   <h6>{item.title}</h6>
@@ -106,14 +171,18 @@ const Wishlist = () => {
                   <div className="wishlist-actions">
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => navigate("/checkout", { state: { item } })}
+                      onClick={() =>
+                        navigate("/checkout", { state: { item } })
+                      }
                     >
                       Buy Now
                     </button>
 
                     <button
                       className="btn btn-sm btn-outline-danger"
-                      onClick={() => removeFromWishlist(item.id)}
+                      onClick={() =>
+                        removeFromWishlist(item.productId)
+                      }
                     >
                       <Trash size={16} />
                     </button>
