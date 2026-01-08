@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import '../styles/products.css';
 import { Delete, Heart, Search, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,8 +16,7 @@ const Products = () => {
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
   const [quantities, setQuantities] = useState({});
-  const [cartCount, setCartCount] = useState(0);
-  const [wishCount, setWishCount] = useState(0);
+  const[wishlistProductIds,setWishlistProductIds]=useState([])
   const [wishlistIds, setWishlistIds] = useState([]);
 
   // ✅ Pagination states
@@ -33,9 +32,10 @@ const Products = () => {
 
   //Wishlist state
   useEffect(() => {
+    if(!user) return;
     const wishIds = JSON.parse(localStorage.getItem(`wishlistIds${userId}`)) || []
     setWishlistIds(wishIds)
-  }, [])
+  }, [userId])
 
   const handleQuantityChange = (id, value) => {
     const quantity = Math.max(1, parseInt(value) || 1);
@@ -99,9 +99,13 @@ const Products = () => {
           localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updated));
           return updated;
         });
-
-        // Update wishlist count
-        setWishCount(wishlist.length);
+        
+        // Update wishlist 
+        setWishlistProductIds((prev)=>{
+          const updated={...prev,[response.data.productId]:response.data.id};
+          localStorage.setItem(`wishlistRowMap${userId}`,JSON.stringify(updated))
+          return updated;
+        })
 
         // Trigger storage event for other tabs
         window.dispatchEvent(new Event("storage"));
@@ -119,10 +123,16 @@ const Products = () => {
 
 
   const removeFromWishlist = async (product) => {
+  const rowMap=JSON.parse(localStorage.getItem(`wishlistRowMap${userId}`))||{};
+  if(!rowMap){
+    toast.info("Row id not found")
+    return;
+  }
+  const rowId=rowMap[product.productId];
   try {
     // 1️⃣ Call backend
     const res = await fetch(
-      `${apiKey}/wishlist/delete/${product.id}`,
+      `${apiKey}/wishlist/delete/${rowId}`,
       {
 
         method: "DELETE",
@@ -136,15 +146,23 @@ const Products = () => {
       toast.error("Failed to remove from wishlist");
       return;
     }
+    let wishlist =
+  JSON.parse(localStorage.getItem(`wishlist${userId}`)) || [];
 
+wishlist = wishlist.filter(
+  (item) => item.productId !== product.productId
+);
+
+localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
     // 2️⃣ Update wishlistIds (ONLY IDS)
     setWishlistIds((prev) => {
       const updated = prev.filter((id) => id !== product.productId);
       localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updated));
-      setWishCount(updated.length);
+      
       return updated;
     });
-
+    delete rowMap[product.productId]
+    localStorage.setItem(`wishlistRowMap${userId}`,JSON.stringify(rowMap))
     // 3️⃣ Notify UI
     window.dispatchEvent(new Event("storage"));
     toast.success(`${product.title} removed from wishlist.`);
@@ -192,7 +210,7 @@ const Products = () => {
       toast.error(`Error while adding to cart: ${error.message}`);
     }
 
-    setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
+  
   };
 
   function highlightText(text) {
@@ -351,8 +369,10 @@ const Products = () => {
 
           <div className="row g-4">
             {currentItems.length > 0 ? (
+              
               currentItems.map((item) => (
-                <div className="col-lg-3 col-md-4 col-sm-6" key={item.id}>
+                
+                <div className="col-lg-3 col-md-4 col-sm-6" key={item.productId}>
                   <div className="card h-100 shadow-sm transition-shadow">
                     <div className="p-3 text-center">
                       <Link to="/item" state={{ item }}>

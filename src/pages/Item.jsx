@@ -7,6 +7,7 @@ import apiKey from "../service/api";
 const Item = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const user = storedUser;
+  const userId=user.id;
   const navigate = useNavigate();
   const location = useLocation();
   const item = location.state?.item;
@@ -27,7 +28,7 @@ const Item = () => {
   // ❤️ Wishlist
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const WISHLIST_IDS_KEY = "wishlistIds";
+  const WISHLIST_IDS_KEY = `wishlistIds${userId}`;
 
   const getWishlistIds = () =>
     JSON.parse(localStorage.getItem(WISHLIST_IDS_KEY)) || [];
@@ -95,7 +96,11 @@ const toggleWishlist = async () => {
     if (isWishlisted) {
       // ❌ REMOVE
       await fetch(`${apiKey}/wishlist/delete/${item.productId}`, {
+
         method: "DELETE",
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
       });
 
       wishlistIds = wishlistIds.filter((id) => id !== item.productId);
@@ -132,7 +137,7 @@ const toggleWishlist = async () => {
       JSON.stringify(updatedWishlist)
     );
 
-    localStorage.setItem("wishlistIds", JSON.stringify(wishlistIds));
+    localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(wishlistIds));
     setWishlistIds(wishlistIds);
 
     window.dispatchEvent(new Event("storage"));
