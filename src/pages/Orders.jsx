@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/orders.css";
 import { toast } from "react-toastify";
-import apiKey from "../service/api";
+import {apiUrl} from "../service/api";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -17,7 +17,7 @@ useEffect(() => {
   const fetchOrders = async () => {
     try {
       const res = await fetch(
-        `${apiKey}/orders/get`,
+        `${apiUrl}/orders/get`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ useEffect(() => {
   const handleCancel = async (orderId) => {
     try {
       await fetch(
-        `${apiKey}/orders/delete/${orderId}`,
+        `${apiUrl}/orders/delete/${orderId}`,
         {
           method: "DELETE",
           

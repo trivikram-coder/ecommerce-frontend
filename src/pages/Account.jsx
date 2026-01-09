@@ -6,7 +6,7 @@ import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import apiKey  from "../service/api";
+import {apiUrl}  from "../service/api";
 const Account = () => {
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ const Account = () => {
       setIsUpdating(true);
 
       const res = await fetch(
-        `${apiKey}/auth/update?email=${user.email}`,
+        `${apiUrl}/auth/update?email=${user.email}`,
         {
           method: "PUT",
           headers: {

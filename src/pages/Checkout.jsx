@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../styles/checkout.css";
-import apiKey from "../service/api";
+import {apiUrl} from "../service/api";
 
 const Checkout = () => {
   const location = useLocation();
@@ -44,7 +44,7 @@ const Checkout = () => {
       setCart([singleItem]);
       setTotal(calculateTotal([singleItem]));
     } else {
-      fetch(`${apiKey}/cart/get`, {
+      fetch(`${apiUrl}/cart/get`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -104,7 +104,7 @@ const Checkout = () => {
     };
 
     try {
-      const res = await fetch(`${apiKey}/orders/add`, {
+      const res = await fetch(`${apiUrl}/orders/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

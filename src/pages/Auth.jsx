@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/forms.css";
 import { toast } from "react-toastify";
 import axios from "axios";
-import apiKey  from "../service/api";
+import {apiUrl,emailUrl}  from "../service/api";
 const Auth = () => {
   const location=useLocation();
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `${apiKey}/auth/signin`,
+        `${apiUrl}/auth/signin`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ useEffect(() => {
       localStorage.setItem("token", data.token);
 
       const userRes = await fetch(
-        `${apiKey}/auth/details`,
+        `${apiUrl}/auth/details`,
         {
           headers: {
             Authorization: `Bearer ${data.token}`,
@@ -106,7 +106,7 @@ useEffect(() => {
   const checkUser = async () => {
     try {
       await axios.get(
-        `${apiKey}/auth/check-email?email=${signupData.email}`
+        `${apiUrl}/auth/check-email?email=${signupData.email}`
       );
       return true;
     } catch (error) {
@@ -130,7 +130,7 @@ useEffect(() => {
 
     try {
       await axios.post(
-        "https://email-service-72rh.onrender.com/otp/send-otp",
+        `${emailUrl}/otp/send-otp`,
         {
           email: signupData.email,
           appName: "Vk Store",
@@ -149,12 +149,12 @@ useEffect(() => {
   const verifyOtp = async () => {
     try {
       await axios.post(
-        `https://email-service-72rh.onrender.com/otp/verify-otp/${signupData.email}`,
+        `${emailUrl}/otp/verify-otp/${signupData.email}`,
         { otp }
       );
 
       await axios.post(
-        `${apiKey}/auth/signup`,
+        `${apiUrl}/auth/signup`,
         signupData
       );
 

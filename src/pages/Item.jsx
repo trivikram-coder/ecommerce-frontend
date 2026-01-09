@@ -3,7 +3,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, ShoppingCart, ArrowRight, Heart, ArrowUp } from "lucide-react";
 import "../styles/items.css";
 import { toast } from "react-toastify";
-import apiKey from "../service/api";
+import {apiUrl} from "../service/api";
 
 const Item = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
@@ -85,7 +85,7 @@ setIsInCart(cartIds.includes(productId));
           return;
         }
 
-        await fetch(`${apiKey}/wishlist/delete/${wishlistRowId}`, {
+        await fetch(`${apiUrl}/wishlist/delete/${wishlistRowId}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ setIsInCart(cartIds.includes(productId));
         toast.info("Removed from wishlist");
       } else {
         /* -------- ADD -------- */
-        const res = await fetch(`${apiKey}/wishlist/add`, {
+        const res = await fetch(`${apiUrl}/wishlist/add`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -186,7 +186,7 @@ setIsInCart(cartIds.includes(productId));
     try {
       setIsAdding(true);
 
-      const response = await fetch(`${apiKey}/cart/add`, {
+      const response = await fetch(`${apiUrl}/cart/add`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

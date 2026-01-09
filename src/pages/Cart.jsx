@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import "../styles/cart.css";
-import apiKey from "../service/api";
+import {apiUrl} from "../service/api";
 import { toast } from "react-toastify";
 
 /* ================= CART ITEM ================= */
@@ -100,7 +100,7 @@ const CART_IDS_KEY = `cartIds${userId}`;
   const fetchCartItems = () => {
     setLoading(true);
 
-    fetch(`${apiKey}/cart/get`, {
+    fetch(`${apiUrl}/cart/get`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -129,7 +129,7 @@ const CART_IDS_KEY = `cartIds${userId}`;
 
   const productId = removedItem?.productId;
 
-  fetch(`${apiKey}/cart/delete/${cartId}`, {
+  fetch(`${apiUrl}/cart/delete/${cartId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -169,7 +169,7 @@ const CART_IDS_KEY = `cartIds${userId}`;
     syncCart(updated);
 
     fetch(
-      `${apiKey}/cart/update/${cartId}?quantity=${quantity}`,
+      `${apiUrl}/cart/update/${cartId}?quantity=${quantity}`,
       {
         method: "PUT",
         headers: {

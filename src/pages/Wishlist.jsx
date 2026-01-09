@@ -3,7 +3,7 @@ import { Heart, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/wishlist.css";
 import { toast } from "react-toastify";
-import apiKey from "../service/api";
+import {apiUrl} from "../service/api";
 
 const Wishlist = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Wishlist = () => {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const res = await fetch(`${apiKey}/wishlist/get`, {
+        const res = await fetch(`${apiUrl}/wishlist/get`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -83,7 +83,7 @@ const Wishlist = () => {
 
       // 2️⃣ delete from backend
       const res = await fetch(
-        `${apiKey}/wishlist/delete/${wishlistRowId}`,
+        `${apiUrl}/wishlist/delete/${wishlistRowId}`,
         {
           method: "DELETE",
           headers: {

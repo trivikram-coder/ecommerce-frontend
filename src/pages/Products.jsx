@@ -4,7 +4,7 @@ import { Delete, Heart, Search, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import products from '../Categories/data/data2';
-import apiKey from '../service/api';
+import {apiUrl} from '../service/api';
 const Products = () => {
   // ... (Your state and function definitions are kept as they are)
   const token=localStorage.getItem("token")
@@ -87,7 +87,7 @@ if (!userId) return;
     };
 
     try {
-      const res = await fetch(`${apiKey}/wishlist/add`, {
+      const res = await fetch(`${apiUrl}/wishlist/add`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -145,7 +145,7 @@ if (!userId) return;
   try {
     // 1️⃣ Call backend
     const res = await fetch(
-      `${apiKey}/wishlist/delete/${rowId}`,
+      `${apiUrl}/wishlist/delete/${rowId}`,
       {
 
         method: "DELETE",
@@ -204,7 +204,7 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
     const cartData = { ...product, email: user.email };
     
     try {
-      const response = await fetch(`${apiKey}/cart/add`, {
+      const response = await fetch(`${apiUrl}/cart/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
           "Authorization":`Bearer ${token}`
