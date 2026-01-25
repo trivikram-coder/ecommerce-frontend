@@ -2,19 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../styles/checkout.css";
-import { apiUrl } from "../service/api";
-
-/* ================= DATE FORMATTER ================= */
-const formatDate = (date) => {
-  const d = new Date(date);
-  return d.toISOString().split("T")[0]; // yyyy-MM-dd
-};
+import {apiUrl} from "../service/api";
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token") || "";
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
   const itemBuy = location.state?.items ?? location.state?.item;
 
   const [cart, setCart] = useState([]);
@@ -33,10 +29,9 @@ const Checkout = () => {
 
   /* ================= CALCULATE TOTAL ================= */
   const calculateTotal = (items) =>
-    items.reduce((sum, item) => {
-      const price =
-        item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
-      return sum + price * (item.quantity || 1);
+    items.reduce((acc, item) => {
+      const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+      return acc + price * (item.quantity || 1);
     }, 0);
 
   /* ================= INIT CART ================= */
@@ -45,14 +40,25 @@ const Checkout = () => {
       setCart(itemBuy);
       setTotal(calculateTotal(itemBuy));
     } else if (itemBuy) {
-      const singleItem = { ...itemBuy, quantity: 1 };
+      const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
       setCart([singleItem]);
       setTotal(calculateTotal([singleItem]));
     } else {
-      toast.info("Your cart is empty");
-      navigate("/products");
+      fetch(`${apiUrl}/cart/get`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setCart(data || []);
+          setTotal(calculateTotal(data || []));
+          if (!data || data.length === 0) {
+            toast.info("Your cart is empty");
+            navigate("/products");
+          }
+        })
+        .catch(() => toast.error("Failed to load cart"));
     }
-  }, [itemBuy, navigate]);
+  }, [itemBuy, token, navigate]);
 
   /* ================= QUANTITY UPDATE ================= */
   const updateQuantity = (id, type) => {
@@ -73,14 +79,9 @@ const Checkout = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  /* ================= PLACE ORDER ================= */
+  /* ================= PLACE ORDER (BACKEND) ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.name || !formData.email) {
-      toast.error("Name and Email are required");
-      return;
-    }
 
     if (cart.length === 0) {
       toast.error("Cart is empty");
@@ -88,26 +89,18 @@ const Checkout = () => {
     }
 
     const orderDate = new Date();
-    const expectedDate = new Date();
+    const expectedDate = new Date(orderDate);
     expectedDate.setDate(orderDate.getDate() + 5);
 
-    /* ===== MAP CART → ORDER ITEMS (MATCH OrderItem ENTITY) ===== */
-    const orderItems = cart.map((item) => ({
-      productId: item.id,
-      title: item.title || item.name,
-      price:
-        item.discountPrice ?? item.offerPrice ?? item.price ?? 0,
-      quantity: item.quantity || 1,
-    }));
-
     const newOrder = {
+    
       name: formData.name,
       email: formData.email,
-      orderDate: formatDate(orderDate),
-      expectedDelivery: formatDate(expectedDate),
-      status: "PROCESSING",
+      items: cart,
       totalAmount: total,
-      items: orderItems,
+      orderDate: orderDate.toLocaleDateString(),
+      expectedDelivery: expectedDate.toLocaleDateString(),
+      status: "Processing",
     };
 
     try {
@@ -115,6 +108,7 @@ const Checkout = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
         body: JSON.stringify(newOrder),
       });
@@ -124,11 +118,15 @@ const Checkout = () => {
         return;
       }
 
+      // ✅ Clear cart
+      localStorage.removeItem(`cart${storedUser.id}`);
+      window.dispatchEvent(new Event("storage"));
+
       toast.success("Order placed successfully!");
       navigate("/order-placed", { state: { order: newOrder } });
     } catch (err) {
       console.error("Order error:", err);
-      toast.error("Something went wrong");
+      toast.error("Something went wrong while placing order");
     }
   };
 
@@ -155,13 +153,11 @@ const Checkout = () => {
                     required
                   />
                 </div>
-
                 <div className="col-md-6">
                   <label>Email</label>
                   <input
                     className="form-control"
                     name="email"
-                    type="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -207,6 +203,8 @@ const Checkout = () => {
               <input
                 className="form-control mb-3"
                 placeholder="Card Number"
+                name="cardNumber"
+                onChange={handleChange}
                 required
               />
 
@@ -215,6 +213,8 @@ const Checkout = () => {
                   <input
                     className="form-control"
                     placeholder="MM/YY"
+                    name="expiry"
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -222,7 +222,9 @@ const Checkout = () => {
                   <input
                     className="form-control"
                     placeholder="CVV"
+                    name="cvv"
                     type="password"
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -267,9 +269,7 @@ const Checkout = () => {
                       </button>
                     </div>
                   </div>
-                  <strong>
-                    ₹{(price * item.quantity).toFixed(2)}
-                  </strong>
+                  <strong>₹{(price * item.quantity).toFixed(2)}</strong>
                 </div>
               );
             })}
@@ -277,9 +277,7 @@ const Checkout = () => {
             <hr />
             <h5 className="d-flex justify-content-between">
               <span>Total</span>
-              <span className="text-danger">
-                ₹{total.toFixed(2)}
-              </span>
+              <span className="text-danger">₹{total.toFixed(2)}</span>
             </h5>
           </div>
         </div>
