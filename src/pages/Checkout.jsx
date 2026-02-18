@@ -151,7 +151,7 @@ const Checkout = () => {
             }
           );
 
-          if (!verifyRes.ok) {
+          if (!verifyRes.success) {
             toast.error("Payment verification failed");
             setLoading(false);
             return;
@@ -198,7 +198,7 @@ const Checkout = () => {
             body: JSON.stringify(finalOrder),
           });
 
-          if (!orderRes.ok) {
+          if (!orderRes.success) {
             toast.error("Order creation failed");
             setLoading(false);
             return;
