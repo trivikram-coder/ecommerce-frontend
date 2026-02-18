@@ -15,6 +15,7 @@ const Checkout = () => {
 
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: storedUser?.userName || "",
@@ -22,9 +23,6 @@ const Checkout = () => {
     address: "",
     city: "",
     zip: "",
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
   });
 
   /* ================= CALCULATE TOTAL ================= */
@@ -87,7 +85,7 @@ const Checkout = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  /* ================= PLACE ORDER ================= */
+  /* ================= PAYMENT FLOW ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,71 +94,133 @@ const Checkout = () => {
       return;
     }
 
-    const orderDate = new Date();
-    const expectedDate = new Date();
-    expectedDate.setDate(orderDate.getDate() + 5);
-
-    /* 🔥 Format items properly */
-    const formattedItems = cart.map((item) => ({
-      productId: item.productId,
-      title: item.title,
-      image: item.image,
-      category: item.category,
-      price: item.discountPrice ?? item.price,
-      quantity: item.quantity,
-    }));
-
-    /* 🔐 Safe Payment Snapshot */
-    const last4 = formData.cardNumber.slice(-4);
-
-    const newOrder = {
-    
-      name: formData.name,
-      email: formData.email,
-      address: formData.address,
-      city: formData.city,
-      zip: formData.zip,
-      items: formattedItems,
-      totalAmount: total,
-      orderDate: orderDate.toISOString(),
-      expectedDelivery: expectedDate.toISOString(),
-      status: "PLACED",
-      payment: {
-        method: "CARD",
-        status: "PAID",
-        transactionId: "TXN" + Date.now(),
-        last4: last4,
-      },
-    };
+    setLoading(true);
 
     try {
-      const res = await fetch(`${apiUrl}/orders`, {
+      /* 1️⃣ CREATE RAZORPAY ORDER */
+      const paymentRes = await fetch(`${apiUrl}/payment/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          
         },
-        body: JSON.stringify(newOrder),
+        body: JSON.stringify({ userId:storedUser._id,amount: total }),
       });
 
-      const data = await res.json();
+      const paymentData = await paymentRes.json();
 
-      if (!res.ok) {
-        toast.error(data.message || "Failed to place order");
+      if (!paymentRes.ok) {
+        toast.error("Failed to initiate payment");
+        setLoading(false);
         return;
       }
 
-      /* ✅ Clear cart */
-      localStorage.removeItem("cart");
-      localStorage.removeItem(`cartIds_${storedUser.id}`);
-      window.dispatchEvent(new Event("storage"));
+      const { razorpayOrder } = paymentData;
 
-      toast.success("Order placed successfully!");
-      navigate("/order-placed", { state: { order: data.order } });
+      /* 2️⃣ OPEN RAZORPAY */
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        order_id: razorpayOrder.id,
+        name: "VK Store",
+        description: "Order Payment",
+        prefill: {
+          name: storedUser.userName,
+          contact:storedUser.mobileNumber,
+          email: storedUser.email,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+        handler: async function (response) {
+          /* 3️⃣ VERIFY PAYMENT */
+          const verifyRes = await fetch(
+            `${apiUrl}/payment/verify-payment`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
 
-    } catch (err) {
-      console.error("Order error:", err);
-      toast.error("Something went wrong while placing order");
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            }
+          );
+
+          if (!verifyRes.ok) {
+            toast.error("Payment verification failed");
+            setLoading(false);
+            return;
+          }
+
+          /* 4️⃣ CREATE FINAL ORDER */
+          const orderDate = new Date();
+          const expectedDate = new Date();
+          expectedDate.setDate(orderDate.getDate() + 5);
+
+          const formattedItems = cart.map((item) => ({
+            productId: item.productId,
+            title: item.title,
+            image: item.image,
+            category: item.category,
+            price: item.discountPrice ?? item.price,
+            quantity: item.quantity,
+          }));
+
+          const finalOrder = {
+            name: formData.name,
+            email: formData.email,
+            address: formData.address,
+            city: formData.city,
+            zip: formData.zip,
+            items: formattedItems,
+            totalAmount: total,
+            orderDate: orderDate.toISOString(),
+            expectedDelivery: expectedDate.toISOString(),
+            status: "PLACED",
+            payment: {
+              method: "RAZORPAY",
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+            },
+          };
+
+          const orderRes = await fetch(`${apiUrl}/orders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(finalOrder),
+          });
+
+          if (!orderRes.ok) {
+            toast.error("Order creation failed");
+            setLoading(false);
+            return;
+          }
+
+          localStorage.removeItem("cart");
+          localStorage.removeItem(`cartIds_${storedUser.id}`);
+          window.dispatchEvent(new Event("storage"));
+
+          toast.success("Payment successful & Order placed!");
+          navigate("/order-placed");
+
+          setLoading(false);
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error(error);
+      toast.error("Payment failed");
+      setLoading(false);
     }
   };
 
@@ -215,7 +275,7 @@ const Checkout = () => {
               />
 
               <input
-                className="form-control mb-3"
+                className="form-control mb-4"
                 name="zip"
                 value={formData.zip}
                 onChange={handleChange}
@@ -223,42 +283,13 @@ const Checkout = () => {
                 required
               />
 
-              <hr />
-
-              <h4 className="text-primary mb-3">Payment</h4>
-
-              <input
-                className="form-control mb-3"
-                placeholder="Card Number"
-                name="cardNumber"
-                onChange={handleChange}
-                required
-              />
-
-              <div className="row mb-4">
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="MM/YY"
-                    name="expiry"
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="CVV"
-                    name="cvv"
-                    type="password"
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <button className="btn btn-success w-100">
-                Pay ₹{total.toFixed(2)}
+              <button
+                className="btn btn-success w-100"
+                disabled={loading}
+              >
+                {loading
+                  ? "Processing..."
+                  : `Pay Securely ₹${total.toFixed(2)}`}
               </button>
             </form>
           </div>
@@ -283,6 +314,7 @@ const Checkout = () => {
                     <strong>{item.title}</strong>
                     <div className="quantity-controls mt-1">
                       <button
+                        type="button"
                         className="btn btn-sm btn-outline-secondary"
                         onClick={() => updateQuantity(id, "dec")}
                       >
@@ -290,6 +322,7 @@ const Checkout = () => {
                       </button>
                       <span className="mx-2">{item.quantity}</span>
                       <button
+                        type="button"
                         className="btn btn-sm btn-outline-secondary"
                         onClick={() => updateQuantity(id, "inc")}
                       >
