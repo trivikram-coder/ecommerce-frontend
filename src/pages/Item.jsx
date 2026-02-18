@@ -8,7 +8,7 @@ import {apiUrl} from "../service/api";
 const Item = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const user = storedUser;
-  const userId = user?.id;
+  const userId = user?._id;
   const token = localStorage.getItem("token") || "";
   const CART_IDS_KEY = `cartIds${userId}`;
   const[isInCart,setIsInCart]=useState(false)
@@ -85,13 +85,13 @@ setIsInCart(cartIds.includes(productId));
           return;
         }
 
-        await fetch(`${apiUrl}/wishlist/delete/${wishlistRowId}`, {
+        await fetch(`${apiUrl}/wishlist/${wishlistRowId}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+        console.log("Wishlist ids ",wishlistIds)
         const updatedIds = wishlistIds.filter((id) => id !== productId);
         delete rowMap[productId];
         updatedWishlist = updatedWishlist.filter(
@@ -116,13 +116,14 @@ setIsInCart(cartIds.includes(productId));
         toast.info("Removed from wishlist");
       } else {
         /* -------- ADD -------- */
-        const res = await fetch(`${apiUrl}/wishlist/add`, {
+        console.log(item)
+        const res = await fetch(`${apiUrl}/wishlist`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...item, productId }),
+          body: JSON.stringify({ productId }),
         });
 
         const response = await res.json();
@@ -132,7 +133,7 @@ setIsInCart(cartIds.includes(productId));
         }
 
         wishlistIds.push(productId);
-        rowMap[productId] = response.data.id;
+        rowMap[productId] = response.data._id;
         updatedWishlist.push({ ...item, productId });
 
         localStorage.setItem(
@@ -161,64 +162,69 @@ setIsInCart(cartIds.includes(productId));
   };
 
   /* ---------------- ADD TO CART ---------------- */
-  const addToCart = async (product) => {
-    if (!user) {
-      toast.error("Please sign in to add items to the cart.");
-      navigate("/signin");
+  const addToCart = async () => {
+
+  if (!user) {
+    toast.error("Please sign in to add items to the cart.");
+    navigate("/signin");
+    return;
+  }
+
+  const cartKey = `cart${userId}`;
+  const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+  const index = existingCart.findIndex(
+    (p) => p.productId === productId
+  );
+
+  if (index !== -1) {
+    existingCart[index].quantity += quantity;
+  } else {
+    existingCart.push({ ...item, productId, quantity });
+  }
+
+  localStorage.setItem(cartKey, JSON.stringify(existingCart));
+
+  try {
+    setIsAdding(true);
+    console.log(productId)
+    const response = await fetch(`${apiUrl}/cart`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId }),   // ✅ FIXED
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.message || "Failed to add to cart");
       return;
     }
 
-    const cartKey = `cart${userId}`;
-    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    const cartIds =
+      JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
 
-    const index = existingCart.findIndex(
-      (p) => p.productId === productId
-    );
-
-    if (index !== -1) {
-      existingCart[index].quantity += quantity;
-    } else {
-      existingCart.push({ ...product, productId, quantity });
+    if (!cartIds.includes(productId)) {
+      cartIds.push(productId);
+      localStorage.setItem(CART_IDS_KEY, JSON.stringify(cartIds));
     }
 
-    localStorage.setItem(cartKey, JSON.stringify(existingCart));
+    setIsInCart(true);
 
-    try {
-      setIsAdding(true);
+    toast.success(`${item.title} added to cart`);
+    window.dispatchEvent(new Event("storage"));
 
-      const response = await fetch(`${apiUrl}/cart/add`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...product, productId, quantity }),
-      });
+  } catch (error) {
+    console.error(error);
+    toast.error("Error while connecting to service");
+  } finally {
+    setIsAdding(false);
+  }
+};
 
-      const data = await response.json();
-      if (!response.ok) {
-        toast.error(data.message || "Failed to add to cart");
-        return;
-      }
-      const cartIds =
-  JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
-
-if (!cartIds.includes(productId)) {
-  cartIds.push(productId);
-  localStorage.setItem(CART_IDS_KEY, JSON.stringify(cartIds));
-}
-
-setIsInCart(true);
-
-      toast.success(`${product.title} added to cart`);
-      window.dispatchEvent(new Event("storage"));
-    } catch (error) {
-      console.error(error);
-      toast.error("Error while connecting to service");
-    } finally {
-      setIsAdding(false);
-    }
-  };
 
   const discountPercentage =
     basePrice < item.price
@@ -298,7 +304,7 @@ setIsInCart(true);
               ):(
                   <button
               className="btn btn-warning w-50"
-              onClick={() => addToCart(item)}
+              onClick={addToCart}
               disabled={isAdding}
             >
               <ShoppingCart size={18} className="me-2" />

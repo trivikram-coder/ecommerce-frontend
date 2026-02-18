@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import "../styles/cart.css";
-import {apiUrl} from "../service/api";
+import { apiUrl } from "../service/api";
 import { toast } from "react-toastify";
 
 /* ================= CART ITEM ================= */
@@ -11,8 +11,6 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
   const price = item.discountPrice ?? item.price ?? 0;
   const quantity = item.quantity || 1;
   const subTotal = price * quantity;
-  
-
 
   return (
     <li className="cart-item-card">
@@ -46,10 +44,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
             min="1"
             value={quantity}
             onChange={(e) =>
-              updateQuantity(
-                item.cartId,
-                parseInt(e.target.value) || 1
-              )
+              updateQuantity(item.cartId, parseInt(e.target.value) || 1)
             }
           />
 
@@ -65,7 +60,6 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
       <button
         className="btn remove-btn"
         onClick={() => removeItem(item.cartId)}
-
         aria-label="Remove item"
       >
         <X size={18} />
@@ -78,9 +72,13 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 const Cart = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user")) || {};
-const userId = user?.id;
-const CART_IDS_KEY = `cartIds${userId}`;
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = user?._id;
+
+  const CART_IDS_KEY = `cartIds${userId}`;
+  const CART_KEY = `cart${userId}`;
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -89,58 +87,76 @@ const CART_IDS_KEY = `cartIds${userId}`;
     if (!token) navigate("/", { replace: true });
   }, [token, navigate]);
 
-  /* 🔁 Sync helper (IMPORTANT) */
-  const syncCart = (updatedItems) => {
-    setItems(updatedItems);
-    localStorage.setItem("cart", JSON.stringify(updatedItems));
-    window.dispatchEvent(new Event("storage"));
-  };
+  /* 🔁 Sync helper */
+ const syncCart = (updatedItems) => {
+  const modifiedItems = updatedItems.map((item) => {
+    if (item._id) {
+      return { ...item, cartId: item._id };
+    }
+    return item; // already has cartId
+  });
+
+  setItems(modifiedItems);
+  localStorage.setItem(`cart${userId}`, JSON.stringify(modifiedItems));
+  window.dispatchEvent(new Event("storage"));
+};
+
 
   /* Fetch cart */
-  const fetchCartItems = () => {
-    setLoading(true);
+  const fetchCartItems = async () => {
+    try {
+      setLoading(true);
 
-    fetch(`${apiUrl}/cart/get`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const list = data?.data || [];
-        syncCart(list);
-      })
-      .catch((err) => console.error("Cart fetch error:", err))
-      .finally(() => setLoading(false));
+      const res = await fetch(`${apiUrl}/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      const list = data?.items || [];
+
+      syncCart(list);
+    } catch (err) {
+      console.error("Cart fetch error:", err);
+      toast.error("Failed to load cart");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchCartItems();
-  }, []);
+    if (token) {
+      fetchCartItems();
+    }
+  }, [token]);
 
   /* Remove item */
-  const removeItem = (cartId) => {
-  const cartIds =
-    JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
+  const removeItem = async (cartId) => {
+    try {
+      const removedItem = items.find(
+        (item) => item.cartId === cartId
+      );
 
-  const removedItem = items.find(
-    (item) => item.cartId === cartId
-  );
+      if (!removedItem) return;
 
-  const productId = removedItem?.productId;
+      const productId = removedItem.productId;
 
-  fetch(`${apiUrl}/cart/delete/${cartId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then(() => {
+      await fetch(`${apiUrl}/cart/${cartId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       const updated = items.filter(
         (item) => item.cartId !== cartId
       );
 
-      // ✅ update cartIds
+      // update CART IDS
+      const cartIds =
+        JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
+
       const updatedIds = cartIds.filter(
         (id) => id !== productId
       );
@@ -149,34 +165,54 @@ const CART_IDS_KEY = `cartIds${userId}`;
         CART_IDS_KEY,
         JSON.stringify(updatedIds)
       );
-      toast.info(`Item removed from cart`)
-      syncCart(updated);
-    })
-    .catch((err) => console.error("Delete error:", err));
-};
 
+      toast.info("Item removed from cart");
+
+      syncCart(updated);
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to remove item");
+    }
+  };
 
   /* Update quantity */
-  const updateQuantity = (cartId, quantity) => {
+  const updateQuantity = async (cartId, quantity) => {
     if (quantity < 1) return;
 
-    const updated = items.map((item) =>
-      item.cartId === cartId
-        ? { ...item, quantity }
-        : item
-    );
-
-    syncCart(updated);
-
-    fetch(
-      `${apiUrl}/cart/update/${cartId}?quantity=${quantity}`,
-      {
+    try {
+      const res = await fetch(`${apiUrl}/cart/${cartId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ quantity }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setItems((prevItems) => {
+          const updatedItems = prevItems.map((item) =>
+            item.cartId === cartId
+              ? { ...data.cart, cartId: data.cart._id }
+              : item
+          );
+
+          localStorage.setItem(
+            CART_KEY,
+            JSON.stringify(updatedItems)
+          );
+
+          window.dispatchEvent(new Event("storage"));
+
+          return updatedItems;
+        });
       }
-    ).catch((err) => console.error("Update error:", err));
+    } catch (err) {
+      console.error("Update error:", err);
+      toast.error("Failed to update quantity");
+    }
   };
 
   /* Total */

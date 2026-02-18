@@ -3,14 +3,15 @@ import '../styles/products.css';
 import { Delete, Heart, Search, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import products from '../Categories/data/data2';
+import {getProducts} from '../Categories/data/data2';
 import {apiUrl} from '../service/api';
 const Products = () => {
+  
   // ... (Your state and function definitions are kept as they are)
   const token=localStorage.getItem("token")
   const storedUser = JSON.parse(localStorage.getItem("user") || "[]");
   const user = storedUser
-  const userId = user.id
+  const userId = user._id
   const CART_IDS_KEY = `cartIds${userId}`;
 
   const [items, setItems] = useState([]);
@@ -29,8 +30,12 @@ const Products = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+   const loadProducts=async()=>{
+    const products=await getProducts();
     setItems(products);
     setFiltered(products);
+   }
+   loadProducts()
   }, []);
   //Cart state
   useEffect(()=>{
@@ -74,64 +79,55 @@ if (!userId) return;
     return;
   }
 
-  // Get existing wishlist from localStorage
-  let wishlist = JSON.parse(localStorage.getItem(`wishlist${user.id}`) || "[]");
+  try {
+    const res = await fetch(`${apiUrl}/wishlist`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: product.productId,
+           // send entire product object
+      }),
+    });
 
-  // Check if the product is already in wishlist
-  if (!wishlist.some((item) => item.productId === product.id)) {
-    // Prepare data to send to backend
-    const wishlistData = {
-      ...product,
-       // make sure backend receives productId
-      
-    };
+    const response = await res.json();
 
-    try {
-      const res = await fetch(`${apiUrl}/wishlist/add`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(wishlistData),
-      });
-
-      const response = await res.json();
-
-      if (res.ok) {
-        toast.success(`${product.title} added to wishlist`);
-
-        // Update localStorage and state
-        wishlist.push(wishlistData);
-        localStorage.setItem(`wishlist${user.id}`, JSON.stringify(wishlist));
-
-        // Update wishlistIds in state and localStorage
-        setWishlistIds((prev) => {
-          const updated = [...prev, product.productId];
-          localStorage.setItem(`wishlistIds${userId}`, JSON.stringify(updated));
-          return updated;
-        });
-        
-        // Update wishlist 
-        setWishlistProductIds((prev)=>{
-          const updated={...prev,[response.data.productId]:response.data.id};
-          localStorage.setItem(`wishlistRowMap${userId}`,JSON.stringify(updated))
-          return updated;
-        })
-
-        // Trigger storage event for other tabs
-        window.dispatchEvent(new Event("storage"));
-      } else {
-        toast.error(response.message || "Failed to add to wishlist");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Server error");
+    if (!res.ok) {
+      toast.info(response.message || "Already in wishlist");
+      return;
     }
-  } else {
-    toast.info(`${product.title} is already in your wishlist`);
+
+    toast.success(`${product.title} added to wishlist ❤️`);
+
+    // -------- Update wishlistIds --------
+    const updatedIds = [...wishlistIds, product.productId];
+    setWishlistIds(updatedIds);
+    localStorage.setItem(
+      `wishlistIds${userId}`,
+      JSON.stringify(updatedIds)
+    );
+
+    // -------- Update rowMap --------
+    const rowMap =
+      JSON.parse(localStorage.getItem(`wishlistRowMap${userId}`)) || {};
+
+    rowMap[product.productId] = response.data._id;
+
+    localStorage.setItem(
+      `wishlistRowMap${userId}`,
+      JSON.stringify(rowMap)
+    );
+
+    window.dispatchEvent(new Event("storage"));
+
+  } catch (error) {
+    console.error("Wishlist error:", error);
+    toast.error("Server error");
   }
 };
+
 
 
   const removeFromWishlist = async (product) => {
@@ -145,7 +141,7 @@ if (!userId) return;
   try {
     // 1️⃣ Call backend
     const res = await fetch(
-      `${apiUrl}/wishlist/delete/${rowId}`,
+      `${apiUrl}/wishlist/${rowId}`,
       {
 
         method: "DELETE",
@@ -186,53 +182,67 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
 };
 
 
-  const addToCart = async (product) => {
-    
-    const cart = JSON.parse(localStorage.getItem(`cart${userId}`) || "[]")
-    const existingItem = cart.find((item) => item.productId === product.id);
-    const quantity = quantities[product.id] || 1;
+ const addToCart = async (product) => {
+  if (!user || !token) {
+    toast.error("You must be logged in to add to cart");
+    return;
+  }
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      product.quantity = quantity;
-      cart.push({ ...product, productId: product.productId, quantity });
+  const cartKey = `cart${userId}`;
+  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
+  const quantity = quantities[product.productId] || 1;
+
+  const existingItem = cart.find(
+    (item) => item.productId === product.productId
+  );
+
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    cart.push({ ...product, quantity });
+  }
+
+  localStorage.setItem(cartKey, JSON.stringify(cart));
+
+  try {
+    const response = await fetch(`${apiUrl}/cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        productId: product.productId,
+        quantity
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.message || "Cart error");
+      return;
     }
 
-    localStorage.setItem(`cart${userId}`, JSON.stringify(cart));
-    const cartData = { ...product, email: user.email };
-    
-    try {
-      const response = await fetch(`${apiUrl}/cart/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-          "Authorization":`Bearer ${token}`
-         },
-        body: JSON.stringify(cartData),
-      });
+    const updatedIds =
+      JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(`${product.title} added to cart`);
-        const updatedIds =JSON.parse(localStorage.getItem(CART_IDS_KEY)) || [];
-        if (!updatedIds.includes(product.productId)) {
-            updatedIds.push(product.productId);
-          }
-
-          localStorage.setItem(CART_IDS_KEY, JSON.stringify(updatedIds));
-          setCartProductIds(updatedIds);
-        window.dispatchEvent(new Event("storage"));
-      } else {
-        toast.error(`Backend Error: ${data.message}`);
-      }
-    } catch (error) {
-      toast.error(`Error while adding to cart: ${error.message}`);
+    if (!updatedIds.includes(product.productId)) {
+      updatedIds.push(product.productId);
     }
 
-  
-  };
+    localStorage.setItem(CART_IDS_KEY, JSON.stringify(updatedIds));
+    setCartProductIds(updatedIds);
+
+    window.dispatchEvent(new Event("storage"));
+    toast.success(`${product.title} added to cart`);
+
+  } catch (error) {
+    toast.error("Server error while adding to cart");
+  }
+};
+
 
   function highlightText(text) {
     if (!search) return text;
@@ -292,7 +302,7 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
             <ul className="list-group list-group-flush">
               {items.slice(0, 5).map((item, index) => (
                 <li
-                  key={item.id}
+                  key={item.productId}
                   className="list-group-item list-group-item-action p-2"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
@@ -419,9 +429,9 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
                         <input
                           type="number"
                           min="1"
-                          value={quantities[item.id] || 1}
+                          value={quantities[item.productId] || 1}
                           onChange={(e) =>
-                            handleQuantityChange(item.id, e.target.value)
+                            handleQuantityChange(item.productId, e.target.value)
                           }
                           className="form-control form-control-sm text-center"
                           style={{ width: '70px' }}

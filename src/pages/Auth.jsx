@@ -23,7 +23,7 @@ const Auth = () => {
 
   /* ================= SIGNUP STATE ================= */
   const [signupData, setSignupData] = useState({
-    name: "",
+    userName: "",
     fatherName: "",
     dob: "",
     address: "",
@@ -83,7 +83,7 @@ useEffect(() => {
       localStorage.setItem("token", data.token);
 
       const userRes = await fetch(
-        `${apiUrl}/auth/details`,
+        `${apiUrl}/auth/users/me`,
         {
           headers: {
             Authorization: `Bearer ${data.token}`,
@@ -92,8 +92,8 @@ useEffect(() => {
       );
 
       const userData = await userRes.json();
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData)
+      localStorage.setItem("user", JSON.stringify(userData.user));
+      setUser(userData.user)
       toast.success("Signin successful!");
     window.dispatchEvent(new Event("storage"));
       navigate("/products");
@@ -105,10 +105,13 @@ useEffect(() => {
   /* ================= CHECK USER ================= */
   const checkUser = async () => {
     try {
-      await axios.get(
-        `${apiUrl}/auth/check-email?email=${signupData.email}`
+      const res=await axios.get(
+        `${apiUrl}/auth/check-email/${signupData.email}`
       );
-      return true;
+      if(res.data.message.includes("not found")){
+        return true
+      }
+      return false;
     } catch (error) {
       toast.error(error.response?.data?.message);
       return false;
@@ -237,7 +240,7 @@ useEffect(() => {
         {mode === "signup" && (
           <form onSubmit={sendOtp}>
             {[
-              { id: "name", label: "Name" },
+              { id: "userName", label: "Username" },
               { id: "fatherName", label: "Father Name" },
               { id: "dob", label: "Date of Birth", type: "date" },
               { id: "address", label: "Address" },

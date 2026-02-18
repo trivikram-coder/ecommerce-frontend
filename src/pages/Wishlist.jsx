@@ -10,7 +10,7 @@ const Wishlist = () => {
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const token = localStorage.getItem("token");
-  const userId = user?.id;
+  const userId = user?._id;
 
   const [wishlist, setWishlist] = useState([]);
 
@@ -18,14 +18,14 @@ const Wishlist = () => {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const res = await fetch(`${apiUrl}/wishlist/get`, {
+        const res = await fetch(`${apiUrl}/wishlist`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const result = await res.json();
-
+        console.log("Wishlist items",result)
         if (!res.ok) {
           toast.error(result.message || "Failed to fetch wishlist");
           return;
@@ -52,7 +52,7 @@ const Wishlist = () => {
         // 4️⃣ save rowMap (productId → wishlistRowId)
         const rowMap = {};
         data.forEach((item) => {
-          rowMap[item.productId] = item.id;
+          rowMap[item.productId] = item._id;
         });
         localStorage.setItem(
           `wishlistRowMap${userId}`,
@@ -83,7 +83,7 @@ const Wishlist = () => {
 
       // 2️⃣ delete from backend
       const res = await fetch(
-        `${apiUrl}/wishlist/delete/${wishlistRowId}`,
+        `${apiUrl}/wishlist/${wishlistRowId}`,
         {
           method: "DELETE",
           headers: {
@@ -152,7 +152,7 @@ const Wishlist = () => {
       ) : (
         <div className="row g-4">
           {wishlist.map((item) => (
-            <div className="col-md-3" key={item.id}>
+            <div className="col-md-3" key={item._id}>
               <div className="wishlist-card">
                 <img
                   src={item.image}

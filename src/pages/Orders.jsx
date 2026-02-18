@@ -17,7 +17,7 @@ useEffect(() => {
   const fetchOrders = async () => {
     try {
       const res = await fetch(
-        `${apiUrl}/orders/get`,
+        `${apiUrl}/orders`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,7 +26,7 @@ useEffect(() => {
       );
 
       const data = await res.json();
-      setOrders(data || []);
+      setOrders(data.orders || []);
       setLoaded(true); // ✅ IMPORTANT
     } catch (err) {
       console.error("Fetch orders error:", err);
@@ -41,14 +41,17 @@ useEffect(() => {
   const handleCancel = async (orderId) => {
     try {
       await fetch(
-        `${apiUrl}/orders/delete/${orderId}`,
+        `${apiUrl}/orders/${orderId}`,
         {
           method: "DELETE",
-          
+          headers:{
+            "content-type":"application/json",
+            "authorization":`Bearer ${token}`
+          }
         }
       );
 
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      setOrders((prev) => prev.filter((o) => o._id !== orderId));
       toast.success("Order cancelled successfully");
     } catch (err) {
       console.error("Cancel order error:", err);
@@ -64,7 +67,7 @@ useEffect(() => {
         <div className="empty-orders">No orders found.</div>
       ) : (
         orders.map((order) => (
-          <div className="amazon-order-card" key={order.id}>
+          <div className="amazon-order-card" key={order._id}>
 
             {/* HEADER */}
             <div className="amazon-order-header">
@@ -84,14 +87,14 @@ useEffect(() => {
               </div>
 
               <div className="order-id">
-                Order #{order.id}
+                Order #{order._id}
               </div>
             </div>
 
             {/* BODY */}
             <div className="amazon-order-body">
               {order.items.map((item) => (
-                <div className="amazon-order-item" key={item.id}>
+                <div className="amazon-order-item" key={item._id}>
 
                   {/* IMAGE */}
                   <div className="order-item-img">
@@ -129,7 +132,7 @@ useEffect(() => {
             <div className="amazon-order-footer">
               <button
                 className="btn btn-outline-secondary btn-sm"
-                onClick={() => handleCancel(order.id)}
+                onClick={() => handleCancel(order._id)}
               >
                 Cancel order
               </button>

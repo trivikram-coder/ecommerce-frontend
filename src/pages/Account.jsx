@@ -37,13 +37,13 @@ const Account = () => {
 
   // -------- UPDATE USER --------
   const updateUser = async () => {
-    if (!updatedUser.name || !updatedUser.mobileNumber) {
+    if (!updatedUser.userName || !updatedUser.mobileNumber) {
       toast.error("Name and mobile number cannot be empty");
       return;
     }
 
     const payload = {
-      name: updatedUser.name,
+      userName: updatedUser.userName,
       mobileNumber: updatedUser.mobileNumber,
     };
 
@@ -51,7 +51,7 @@ const Account = () => {
       setIsUpdating(true);
 
       const res = await fetch(
-        `${apiUrl}/auth/update?email=${user.email}`,
+        `${apiUrl}/auth/users/me`,
         {
           method: "PUT",
           headers: {
@@ -62,11 +62,17 @@ const Account = () => {
         }
       );
 
-      const newdata = await res.json();
+      const data=await res.json();
 
-      if (res.ok && newdata.account) {
-        localStorage.setItem("user", JSON.stringify(newdata.account));
-        setUpdatedUser(newdata.account);
+      if (data.success) {
+        const userFetch=await fetch(`${apiUrl}/auth/users/me`,{
+          headers:{
+            "authorization":`Bearer ${data.token}`
+          }
+        })
+        const data1=await userFetch.json();
+        localStorage.setItem("user", JSON.stringify(data1.user));
+        setUpdatedUser(data1.user);
 
         window.dispatchEvent(new Event("storage"));
         toast.success("Profile updated successfully ✅");
@@ -114,7 +120,7 @@ const Account = () => {
                 <UserCircle size={110} className="text-secondary mb-3" />
               )}
 
-              <h3 className="fw-bold mb-1">{updatedUser.name}</h3>
+              <h3 className="fw-bold mb-1">{updatedUser.userName}</h3>
               <p className="text-muted mb-0">{updatedUser.email}</p>
             </div>
           </div>
@@ -140,7 +146,7 @@ const Account = () => {
                 <div className="col-md-6">
                   <div className="info-box">
                     <span className="info-label">Full Name</span>
-                    <span className="info-value">{updatedUser.name}</span>
+                    <span className="info-value">{updatedUser.userName}</span>
                   </div>
                 </div>
 
@@ -192,9 +198,9 @@ const Account = () => {
               <input
                 type="text"
                 className="form-control"
-                value={updatedUser.name || ""}
+                value={updatedUser.userName || ""}
                 onChange={(e) =>
-                  setUpdatedUser({ ...updatedUser, name: e.target.value })
+                  setUpdatedUser({ ...updatedUser, userName: e.target.value })
                 }
               />
             </div>

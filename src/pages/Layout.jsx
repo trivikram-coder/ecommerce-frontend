@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import {
   ShoppingBag,
@@ -10,7 +10,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import "../styles/layout.css";
-import {apiUrl} from "../service/api";
+import { apiUrl } from "../service/api";
+
 const Layout = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -20,7 +21,7 @@ const Layout = () => {
   const [wishCount, setWishCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // ---------- Helpers ----------
+  /* ---------------- SAFE JSON ---------------- */
   const safeJSON = (value, fallback = null) => {
     try {
       return value ? JSON.parse(value) : fallback;
@@ -29,8 +30,8 @@ const Layout = () => {
     }
   };
 
-  // ---------- FETCH CART USING JWT ----------
-  const fetchCart = async () => {
+  /* ---------------- FETCH CART ---------------- */
+  const fetchCart = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setCartCount(0);
@@ -38,78 +39,104 @@ const Layout = () => {
     }
 
     try {
-      const res = await fetch(
-        `${apiUrl}/cart/get`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${apiUrl}/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         setCartCount(0);
         return;
       }
 
-      const cart = await res.json();
+      const data = await res.json();
 
-      // total quantity
-      const total = cart.data.reduce(
-        (sum, item) => sum + (item.quantity || 1),
-        0
-      );
+      const totalQuantity =
+        data.items?.reduce(
+          (sum, item) => sum + (item.quantity || 1),
+          0
+        ) || 0;
 
-      setCartCount(total);
+      setCartCount(totalQuantity);
     } catch (err) {
-      console.error("Cart fetch failed", err);
+      console.error("Cart fetch failed:", err);
       setCartCount(0);
     }
-  };
+  }, []);
 
-  // ---------- UPDATE USER + COUNTS ----------
-  const syncUserState = () => {
+  /* ---------------- FETCH WISHLIST ---------------- */
+  const fetchWishlist = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setWishCount(0);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${apiUrl}/wishlist`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        setWishCount(0);
+        return;
+      }
+
+      const data = await res.json();
+
+      setWishCount(data.data?.length || 0);
+    } catch (err) {
+      console.error("Wishlist fetch failed:", err);
+      setWishCount(0);
+    }
+  }, []);
+
+  /* ---------------- SYNC USER STATE ---------------- */
+  const syncUserState = useCallback(() => {
     const storedUser = safeJSON(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
 
     if (storedUser && token) {
       setUser(storedUser);
       fetchCart();
-
-      const wish = safeJSON(
-        localStorage.getItem(`wishlist${storedUser.id}`),
-        []
-      );
-      setWishCount(wish.length);
+      fetchWishlist();
     } else {
       setUser(null);
       setCartCount(0);
       setWishCount(0);
     }
-  };
+  }, [fetchCart, fetchWishlist]);
 
-  // ---------- EFFECTS ----------
+  /* ---------------- INITIAL LOAD ---------------- */
   useEffect(() => {
     syncUserState();
+
     window.addEventListener("storage", syncUserState);
 
     return () => {
       window.removeEventListener("storage", syncUserState);
     };
-  }, []);
+  }, [syncUserState]);
 
-  // Close dropdown on outside click
+  /* ---------------- CLOSE DROPDOWN ON OUTSIDE CLICK ---------------- */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  // ---------- HANDLERS ----------
+  /* ---------------- SIGN OUT ---------------- */
   const handleSignOut = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -119,6 +146,7 @@ const Layout = () => {
     setWishCount(0);
 
     window.dispatchEvent(new Event("storage"));
+
     navigate("/", { replace: true });
     setShowDropdown(false);
   };
@@ -128,7 +156,10 @@ const Layout = () => {
     setShowDropdown(false);
   };
 
-  const userName = user?.name ? user.name.split(" ")[0] : "Guest";
+  const userName =
+    user?.userName?.split(" ")[0] ||
+    user?.name?.split(" ")[0] ||
+    "Guest";
 
   return (
     <>
@@ -136,7 +167,8 @@ const Layout = () => {
       <header className="app-header-container">
         <div className="container-fluid px-4">
           <div className="d-flex justify-content-between align-items-center header-content">
-            {/* Logo */}
+            
+            {/* ---------- LOGO ---------- */}
             <Link to="/products" className="logo-link text-decoration-none">
               <div className="d-flex align-items-center vk-store-logo">
                 <ShoppingBag size={24} className="me-2" />
@@ -144,8 +176,9 @@ const Layout = () => {
               </div>
             </Link>
 
-            {/* Navigation */}
+            {/* ---------- NAVIGATION ---------- */}
             <nav className="header-nav-links d-flex align-items-center">
+
               {/* Wishlist */}
               <div
                 className="nav-item-link"
@@ -154,7 +187,9 @@ const Layout = () => {
               >
                 <Heart size={20} />
                 {wishCount > 0 && (
-                  <span className="badge-count bg-danger">{wishCount}</span>
+                  <span className="badge-count bg-danger">
+                    {wishCount}
+                  </span>
                 )}
                 <span className="nav-label d-none d-lg-inline ms-1">
                   Wishlist
@@ -169,7 +204,9 @@ const Layout = () => {
               >
                 <ShoppingCart size={20} />
                 {cartCount > 0 && (
-                  <span className="badge-count bg-warning">{cartCount}</span>
+                  <span className="badge-count bg-warning">
+                    {cartCount}
+                  </span>
                 )}
                 <span className="nav-label d-none d-lg-inline ms-1">
                   Cart
@@ -184,10 +221,14 @@ const Layout = () => {
                 onClick={() => setShowDropdown((prev) => !prev)}
               >
                 <User size={20} />
-                <span className="nav-label ms-1 me-1">{userName}</span>
+                <span className="nav-label ms-1 me-1">
+                  {userName}
+                </span>
                 <ChevronDown
                   size={14}
-                  className={`chevron-icon ${showDropdown ? "rotate" : ""}`}
+                  className={`chevron-icon ${
+                    showDropdown ? "rotate" : ""
+                  }`}
                 />
 
                 {showDropdown && (
@@ -195,29 +236,40 @@ const Layout = () => {
                     {user ? (
                       <>
                         <div className="dropdown-user-info">
-                          <p className="fw-bold mb-0">{user.name}</p>
-                          <p className="small text-muted mb-0">{user.email}</p>
+                          <p className="fw-bold mb-0">
+                            {user.name || user.userName}
+                          </p>
+                          <p className="small text-muted mb-0">
+                            {user.email}
+                          </p>
                         </div>
 
                         <div
                           className="dropdown-item"
-                          onClick={() => handleNavigation("/account")}
+                          onClick={() =>
+                            handleNavigation("/account")
+                          }
                         >
-                          <User size={16} className="me-2" /> My Profile
+                          <User size={16} className="me-2" />
+                          My Profile
                         </div>
 
                         <div
                           className="dropdown-item"
-                          onClick={() => handleNavigation("/orders")}
+                          onClick={() =>
+                            handleNavigation("/orders")
+                          }
                         >
-                          <ListOrdered size={16} className="me-2" /> My Orders
+                          <ListOrdered size={16} className="me-2" />
+                          My Orders
                         </div>
 
                         <div
                           className="dropdown-item signout-item"
                           onClick={handleSignOut}
                         >
-                          <LogOut size={16} className="me-2" /> Sign Out
+                          <LogOut size={16} className="me-2" />
+                          Sign Out
                         </div>
                       </>
                     ) : (
@@ -228,10 +280,13 @@ const Layout = () => {
                         >
                           Sign In
                         </div>
+
                         <div
                           className="dropdown-item"
                           onClick={() =>
-                            navigate("/", { state: { mode: "signup" } })
+                            navigate("/", {
+                              state: { mode: "signup" },
+                            })
                           }
                         >
                           Create Account

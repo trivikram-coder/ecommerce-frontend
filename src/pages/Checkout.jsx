@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../styles/checkout.css";
-import {apiUrl} from "../service/api";
+import { apiUrl } from "../service/api";
 
 const Checkout = () => {
   const location = useLocation();
@@ -17,7 +17,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
 
   const [formData, setFormData] = useState({
-    name: storedUser?.name || "",
+    name: storedUser?.userName || "",
     email: storedUser?.email || "",
     address: "",
     city: "",
@@ -30,7 +30,8 @@ const Checkout = () => {
   /* ================= CALCULATE TOTAL ================= */
   const calculateTotal = (items) =>
     items.reduce((acc, item) => {
-      const price = item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+      const price =
+        item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
       return acc + price * (item.quantity || 1);
     }, 0);
 
@@ -40,18 +41,23 @@ const Checkout = () => {
       setCart(itemBuy);
       setTotal(calculateTotal(itemBuy));
     } else if (itemBuy) {
-      const singleItem = { ...itemBuy, quantity: itemBuy.quantity || 1 };
+      const singleItem = {
+        ...itemBuy,
+        quantity: itemBuy.quantity || 1,
+      };
       setCart([singleItem]);
       setTotal(calculateTotal([singleItem]));
     } else {
-      fetch(`${apiUrl}/cart/get`, {
+      fetch(`${apiUrl}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
-          setCart(data || []);
-          setTotal(calculateTotal(data || []));
-          if (!data || data.length === 0) {
+          const items = data?.items || [];
+          setCart(items);
+          setTotal(calculateTotal(items));
+
+          if (items.length === 0) {
             toast.info("Your cart is empty");
             navigate("/products");
           }
@@ -63,7 +69,9 @@ const Checkout = () => {
   /* ================= QUANTITY UPDATE ================= */
   const updateQuantity = (id, type) => {
     const updatedCart = cart.map((item) => {
-      if (item.id === id) {
+      const itemId = item._id || item.cartId;
+
+      if (itemId === id) {
         let qty = item.quantity || 1;
         qty = type === "inc" ? qty + 1 : Math.max(1, qty - 1);
         return { ...item, quantity: qty };
@@ -79,7 +87,7 @@ const Checkout = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  /* ================= PLACE ORDER (BACKEND) ================= */
+  /* ================= PLACE ORDER ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,41 +97,67 @@ const Checkout = () => {
     }
 
     const orderDate = new Date();
-    const expectedDate = new Date(orderDate);
+    const expectedDate = new Date();
     expectedDate.setDate(orderDate.getDate() + 5);
+
+    /* 🔥 Format items properly */
+    const formattedItems = cart.map((item) => ({
+      productId: item.productId,
+      title: item.title,
+      image: item.image,
+      category: item.category,
+      price: item.discountPrice ?? item.price,
+      quantity: item.quantity,
+    }));
+
+    /* 🔐 Safe Payment Snapshot */
+    const last4 = formData.cardNumber.slice(-4);
 
     const newOrder = {
     
       name: formData.name,
       email: formData.email,
-      items: cart,
+      address: formData.address,
+      city: formData.city,
+      zip: formData.zip,
+      items: formattedItems,
       totalAmount: total,
-      orderDate: orderDate.toLocaleDateString(),
-      expectedDelivery: expectedDate.toLocaleDateString(),
-      status: "Processing",
+      orderDate: orderDate.toISOString(),
+      expectedDelivery: expectedDate.toISOString(),
+      status: "PLACED",
+      payment: {
+        method: "CARD",
+        status: "PAID",
+        transactionId: "TXN" + Date.now(),
+        last4: last4,
+      },
     };
 
     try {
-      const res = await fetch(`${apiUrl}/orders/add`, {
+      const res = await fetch(`${apiUrl}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newOrder),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        toast.error("Failed to place order");
+        toast.error(data.message || "Failed to place order");
         return;
       }
 
-      // ✅ Clear cart
-      localStorage.removeItem(`cart${storedUser.id}`);
+      /* ✅ Clear cart */
+      localStorage.removeItem("cart");
+      localStorage.removeItem(`cartIds_${storedUser.id}`);
       window.dispatchEvent(new Event("storage"));
 
       toast.success("Order placed successfully!");
-      navigate("/order-placed", { state: { order: newOrder } });
+      navigate("/order-placed", { state: { order: data.order } });
+
     } catch (err) {
       console.error("Order error:", err);
       toast.error("Something went wrong while placing order");
@@ -133,73 +167,66 @@ const Checkout = () => {
   /* ================= UI ================= */
   return (
     <div className="container py-5">
-      <h2 className="text-center mb-5 fw-bold checkout-title">Checkout</h2>
+      <h2 className="text-center mb-5 fw-bold checkout-title">
+        Checkout
+      </h2>
 
       <div className="row">
-        {/* LEFT */}
+        {/* LEFT SIDE */}
         <div className="col-lg-7">
           <div className="card p-4 shadow-lg">
             <h4 className="text-primary mb-4">Billing Details</h4>
 
             <form onSubmit={handleSubmit}>
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <label>Name</label>
-                  <input
-                    className="form-control"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label>Email</label>
-                  <input
-                    className="form-control"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
               <input
                 className="form-control mb-3"
-                placeholder="Address"
-                name="address"
-                value={formData.address}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
+                placeholder="Full Name"
                 required
               />
 
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="City"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="ZIP"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+              <input
+                className="form-control mb-3"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+              />
+
+              <input
+                className="form-control mb-3"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Address"
+                required
+              />
+
+              <input
+                className="form-control mb-3"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                placeholder="City"
+                required
+              />
+
+              <input
+                className="form-control mb-3"
+                name="zip"
+                value={formData.zip}
+                onChange={handleChange}
+                placeholder="ZIP Code"
+                required
+              />
 
               <hr />
 
               <h4 className="text-primary mb-3">Payment</h4>
+
               <input
                 className="form-control mb-3"
                 placeholder="Card Number"
@@ -237,7 +264,7 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT SIDE */}
         <div className="col-lg-5">
           <div className="card p-4 shadow-lg">
             <h4 className="text-primary mb-3">Order Summary</h4>
@@ -245,31 +272,35 @@ const Checkout = () => {
             {cart.map((item) => {
               const price =
                 item.discountPrice ?? item.offerPrice ?? item.price ?? 0;
+              const id = item._id || item.cartId;
 
               return (
                 <div
-                  key={item.id}
+                  key={id}
                   className="d-flex justify-content-between align-items-center mb-3"
                 >
                   <div>
-                    <strong>{item.title || item.name}</strong>
+                    <strong>{item.title}</strong>
                     <div className="quantity-controls mt-1">
                       <button
                         className="btn btn-sm btn-outline-secondary"
-                        onClick={() => updateQuantity(item.id, "dec")}
+                        onClick={() => updateQuantity(id, "dec")}
                       >
                         −
                       </button>
                       <span className="mx-2">{item.quantity}</span>
                       <button
                         className="btn btn-sm btn-outline-secondary"
-                        onClick={() => updateQuantity(item.id, "inc")}
+                        onClick={() => updateQuantity(id, "inc")}
                       >
                         +
                       </button>
                     </div>
                   </div>
-                  <strong>₹{(price * item.quantity).toFixed(2)}</strong>
+
+                  <strong>
+                    ₹{(price * item.quantity).toFixed(2)}
+                  </strong>
                 </div>
               );
             })}
@@ -277,7 +308,9 @@ const Checkout = () => {
             <hr />
             <h5 className="d-flex justify-content-between">
               <span>Total</span>
-              <span className="text-danger">₹{total.toFixed(2)}</span>
+              <span className="text-danger">
+                ₹{total.toFixed(2)}
+              </span>
             </h5>
           </div>
         </div>
