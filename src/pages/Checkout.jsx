@@ -86,54 +86,59 @@ const Checkout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   /* ================= PAYMENT FLOW ================= */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (cart.length === 0) {
-      toast.error("Cart is empty");
+  if (cart.length === 0) {
+    toast.error("Cart is empty");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    /* ================= 1️⃣ CREATE ORDER ================= */
+    const paymentRes = await fetch(`${apiUrl}/payment/create-order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: storedUser._id,
+        amount: total,
+      }),
+    });
+
+    const paymentData = await paymentRes.json();
+
+    if (!paymentRes.ok) {
+      toast.error(paymentData.message || "Failed to initiate payment");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
+    const { razorpayOrder } = paymentData;
 
-    try {
-      /* 1️⃣ CREATE RAZORPAY ORDER */
-      const paymentRes = await fetch(`${apiUrl}/payment/create-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          
-        },
-        body: JSON.stringify({ userId:storedUser._id,amount: total }),
-      });
+    /* ================= 2️⃣ OPEN RAZORPAY ================= */
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+      order_id: razorpayOrder.id,
+      name: "VK Store",
+      description: "Order Payment",
+      prefill: {
+        name: storedUser.userName,
+        contact: storedUser.mobileNumber,
+        email: storedUser.email,
+      },
+      theme: {
+        color: "#3399cc",
+      },
 
-      const paymentData = await paymentRes.json();
-
-      if (!paymentRes.ok) {
-        toast.error("Failed to initiate payment");
-        setLoading(false);
-        return;
-      }
-
-      const { razorpayOrder } = paymentData;
-
-      /* 2️⃣ OPEN RAZORPAY */
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-        order_id: razorpayOrder.id,
-        name: "VK Store",
-        description: "Order Payment",
-        prefill: {
-          name: storedUser.userName,
-          contact:storedUser.mobileNumber,
-          email: storedUser.email,
-        },
-        theme: {
-          color: "#3399cc",
-        },
-        handler: async function (response) {
+      /* ================= SUCCESS HANDLER ================= */
+      handler: async function (response) {
+        try {
           /* 3️⃣ VERIFY PAYMENT */
           const verifyRes = await fetch(
             `${apiUrl}/payment/verify-payment`,
@@ -141,7 +146,6 @@ const Checkout = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-
               },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
@@ -151,8 +155,12 @@ const Checkout = () => {
             }
           );
 
-          if (!verifyRes.success) {
-            toast.error("Payment verification failed");
+          const verifyData = await verifyRes.json();
+
+          if (!verifyRes.ok) {
+            toast.error(
+              verifyData.message || "Payment verification failed"
+            );
             setLoading(false);
             return;
           }
@@ -198,12 +206,15 @@ const Checkout = () => {
             body: JSON.stringify(finalOrder),
           });
 
-          if (!orderRes.success) {
-            toast.error("Order creation failed");
+          const orderData = await orderRes.json();
+
+          if (!orderRes.ok) {
+            toast.error(orderData.message || "Order creation failed");
             setLoading(false);
             return;
           }
 
+          /* ================= SUCCESS ================= */
           localStorage.removeItem("cart");
           localStorage.removeItem(`cartIds_${storedUser.id}`);
           window.dispatchEvent(new Event("storage"));
@@ -212,17 +223,33 @@ const Checkout = () => {
           navigate("/order-placed");
 
           setLoading(false);
-        },
-      };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error(error);
-      toast.error("Payment failed");
-      setLoading(false);
-    }
-  };
+        } catch (err) {
+          console.error(err);
+          toast.error("Payment verification failed");
+          setLoading(false);
+        }
+      },
+
+      /* ================= CANCEL HANDLER ================= */
+      modal: {
+        ondismiss: function () {
+          toast.error("Payment cancelled");
+          setLoading(false);
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Payment failed");
+    setLoading(false);
+  }
+};
+
 
   /* ================= UI ================= */
   return (
