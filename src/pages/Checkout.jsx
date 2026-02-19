@@ -102,6 +102,7 @@ const handleSubmit = async (e) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "authorization":`Bearer ${token}`
       },
       body: JSON.stringify({
         userId: storedUser._id,
@@ -146,6 +147,7 @@ const handleSubmit = async (e) => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "authorization":`Bearer ${token}`
               },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
