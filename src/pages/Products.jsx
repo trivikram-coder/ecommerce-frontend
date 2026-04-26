@@ -490,7 +490,7 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
               ))
             ) : (
               <div className="col-12 text-center py-5">
-                <p className="lead text-muted">No products found matching your search.</p>
+                <p className="lead text-muted">Loading....</p>
               </div>
             )}
           </div>
