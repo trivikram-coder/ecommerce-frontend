@@ -12,6 +12,9 @@ import {
 import "../styles/layout.css";
 import { apiUrl } from "../service/api";
 
+// 🔥 IMPORT CHATBOT
+import ChatBot from "../pages/ChatBot";
+
 const Layout = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -121,7 +124,7 @@ const Layout = () => {
     };
   }, [syncUserState]);
 
-  /* ---------------- CLOSE DROPDOWN ON OUTSIDE CLICK ---------------- */
+  /* ---------------- CLOSE DROPDOWN ---------------- */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -167,8 +170,8 @@ const Layout = () => {
       <header className="app-header-container">
         <div className="container-fluid px-4">
           <div className="d-flex justify-content-between align-items-center header-content">
-            
-            {/* ---------- LOGO ---------- */}
+
+            {/* LOGO */}
             <Link to="/products" className="logo-link text-decoration-none">
               <div className="d-flex align-items-center vk-store-logo">
                 <ShoppingBag size={24} className="me-2" />
@@ -176,7 +179,7 @@ const Layout = () => {
               </div>
             </Link>
 
-            {/* ---------- NAVIGATION ---------- */}
+            {/* NAV */}
             <nav className="header-nav-links d-flex align-items-center">
 
               {/* Wishlist */}
@@ -213,23 +216,18 @@ const Layout = () => {
                 </span>
               </div>
 
-              {/* User Menu */}
+              {/* User */}
               <div
                 className="nav-item-link user-menu-toggle"
                 role="button"
                 ref={dropdownRef}
-                onClick={() => setShowDropdown((prev) => !prev)}
+                onClick={() => setShowDropdown(prev => !prev)}
               >
                 <User size={20} />
                 <span className="nav-label ms-1 me-1">
                   {userName}
                 </span>
-                <ChevronDown
-                  size={14}
-                  className={`chevron-icon ${
-                    showDropdown ? "rotate" : ""
-                  }`}
-                />
+                <ChevronDown size={14} />
 
                 {showDropdown && (
                   <div className="user-dropdown-menu">
@@ -244,51 +242,27 @@ const Layout = () => {
                           </p>
                         </div>
 
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            handleNavigation("/account")
-                          }
-                        >
+                        <div className="dropdown-item" onClick={() => handleNavigation("/account")}>
                           <User size={16} className="me-2" />
                           My Profile
                         </div>
 
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            handleNavigation("/orders")
-                          }
-                        >
+                        <div className="dropdown-item" onClick={() => handleNavigation("/orders")}>
                           <ListOrdered size={16} className="me-2" />
                           My Orders
                         </div>
 
-                        <div
-                          className="dropdown-item signout-item"
-                          onClick={handleSignOut}
-                        >
+                        <div className="dropdown-item signout-item" onClick={handleSignOut}>
                           <LogOut size={16} className="me-2" />
                           Sign Out
                         </div>
                       </>
                     ) : (
                       <>
-                        <div
-                          className="dropdown-item"
-                          onClick={() => handleNavigation("/")}
-                        >
+                        <div className="dropdown-item" onClick={() => handleNavigation("/")}>
                           Sign In
                         </div>
-
-                        <div
-                          className="dropdown-item"
-                          onClick={() =>
-                            navigate("/", {
-                              state: { mode: "signup" },
-                            })
-                          }
-                        >
+                        <div className="dropdown-item" onClick={() => navigate("/", { state: { mode: "signup" } })}>
                           Create Account
                         </div>
                       </>
@@ -317,6 +291,14 @@ const Layout = () => {
           </p>
         </div>
       </footer>
+
+      {/* 🔥 CHATBOT (GLOBAL FLOATING) */}
+      <div
+        className="position-fixed bottom-0 end-0 m-3"
+        style={{ zIndex: 999 }}
+      >
+        <ChatBot />
+      </div>
     </>
   );
 };
