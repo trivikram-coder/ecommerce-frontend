@@ -3,7 +3,7 @@ import { Heart, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/wishlist.css";
 import { toast } from "react-toastify";
-import {apiUrl} from "../service/api";
+import { apiUrl } from "../service/api";
 
 const Wishlist = () => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const Wishlist = () => {
   const userId = user?._id;
 
   const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /* ---------------- FETCH WISHLIST ---------------- */
   useEffect(() => {
@@ -25,7 +26,8 @@ const Wishlist = () => {
         });
 
         const result = await res.json();
-        console.log("Wishlist items",result)
+        console.log("Wishlist items", result);
+
         if (!res.ok) {
           toast.error(result.message || "Failed to fetch wishlist");
           return;
@@ -33,23 +35,23 @@ const Wishlist = () => {
 
         const data = result.data || [];
 
-        // 1️⃣ set state
+        // ✅ set state
         setWishlist(data);
 
-        // 2️⃣ save wishlist objects
+        // ✅ save wishlist objects
         localStorage.setItem(
           `wishlist${userId}`,
           JSON.stringify(data)
         );
 
-        // 3️⃣ save wishlistIds (productIds)
+        // ✅ save wishlistIds
         const wishlistIds = data.map((item) => item.productId);
         localStorage.setItem(
           `wishlistIds${userId}`,
           JSON.stringify(wishlistIds)
         );
 
-        // 4️⃣ save rowMap (productId → wishlistRowId)
+        // ✅ save rowMap
         const rowMap = {};
         data.forEach((item) => {
           rowMap[item.productId] = item._id;
@@ -61,16 +63,22 @@ const Wishlist = () => {
       } catch (error) {
         console.error(error);
         toast.error("Server error");
+      } finally {
+        // ✅ always stop loading
+        setLoading(false);
       }
     };
 
-    if (token && userId) fetchWishlist();
+    if (token && userId) {
+      fetchWishlist();
+    } else {
+      setLoading(false);
+    }
   }, [token, userId]);
 
   /* ---------------- REMOVE FROM WISHLIST ---------------- */
   const removeFromWishlist = async (productId) => {
     try {
-      // 1️⃣ get rowMap
       const rowMap =
         JSON.parse(localStorage.getItem(`wishlistRowMap${userId}`)) || {};
 
@@ -81,7 +89,6 @@ const Wishlist = () => {
         return;
       }
 
-      // 2️⃣ delete from backend
       const res = await fetch(
         `${apiUrl}/wishlist/${wishlistRowId}`,
         {
@@ -101,19 +108,18 @@ const Wishlist = () => {
 
       toast.success(response.message || "Item removed");
 
-      // 3️⃣ update wishlist state
+      // ✅ update state
       const updatedWishlist = wishlist.filter(
         (item) => item.productId !== productId
       );
       setWishlist(updatedWishlist);
 
-      // 4️⃣ update wishlist storage
+      // ✅ update localStorage
       localStorage.setItem(
         `wishlist${userId}`,
         JSON.stringify(updatedWishlist)
       );
 
-      // 5️⃣ update wishlistIds
       const updatedWishlistIds = updatedWishlist.map(
         (item) => item.productId
       );
@@ -122,7 +128,6 @@ const Wishlist = () => {
         JSON.stringify(updatedWishlistIds)
       );
 
-      // 6️⃣ update rowMap
       delete rowMap[productId];
       localStorage.setItem(
         `wishlistRowMap${userId}`,
@@ -142,7 +147,14 @@ const Wishlist = () => {
         My Wishlist <Heart size={26} />
       </h2>
 
-      {wishlist.length === 0 ? (
+      {/* ✅ 1. Loading State */}
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p className="mt-2">Loading wishlist...</p>
+        </div>
+      ) : wishlist.length === 0 ? (
+        /* ✅ 2. Empty State */
         <div className="text-center">
           <h4 className="text-muted">Your wishlist is empty</h4>
           <Link to="/products" className="btn btn-primary mt-3">
@@ -150,6 +162,7 @@ const Wishlist = () => {
           </Link>
         </div>
       ) : (
+        /* ✅ 3. Data State */
         <div className="row g-4">
           {wishlist.map((item) => (
             <div className="col-md-3" key={item._id}>

@@ -7,9 +7,13 @@ import "../styles/category.css";
 const Clothing = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getProducts().then(setProducts);
+    setLoading(true);
+    getProducts()
+      .then(setProducts)
+      .finally(() => setLoading(false));
   }, []);
 
   const clothing = products.filter(
@@ -22,24 +26,32 @@ const Clothing = () => {
         Fashion <Shirt size={26} />
       </h2>
 
-      <div className="row g-4">
-        {clothing.map((item) => (
-          <div className="col-md-4" key={item.productId}>
-            <div
-              className="product-card"
-              onClick={() => navigate("/item", { state: { item } })}
-            >
-              <img src={item.image} alt={item.title} />
+      {loading ? (
+        <div className="text-center">
+        <div className="spinner-border text-primary"></div>
+        <p className="mt-2">Loading products...</p>
+        
+        </div>
+      ) : (
+        <div className="row g-4">
+          {clothing.map((item) => (
+            <div className="col-md-4" key={item.productId}>
+              <div
+                className="product-card"
+                onClick={() => navigate("/item", { state: { item } })}
+              >
+                <img src={item.image} alt={item.title} />
 
-              <div className="product-body">
-                <h5>{item.title}</h5>
-                <p className="desc">{item.description}</p>
-                <span className="price">₹{item.price}</span>
+                <div className="product-body">
+                  <h5>{item.title}</h5>
+                  <p className="desc">{item.description}</p>
+                  <span className="price">₹{item.price}</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

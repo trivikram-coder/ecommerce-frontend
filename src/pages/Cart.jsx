@@ -225,7 +225,9 @@ const Cart = () => {
   if (loading) {
     return (
       <div className="text-center py-5">
+
         <div className="spinner-border text-primary" />
+         <p className="mt-2">Loading cart...</p>
       </div>
     );
   }

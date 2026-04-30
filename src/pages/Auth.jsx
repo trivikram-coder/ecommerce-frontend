@@ -33,6 +33,9 @@ const Auth = () => {
   });
 
   const [otp, setOtp] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 /* ================= HANDLE NAV STATE ================= */
 useEffect(() => {
   if (location.state?.mode === "signup") {
@@ -52,12 +55,14 @@ useEffect(() => {
   /* ================= SIGN IN ================= */
   const handleSignin = async (e) => {
     e.preventDefault();
+    if (isSigningIn) return;
     toast.info("Redirecting....")
     if (!signinData.email || !signinData.password) {
       toast.error("Please enter all fields");
       return;
     }
 
+    setIsSigningIn(true);
     try {
       const res = await fetch(
         `${apiUrl}/auth/signin`,
@@ -99,6 +104,8 @@ useEffect(() => {
       navigate("/products");
     } catch {
       toast.error("Network error. Try again.");
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -121,6 +128,7 @@ useEffect(() => {
   /* ================= SEND OTP ================= */
   const sendOtp = async (e) => {
     e.preventDefault();
+    if (isSendingOtp) return;
 
     for (let key in signupData) {
       if (!signupData[key]) {
@@ -129,9 +137,11 @@ useEffect(() => {
       }
     }
 
-    if (!(await checkUser())) return;
+    setIsSendingOtp(true);
 
     try {
+      if (!(await checkUser())) return;
+
       await axios.post(
         `${emailUrl}/otp/send-otp`,
         {
@@ -145,11 +155,15 @@ useEffect(() => {
       setMode("otp");
     } catch {
       toast.error("Failed to send OTP");
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
   /* ================= VERIFY OTP ================= */
   const verifyOtp = async () => {
+    if (isVerifyingOtp) return;
+    setIsVerifyingOtp(true);
     try {
       await axios.post(
         `${emailUrl}/otp/verify-otp/${signupData.email}`,
@@ -167,6 +181,8 @@ useEffect(() => {
     } catch {
       toast.error("Invalid OTP");
       setOtp("");
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -221,7 +237,9 @@ useEffect(() => {
             </div>
 
             <div className="d-grid mb-2">
-              <button className="btn btn-primary">Sign In</button>
+              <button className="btn btn-primary" disabled={isSigningIn}>
+                {isSigningIn ? "Signing In..." : "Sign In"}
+              </button>
             </div>
 
             <div className="text-center">
@@ -273,7 +291,9 @@ useEffect(() => {
             </div>
 
             <div className="d-grid mb-2">
-              <button className="btn btn-primary">Send OTP</button>
+              <button className="btn btn-primary" disabled={isSendingOtp}>
+                {isSendingOtp ? "Sending OTP..." : "Send OTP"}
+              </button>
             </div>
 
             <div className="text-center">
@@ -307,8 +327,12 @@ useEffect(() => {
             </div>
 
             <div className="d-grid mb-2">
-              <button className="btn btn-success" onClick={verifyOtp}>
-                Verify OTP
+              <button
+                className="btn btn-success"
+                onClick={verifyOtp}
+                disabled={isVerifyingOtp}
+              >
+                {isVerifyingOtp ? "Verifying..." : "Verify OTP"}
               </button>
             </div>
 
@@ -316,8 +340,9 @@ useEffect(() => {
               <button
                 className="btn btn-outline-secondary"
                 onClick={sendOtp}
+                disabled={isSendingOtp || isVerifyingOtp}
               >
-                Resend OTP
+                {isSendingOtp ? "Resending..." : "Resend OTP"}
               </button>
             </div>
           </>

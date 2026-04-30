@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 
 const Electronics = () => {
   const[products,setProducts]=useState([]);
+  const[loading,setLoading]=useState(true)
   const navigate = useNavigate();
   useEffect(()=>{
-    getProducts().then(setProducts)
+    getProducts().then(setProducts).finally(()=>setLoading(false))
   },[])
   const electronics = products.filter(
     (item) => item.category === "electronics"
@@ -19,8 +20,15 @@ const Electronics = () => {
       <h2 className="category-title text-center mb-5">
         Electronics <Laptop size={26} />
       </h2>
+    {
+      loading?(
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p className="mt-2">Loading Products...</p>
 
-      <div className="row g-4">
+        </div>
+      ):(
+        <div className="row g-4">
         {electronics.map((item) => (
           <div className="col-md-4" key={item.id}>
             <div
@@ -42,6 +50,9 @@ const Electronics = () => {
           </div>
         ))}
       </div>
+      )
+    }
+      
     </div>
   );
 };

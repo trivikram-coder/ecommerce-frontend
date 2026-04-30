@@ -9,10 +9,10 @@ const Orders = () => {
   const token = localStorage.getItem("token");
 
   // ---------------- FETCH ORDERS ----------------
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
 
 useEffect(() => {
-  if (!user || !token || loaded) return;
+  if (!user || !token || !loaded) return;
 
   const fetchOrders = async () => {
     try {
@@ -27,9 +27,10 @@ useEffect(() => {
 
       const data = await res.json();
       setOrders(data.orders || []);
-      setLoaded(true); // ✅ IMPORTANT
+      setLoaded(false); // ✅ IMPORTANT
     } catch (err) {
       console.error("Fetch orders error:", err);
+      setLoaded(false);
     }
   };
 
@@ -63,7 +64,12 @@ useEffect(() => {
     <div className="container py-4">
       <h2 className="orders-title">Your Orders</h2>
 
-      {orders.length === 0 ? (
+      {loaded?(
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p className="mt-2">Loading orders...</p>
+        </div>
+      ):orders.length === 0 ? (
         <div className="empty-orders">No orders found.</div>
       ) : (
         orders.map((order) => (

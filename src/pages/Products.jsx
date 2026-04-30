@@ -21,7 +21,7 @@ const Products = () => {
   const[wishlistProductIds,setWishlistProductIds]=useState([])
   const [wishlistIds, setWishlistIds] = useState([]);
   const [cartProductIds, setCartProductIds] = useState([]); // FIX
-
+  const[loading,setLoading]=useState(true)
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +34,7 @@ const Products = () => {
     const products=await getProducts();
     setItems(products);
     setFiltered(products);
+    setLoading(false)
    }
    loadProducts()
   }, []);
@@ -488,9 +489,14 @@ localStorage.setItem(`wishlist${userId}`, JSON.stringify(wishlist));
                   </div>
                 </div>
               ))
-            ) : (
+            ) : loading?(
+              <div className="text-center">
+                <div className="spinner-border text-primary"></div>
+                <p className="mt-2">Loading Products</p>
+              </div>
+            ): (
               <div className="col-12 text-center py-5">
-                <p className="lead text-muted">Loading....</p>
+                <p className="lead text-muted">No Products available</p>
               </div>
             )}
           </div>

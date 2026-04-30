@@ -5,9 +5,10 @@ import "../styles/category.css";
 
 const Jewellery = () => {
   const[products,setProducts]=useState([])
+  const[loading,setLoading]=useState(true)
   const navigate = useNavigate();
   useEffect(()=>{
-    getProducts().then(setProducts);
+    getProducts().then(setProducts).finally(()=>setLoading(false));
   },[])
   const jewellery = products.filter(
     (product) => product.category === "jewellery"
@@ -18,8 +19,14 @@ const Jewellery = () => {
       <h2 className="category-title text-center mb-5">
         Jewellery
       </h2>
-
-      <div className="row g-4">
+    {
+      loading?(
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p className="mt-2">Loading Products...</p>
+        </div>
+      ):(
+        <div className="row g-4">
         {jewellery.map((item) => (
           <div className="col-md-4" key={item.id}>
             <div
@@ -37,6 +44,9 @@ const Jewellery = () => {
           </div>
         ))}
       </div>
+      )
+    }
+      
     </div>
   );
 };
